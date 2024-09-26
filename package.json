@@ -15,6 +15,7 @@
     "rollback-seeds": "knex seed:rollback"
   },
   "dependencies": {
+    "@tanstack/react-form": "^0.33.0",
     "@tanstack/react-query": "^5.56.2",
     "axios": "^1.7.7",
     "class-variance-authority": "^0.7.0",
@@ -27,6 +28,7 @@
     "pg": "^8.13.0",
     "react": "^18",
     "react-dom": "^18",
+    "stripe": "^16.12.0",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
     "yup": "^1.4.0"
