@@ -15,12 +15,17 @@
     "rollback-seeds": "knex seed:rollback"
   },
   "dependencies": {
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.1",
     "knex": "^3.1.0",
+    "lucide-react": "^0.446.0",
     "next": "14.2.13",
     "objection": "^3.1.4",
     "pg": "^8.13.0",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "tailwind-merge": "^2.5.2",
+    "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
     "eslint": "^8.57.0",
