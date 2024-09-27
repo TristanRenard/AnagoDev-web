@@ -2,11 +2,11 @@
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.up = (knex) => knex.schema.createTable('categories', (table) => {
-  table.increments('id').primary()
-  table.string('title').notNullable()
-  table.string('description').notNullable()
-  table.json('images').notNullable()
+exports.up = (knex) => knex.schema.createTable("categories", (table) => {
+  table.increments("id").primary()
+  table.string("title").notNullable()
+  table.string("description").notNullable()
+  table.json("images").notNullable()
   table.timestamps(true, true)
 })
 
@@ -15,4 +15,4 @@ exports.up = (knex) => knex.schema.createTable('categories', (table) => {
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.down = (knex) => knex.schema.dropTable('categories')
+exports.down = (knex) => knex.schema.dropTable("categories")

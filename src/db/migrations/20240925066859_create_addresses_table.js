@@ -2,22 +2,22 @@
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.up = (knex) => knex.schema.createTable('addresses', (table) => {
-  table.increments('id').primary()
-  table.string('street')
-  table.string('city')
-  table.string('state')
-  table.string('zip')
-  table.string('country')
-  table.string('complement')
-  table.string('name')
+exports.up = (knex) => knex.schema.createTable("addresses", (table) => {
+  table.increments("id").primary()
+  table.string("street")
+  table.string("city")
+  table.string("state")
+  table.string("zip")
+  table.string("country")
+  table.string("complement")
+  table.string("name")
   table.timestamps(true, true)
-  table.integer('user_id').unsigned().notNullable()
-  table.foreign('user_id').references('users.id').onDelete('CASCADE')
+  table.integer("user_id").unsigned().notNullable()
+  table.foreign("user_id").references("users.id").onDelete("CASCADE")
 })
 
 /**
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.down = (knex) => knex.schema.dropTable('addresses')
+exports.down = (knex) => knex.schema.dropTable("addresses")
