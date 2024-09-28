@@ -12,12 +12,13 @@ class User extends Model {
   static get jsonSchema() {
     return {
       type: "object",
-      required: ["email", "password"],
+      required: ["email"],
       properties: {
         id: { type: "integer" },
         first_name: { type: 'string' },
         last_name: { type: 'string' },
         email: { type: 'string' },
+        customer_id: { type: 'string' },
         password: { type: 'string' },
         phone: { type: 'string' },
         isAdmin: { type: 'boolean' },
