@@ -15,7 +15,8 @@ class Carousel extends Model {
         name: { type: 'string' },
         description: { type: 'string' },
         images: { type: 'json' },
-        link: { type: 'string' }
+        link: { type: 'string' },
+        order: { type: 'integer' }
       }
     }
   }

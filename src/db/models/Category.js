@@ -15,7 +15,8 @@ class Category extends Model {
         id: { type: 'integer' },
         title: { type: 'string' },
         description: { type: 'string' },
-        images: { type: 'json' }
+        images: { type: 'json' },
+        order: { type: 'integer' }
       }
     }
   }

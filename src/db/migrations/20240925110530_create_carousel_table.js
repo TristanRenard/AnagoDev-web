@@ -8,6 +8,7 @@ exports.up = (knex) => knex.schema.createTable('carousel', (table) => {
   table.string('description').notNullable()
   table.json('images').notNullable()
   table.string('link').notNullable()
+  table.integer('order').notNullable()
   table.timestamps(true, true)
 })
 
