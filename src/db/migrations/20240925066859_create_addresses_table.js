@@ -21,4 +21,4 @@ exports.up = (knex) => knex.schema.createTable('addresses', (table) => {
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.down = (knex) => knex.schema.dropTable('addresses')
+exports.down = (knex) => knex.schema.dropTable("addresses")
