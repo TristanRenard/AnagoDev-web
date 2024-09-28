@@ -1,22 +1,22 @@
-import Product from '@/db/models/Product'
-import { Model } from 'objection'
+import Product from "@/db/models/Product"
+import { Model } from "objection"
 
 class Category extends Model {
   static get tableName() {
-    return 'categories'
+    return "categories"
   }
 
   static get jsonSchema() {
     return {
-      type: 'object',
-      required: ['title', 'description'],
+      type: "object",
+      required: ["title", "description"],
 
       properties: {
-        id: { type: 'integer' },
-        title: { type: 'string' },
-        description: { type: 'string' },
-        images: { type: 'json' },
-        order: { type: 'integer' }
+        id: { type: "integer" },
+        title: { type: "string" },
+        description: { type: "string" },
+        images: { type: "json" },
+        order: { type: "integer" }
       }
     }
   }
@@ -27,8 +27,8 @@ class Category extends Model {
         relation: Model.HasManyRelation,
         modelClass: Product,
         join: {
-          from: 'categories.id',
-          to: 'products.categoryId'
+          from: "categories.id",
+          to: "products.categoryId"
         }
       }
     }

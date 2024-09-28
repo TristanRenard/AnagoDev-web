@@ -3,26 +3,26 @@ import { Model } from "objection"
 
 class Product extends Model {
   static get tableName() {
-    return 'products'
+    return "products"
   }
 
   static get jsonSchema() {
     return {
-      type: 'object',
-      required: ['title', 'description', 'price', 'categoryId'],
+      type: "object",
+      required: ["title", "description", "price", "categoryId"],
 
       properties: {
-        id: { type: 'integer' },
-        title: { type: 'string' },
-        description: { type: 'string' },
-        isMarkdown: { type: 'boolean' },
-        price: { type: 'number' },
-        isSubscription: { type: 'boolean' },
-        images: { type: 'json' },
-        stock: { type: 'integer' },
-        duties: { type: 'number' },
-        isTopProduct: { type: 'boolean' },
-        categoryId: { type: 'integer' }
+        id: { type: "integer" },
+        title: { type: "string" },
+        description: { type: "string" },
+        isMarkdown: { type: "boolean" },
+        price: { type: "number" },
+        isSubscription: { type: "boolean" },
+        images: { type: "json" },
+        stock: { type: "integer" },
+        duties: { type: "number" },
+        isTopProduct: { type: "boolean" },
+        categoryId: { type: "integer" }
       }
     }
   }
@@ -33,8 +33,8 @@ class Product extends Model {
         relation: Model.BelongsToOneRelation,
         modelClass: Category,
         join: {
-          from: 'products.categoryId',
-          to: 'categories.id'
+          from: "products.categoryId",
+          to: "categories.id"
         }
       }
     }

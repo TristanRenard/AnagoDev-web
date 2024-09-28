@@ -6,20 +6,20 @@ import { Model } from "objection"
 
 class Order extends Model {
   static get tableName() {
-    return 'orders'
+    return "orders"
   }
 
   static get jsonSchema() {
     return {
-      type: 'object',
-      required: ['status', 'userId', 'addressId', 'paymentMethodId'],
+      type: "object",
+      required: ["status", "userId", "addressId", "paymentMethodId"],
 
       properties: {
-        id: { type: 'integer' },
-        status: { type: 'string' },
-        userId: { type: 'integer' },
-        addressId: { type: 'integer' },
-        paymentMethodId: { type: 'integer' }
+        id: { type: "integer" },
+        status: { type: "string" },
+        userId: { type: "integer" },
+        addressId: { type: "integer" },
+        paymentMethodId: { type: "integer" }
       }
     }
   }
@@ -30,36 +30,36 @@ class Order extends Model {
         relation: Model.BelongsToOneRelation,
         modelClass: User,
         join: {
-          from: 'orders.userId',
-          to: 'users.id'
+          from: "orders.userId",
+          to: "users.id"
         }
       },
       address: {
         relation: Model.BelongsToOneRelation,
         modelClass: Address,
         join: {
-          from: 'orders.addressId',
-          to: 'addresses.id'
+          from: "orders.addressId",
+          to: "addresses.id"
         }
       },
       paymentMethod: {
         relation: Model.BelongsToOneRelation,
         modelClass: PaymentMethod,
         join: {
-          from: 'orders.paymentMethodId',
-          to: 'paymentMethods.id'
+          from: "orders.paymentMethodId",
+          to: "paymentMethods.id"
         }
       },
       products: {
         relation: Model.ManyToManyRelation,
         modelClass: OrderProduct,
         join: {
-          from: 'orders.id',
+          from: "orders.id",
           through: {
-            from: 'orderProducts.orderId',
-            to: 'orderProducts.productId'
+            from: "orderProducts.orderId",
+            to: "orderProducts.productId"
           },
-          to: 'products.id'
+          to: "products.id"
         }
       }
     }

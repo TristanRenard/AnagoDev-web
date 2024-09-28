@@ -2,21 +2,21 @@ import { Model } from "objection"
 
 class Carousel extends Model {
   static get tableName() {
-    return 'carousel'
+    return "carousel"
   }
 
   static get jsonSchema() {
     return {
-      type: 'object',
-      required: ['name', 'description', 'images', 'link'],
+      type: "object",
+      required: ["name", "description", "images", "link"],
 
       properties: {
-        id: { type: 'integer' },
-        name: { type: 'string' },
-        description: { type: 'string' },
-        images: { type: 'json' },
-        link: { type: 'string' },
-        order: { type: 'integer' }
+        id: { type: "integer" },
+        name: { type: "string" },
+        description: { type: "string" },
+        images: { type: "json" },
+        link: { type: "string" },
+        order: { type: "integer" }
       }
     }
   }
