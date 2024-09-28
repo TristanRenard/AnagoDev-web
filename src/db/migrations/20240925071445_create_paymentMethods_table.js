@@ -7,7 +7,7 @@ exports.up = (knex) => knex.schema.createTable('paymentMethods', (table) => {
   table.string('name')
   table.string('cardNumber')
   table.string('expirationDate')
-  table.string('securityCode')
+  table.string('cvv')
   table.boolean('isDefault').defaultTo(false)
   table.integer('userId').unsigned().notNullable()
   table.foreign('userId').references('users.id').onDelete('CASCADE')
