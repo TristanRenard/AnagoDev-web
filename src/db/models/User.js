@@ -23,6 +23,8 @@ class User extends Model {
         password: { type: "string" },
         phone: { type: "string" },
         isAdmin: { type: "boolean" },
+        isVerified: { type: "boolean" },
+        verificationToken: { type: "string" },
         consentMail: { type: "boolean" },
         consentPhone: { type: "boolean" }
       }

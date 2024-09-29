@@ -11,6 +11,8 @@ exports.up = (knex) => knex.schema.createTable("users", (table) => {
   table.string("password")
   table.string("phone")
   table.boolean("isAdmin")
+  table.boolean("isVerified").notNullable().defaultTo(false)
+  table.boolean("verificationToken")
   table.boolean("consentMail")
   table.boolean("consentPhone")
   table.timestamps(true, true)
