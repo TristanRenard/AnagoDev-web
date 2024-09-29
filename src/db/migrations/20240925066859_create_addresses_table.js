@@ -11,9 +11,10 @@ exports.up = (knex) => knex.schema.createTable("addresses", (table) => {
   table.string("country")
   table.string("complement")
   table.string("name")
-  table.timestamps(true, true)
+  table.boolean("isDefault").defaultTo(false)
   table.integer("user_id").unsigned().notNullable()
   table.foreign("user_id").references("users.id").onDelete("CASCADE")
+  table.timestamps(true, true)
 })
 
 /**

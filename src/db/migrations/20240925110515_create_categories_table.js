@@ -7,6 +7,7 @@ exports.up = (knex) => knex.schema.createTable("categories", (table) => {
   table.string("title").notNullable()
   table.string("description").notNullable()
   table.json("images").notNullable()
+  table.integer("order").notNullable()
   table.timestamps(true, true)
 })
 
