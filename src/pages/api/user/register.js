@@ -58,7 +58,19 @@ const handler = async (req, res) => {
 
     sendEmail(email, "Account Verification", body)
 
-    return res.status(201).json({ message: "User created", user: newUser })
+    return res.status(201).json({
+      message: "User created", user: {
+        id: newUser.id,
+        first_name: newUser.first_name,
+        last_name: newUser.last_name,
+        email: newUser.email,
+        phone: newUser.phone,
+        isAdmin: newUser.isAdmin,
+        isVerified: newUser.isVerified,
+        createdAt: newUser.createdAt,
+        updatedAt: newUser.updatedAt
+      }
+    })
   } catch (error) {
     return res.status(500).json({ message: "Internal Server Error", error })
   }
