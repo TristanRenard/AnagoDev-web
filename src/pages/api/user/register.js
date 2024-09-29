@@ -1,12 +1,11 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable camelcase */
 
 import User from "@/db/models/User"
 import knexInstance from "@/lib/db"
-import mailFormater from "@/lib/mail/mailFormater"
-import { accountVerificationMailTemplate } from "@/lib/mail/mailTemplates"
-import sendEmail from "@/lib/mail/sendMail"
 import { stripe } from "@/lib/stripe"
+import mailFormater from "@/utils/mail/mailFormater"
+import { accountVerificationMailTemplate } from "@/utils/mail/mailTemplates"
+import sendEmail from "@/utils/mail/sendMail"
 import bcrypt from "bcrypt"
 import crypto from "crypto"
 
