@@ -1,18 +1,5 @@
-import login from "@/utils/user/login"
+import loginController from "@/controllers/login"
 
-const handler = async (req, res) => {
-  if (req.method !== "POST") {
-    return res.status(405).json({ message: "Method Not Allowed" })
-  }
-
-  const { email, password, otp } = req.body
-
-  if (!email || !password || !otp) {
-    // eslint-disable-next-line no-nested-ternary
-    return res.status(400).json({ message: "Missing required fields", missing: !email ? "email" : !password ? "password" : "otp" })
-  }
-
-  return await login({ email, password, otp, res })
-}
+const handler = async (req, res) => await loginController(req, res)
 
 export default handler
