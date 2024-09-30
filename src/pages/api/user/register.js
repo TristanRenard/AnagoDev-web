@@ -1,3 +1,4 @@
+import PhoneVerification from "@/db/models/PhoneVerification"
 import User from "@/db/models/User"
 import knexInstance from "@/lib/db"
 import { stripe } from "@/lib/stripe"
@@ -12,11 +13,21 @@ const handler = async (req, res) => {
     return res.status(405).json({ message: "Method Not Allowed" })
   }
 
-  const { firstName, lastName, email, phone, password, consentMail, consentPhone } = req.body
+  const { firstName, lastName, email, phone, password, consentMail, consentPhone, otp } = req.body
 
-  if (!firstName || !lastName || !email || !password) {
+  if (!firstName || !lastName || !email || !password || !phone) {
     // eslint-disable-next-line no-nested-ternary
-    return res.status(400).json({ message: "Missing required fields", missing: !firstName ? "firstName" : !lastName ? "lastName" : !email ? "email" : "password" })
+    return res.status(400).json({ message: "Missing required fields", missing: !firstName ? "firstName" : !lastName ? "lastName" : !email ? "email" : !password ? "password" : "phone" })
+  }
+
+  const phoneVerification = await PhoneVerification.query(knexInstance).findOne({ phoneNumber: phone })
+
+  if (!phoneVerification) {
+    return res.status(400).json({ message: "Invalid Phone number" })
+  }
+
+  if (phoneVerification.code !== otp) {
+    return res.status(400).json({ message: "Invalid Phone number" })
   }
 
   try {
@@ -38,6 +49,9 @@ const handler = async (req, res) => {
       consentMail,
       consentPhone
     })
+
+    await PhoneVerification.query(knexInstance).delete().where({ phoneNumber: phone })
+
     const template = accountVerificationMailTemplate
     const params = [
       {

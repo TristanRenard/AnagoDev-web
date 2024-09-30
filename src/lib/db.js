@@ -1,6 +1,6 @@
 import knex from "knex"
 import { Model } from "objection"
-import knexConfig from "../../knexfile"
+import knexConfig from "../../knexconfig"
 
 const environment = process.env.NODE_ENV || "development"
 const config = knexConfig[environment]
