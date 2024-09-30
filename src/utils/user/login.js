@@ -19,7 +19,7 @@ const login = async ({ email, password, otp, res }) => {
       return res.status(200).json({ message: "Invalid Credentials, if you don't have an account, please create one. If you have, please verify your account or reset your password" })
     }
 
-    // await User.query(knexInstance).patchAndFetchById(user.id, { otpCreation: null, verificationToken: "" })
+    await User.query(knexInstance).patchAndFetchById(user.id, { otpCreation: null, verificationToken: "" })
 
     const token = await jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: "1d" })
 
