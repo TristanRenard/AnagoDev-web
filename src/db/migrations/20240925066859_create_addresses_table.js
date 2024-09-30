@@ -12,8 +12,8 @@ exports.up = (knex) => knex.schema.createTable("addresses", (table) => {
   table.string("complement")
   table.string("name")
   table.boolean("isDefault").defaultTo(false)
-  table.integer("user_id").unsigned().notNullable()
-  table.foreign("user_id").references("users.id").onDelete("CASCADE")
+  table.integer("userId").unsigned().notNullable()
+  table.foreign("userId").references("users.id").onDelete("CASCADE")
   table.timestamps(true, true)
 })
 

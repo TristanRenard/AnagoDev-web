@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import Address from "@/db/models/Address"
 import Order from "@/db/models/Order"
 import PaymentMethod from "@/db/models/PaymentMethod"
@@ -16,10 +15,10 @@ class User extends Model {
       required: ["email"],
       properties: {
         id: { type: "integer" },
-        first_name: { type: "string" },
-        last_name: { type: "string" },
+        firstName: { type: "string" },
+        lastName: { type: "string" },
         email: { type: "string" },
-        customer_id: { type: "string" },
+        customerId: { type: "string" },
         password: { type: "string" },
         phone: { type: "string" },
         isAdmin: { type: "boolean" },
@@ -38,7 +37,7 @@ class User extends Model {
         modelClass: Address,
         join: {
           from: "users.id",
-          to: "addresses.user_id"
+          to: "addresses.userId"
         }
       },
       paymentMethods: {
@@ -46,7 +45,7 @@ class User extends Model {
         modelClass: PaymentMethod,
         join: {
           from: "users.id",
-          to: "paymentMethods.user_id"
+          to: "paymentMethods.userId"
         }
       },
       orders: {
@@ -54,7 +53,7 @@ class User extends Model {
         modelClass: Order,
         join: {
           from: "users.id",
-          to: "orders.user_id"
+          to: "orders.userId"
         }
       },
       subscriptions: {
@@ -62,7 +61,7 @@ class User extends Model {
         modelClass: Subscription,
         join: {
           from: "users.id",
-          to: "subscriptions.user_id"
+          to: "subscriptions.userId"
         }
       }
     }

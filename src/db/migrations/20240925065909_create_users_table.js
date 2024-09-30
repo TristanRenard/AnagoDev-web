@@ -4,10 +4,10 @@
  */
 exports.up = (knex) => knex.schema.createTable("users", (table) => {
   table.increments("id").primary()
-  table.string("first_name")
-  table.string("last_name")
+  table.string("firstName")
+  table.string("lastName")
   table.string("email").notNullable().unique()
-  table.string("customer_id")
+  table.string("customerId")
   table.string("password")
   table.string("phone")
   table.boolean("isAdmin").defaultTo(false)
@@ -15,6 +15,7 @@ exports.up = (knex) => knex.schema.createTable("users", (table) => {
   table.string("verificationToken")
   table.boolean("consentMail")
   table.boolean("consentPhone")
+  table.timestamp("otpCreation")
   table.timestamps(true, true)
 })
 
