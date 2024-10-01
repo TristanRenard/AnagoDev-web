@@ -18,7 +18,7 @@ const sendOTP = async (email, phonenb) => {
 
       try {
         await client.messages.create({
-          body: `Votre code de vérification est ${codeOTP}, si vous n'êtes pas à l'origine de cette demande veuillez ignorer ce message ET NE PARTAGEZ JAMAIS CE CODE.`,
+          body: `Votre code de vérification est ${codeOTP.substring(0, 3)}-${codeOTP.substring(3)}, si vous n'êtes pas à l'origine de cette demande veuillez ignorer ce message ET NE PARTAGEZ JAMAIS CE CODE.`,
           from: process.env.TWILIO_PHONE_NUMBER,
           to: phone,
         })
@@ -35,7 +35,7 @@ const sendOTP = async (email, phonenb) => {
     try {
       await PhoneVerification.query(knexInstance).insert({ phoneNumber: phonenb, code: codeOTP })
       await client.messages.create({
-        body: `Votre code de vérification est ${codeOTP}, si vous n'êtes pas à l'origine de cette demande veuillez ignorer ce message ET NE PARTAGEZ JAMAIS CE CODE.`,
+        body: `Votre code de vérification est ${codeOTP.substring(0, 3)}-${codeOTP.substring(3)}, si vous n'êtes pas à l'origine de cette demande veuillez ignorer ce message ET NE PARTAGEZ JAMAIS CE CODE.`,
         from: process.env.TWILIO_PHONE_NUMBER,
         to: phonenb,
       })
