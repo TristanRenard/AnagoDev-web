@@ -15,6 +15,8 @@
     "rollback-seeds": "knex seed:rollback"
   },
   "dependencies": {
+    "@radix-ui/react-slot": "^1.1.0",
+    "@radix-ui/react-toast": "^1.2.1",
     "@tanstack/react-form": "^0.33.0",
     "@tanstack/react-query": "^5.56.2",
     "axios": "^1.7.7",
