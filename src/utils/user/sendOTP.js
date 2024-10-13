@@ -2,7 +2,7 @@ import PhoneVerification from "@/db/models/PhoneVerification"
 import User from "@/db/models/User"
 import knexInstance from "@/lib/db"
 import generateOTP from "@/utils/user/generateOTP"
-import { track } from "@vercel/analytics/*"
+import { track } from "@vercel/analytics/server"
 import twilio from "twilio"
 
 const accountSid = process.env.TWILIO_ACCOUNT_SID
