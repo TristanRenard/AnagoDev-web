@@ -1,12 +1,16 @@
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
 import axios from "axios"
+import { Loader2 } from "lucide-react"
 import { useRouter } from "next/router"
+import { useState } from "react"
 
 const Verify = ({ token }) => {
+  const [loading, setLoading] = useState(false)
   const router = useRouter()
   const { toast } = useToast()
   const handleVerify = () => {
+    setLoading(true)
     axios.post("/api/user/verify", { verificationToken: token })
       .then(() => {
         toast({
@@ -26,11 +30,21 @@ const Verify = ({ token }) => {
         })
       }
       )
+      .finally(() => setLoading(false))
   }
 
   return (
     <main className="flex flex-1 flex-col gap-4 justify-center items-center">
-      <Button className="font-black text-xl" size="lg" onClick={handleVerify}>Verify Account</Button>
+      {loading ?
+        <Button className="font-normal" size="lg" disabled >
+          <Loader2 className="mx-2 h-4 w-4 animate-spin" />
+          Loading...
+        </Button>
+        :
+        <Button className="font-bold text-xl" size="lg" onClick={handleVerify} >
+          Verify Account
+        </Button>
+      }
     </main>
   )
 }

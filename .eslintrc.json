@@ -134,7 +134,7 @@
     ],
     "max-depth": [
       "error",
-      3
+      4
     ],
     "max-lines": [
       "error",

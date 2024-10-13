@@ -14,7 +14,7 @@ exports.up = (knex) => knex.schema.createTable("users", (table) => {
   table.boolean("isVerified").notNullable().defaultTo(false)
   table.string("verificationToken")
   table.boolean("consentMail")
-  table.boolean("consentPhone")
+  table.boolean("consentConditions")
   table.timestamp("otpCreation")
   table.timestamps(true, true)
 })
