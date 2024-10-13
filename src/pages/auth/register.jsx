@@ -7,6 +7,7 @@ import { Separator } from "@/components/ui/separator"
 import { useToast } from "@/hooks/use-toast"
 import { useForm } from "@tanstack/react-form"
 import { yupValidator } from "@tanstack/yup-form-adapter"
+import { track } from "@vercel/analytics/*"
 import axios from "axios"
 import { useRouter } from "next/router"
 import { useState } from "react"
@@ -22,6 +23,13 @@ const Register = () => {
       const res = await axios.post("/api/user/register", value)
 
       if (res.status === 201) {
+        track("registerSuccess", {
+          ...value,
+          // eslint-disable-next-line no-undefined
+          password: Boolean(value.password),
+          // eslint-disable-next-line no-undefined
+          confirmPassword: Boolean(value.confirmPassword)
+        })
         toast({
           variant: "success",
           title: "Success",
@@ -31,6 +39,13 @@ const Register = () => {
         router.push("/")
       }
     } catch (err) {
+      track("registerError", {
+        ...value,
+        // eslint-disable-next-line no-undefined
+        password: Boolean(value.password),
+        // eslint-disable-next-line no-undefined
+        confirmPassword: Boolean(value.confirmPassword)
+      })
       toast({
         variant: "destructive",
         title: "Error",

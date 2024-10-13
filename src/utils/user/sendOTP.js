@@ -2,6 +2,7 @@ import PhoneVerification from "@/db/models/PhoneVerification"
 import User from "@/db/models/User"
 import knexInstance from "@/lib/db"
 import generateOTP from "@/utils/user/generateOTP"
+import { track } from "@vercel/analytics/*"
 import twilio from "twilio"
 
 const accountSid = process.env.TWILIO_ACCOUNT_SID
@@ -22,7 +23,10 @@ const sendOTP = async (email, phonenb) => {
         if(process.env.NODE_ENV !== "production") {
           return { message: "If User exists, OTP has been sent to the phone number else check your mail or create an account", code: codeOTP }
         }
-
+        
+        track("messageSent", {
+          phone,
+        })
         await client.messages.create({
           body: `Votre code de vérification est ${codeOTP.substring(0, 3)}-${codeOTP.substring(3)}, si vous n'êtes pas à l'origine de cette demande veuillez ignorer ce message ET NE PARTAGEZ JAMAIS CE CODE.`,
           from: process.env.TWILIO_PHONE_NUMBER,
@@ -44,6 +48,7 @@ const sendOTP = async (email, phonenb) => {
         return { message: "If User exists, OTP has been sent to the phone number else check your mail or create an account", code: `${codeOTP.substring(0, 3)}-${codeOTP.substring(3)}` }
       }
 
+      track("messageSent", { phone: phonenb })
       await client.messages.create({
         body: `Votre code de vérification est ${codeOTP.substring(0, 3)}-${codeOTP.substring(3)}, si vous n'êtes pas à l'origine de cette demande veuillez ignorer ce message ET NE PARTAGEZ JAMAIS CE CODE.`,
         from: process.env.TWILIO_PHONE_NUMBER,

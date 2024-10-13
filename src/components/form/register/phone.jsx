@@ -2,6 +2,7 @@ import { FormInput, FormOTP } from "@/components/form/formInput"
 import { CountryCodeSelect } from "@/components/form/phoneInput"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { track } from "@vercel/analytics/*"
 import axios from "axios"
 import { useEffect, useState } from "react"
 import * as yup from "yup"
@@ -16,6 +17,10 @@ const PhoneRegister = ({ form, setStep, step }) => {
   const [remainingTime, setRemainingTime] = useState(0)
   const [OTPerror, setOTPError] = useState("")
   const sendOTP = async () => {
+    track("sendOTP", {
+      phone
+    }
+    )
     setWaiting(true)
 
     if (phone) {
