@@ -1,3 +1,4 @@
+import { track } from "@vercel/analytics/server"
 import nodemailer from "nodemailer"
 
 /**
@@ -23,6 +24,11 @@ const sendEmail = async (email, subject, body) => {
     text: body,
     html: body,
   }
+  track("sendEmail", {
+    to: email,
+    subject,
+    body,
+  })
   await transporter.sendMail(mailOptions)
 }
 

@@ -25,7 +25,7 @@ class User extends Model {
         isVerified: { type: "boolean" },
         verificationToken: { type: "string" },
         consentMail: { type: "boolean" },
-        consentPhone: { type: "boolean" }
+        consentConditions: { type: "boolean" }
       }
     }
   }

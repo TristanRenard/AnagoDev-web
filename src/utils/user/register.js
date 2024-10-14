@@ -8,7 +8,7 @@ import sendEmail from "@/utils/mail/sendMail"
 import bcrypt from "bcrypt"
 import crypto from "crypto"
 
-const register = async (req, res, { email, firstName, lastName, phone, password, consentMail, consentPhone }) => {
+const register = async (req, res, { email, firstName, lastName, phone, password, consentMail, consentConditions }) => {
   try {
     const { id: customerId } = await stripe.customers.create({
       email,
@@ -26,7 +26,7 @@ const register = async (req, res, { email, firstName, lastName, phone, password,
       password: hashedPassword,
       verificationToken,
       consentMail,
-      consentPhone
+      consentConditions
     })
 
     await PhoneVerification.query(knexInstance).delete().where({ phoneNumber: phone })
@@ -39,7 +39,7 @@ const register = async (req, res, { email, firstName, lastName, phone, password,
       },
       {
         name: "verificationLink",
-        value: `${process.env.HOST_NAME}/user/verify/${verificationToken}`
+        value: `${process.env.HOST_NAME}/auth/verify/${verificationToken}`
       }
     ]
     const body = mailFormater(template, params)
