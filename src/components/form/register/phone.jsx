@@ -8,7 +8,7 @@ import { useEffect, useState } from "react"
 import * as yup from "yup"
 
 // eslint-disable-next-line max-lines-per-function
-const PhoneRegister = ({ form, setStep, step }) => {
+const PhoneRegister = ({ form, setDisableNext, setStep, step }) => {
   const [code, setCode] = useState("")
   const [phone, setPhone] = useState("")
   const [waiting, setWaiting] = useState(false)
@@ -16,6 +16,7 @@ const PhoneRegister = ({ form, setStep, step }) => {
   const [displayOTP, setDisplayOTP] = useState(false)
   const [remainingTime, setRemainingTime] = useState(0)
   const [OTPerror, setOTPError] = useState("")
+  setDisableNext(true)
   const sendOTP = async () => {
     track("sendOTP", {
       phone

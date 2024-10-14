@@ -33,7 +33,8 @@ const sendOTPController = async (req, res) => {
         },
         {
           name: "verificationLink",
-          value: `${process.env.HOST_NAME}/user/verify/${user.verificationToken}`
+          // eslint-disable-next-line no-underscore-dangle
+          value: `${process.env.HOST_NAME||process.env.__NEXT_PRIVATE_ORIGIN }/user/verify/${user.verificationToken}`
         }
       ]
       const body = mailFormater(template, params)

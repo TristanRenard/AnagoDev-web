@@ -10,13 +10,13 @@ const login = async ({ email, password, otp, res }) => {
     const curentTime = new Date()
 
     if (!user || !user.isVerified || !user.verificationToken || user.verificationToken !== otp || user.otpCreation.getTime() + 600000 < curentTime.getTime()) {
-      return res.status(200).json({ message: "Invalid Credentials, if you don't have an account, please create one. If you have, please verify your account or reset your password" })
+      return res.status(400).json({ message: "Invalid Credentials, if you don't have an account, please create one. If you have, please verify your account or reset your password" })
     }
 
     const isValidPassword = await bcrypt.compare(password, user.password)
 
     if (!isValidPassword) {
-      return res.status(200).json({ message: "Invalid Credentials, if you don't have an account, please create one. If you have, please verify your account or reset your password" })
+      return res.status(400).json({ message: "Invalid Credentials, if you don't have an account, please create one. If you have, please verify your account or reset your password" })
     }
 
     await User.query(knexInstance).patchAndFetchById(user.id, { otpCreation: null, verificationToken: "" })
