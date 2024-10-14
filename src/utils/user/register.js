@@ -44,7 +44,7 @@ const register = async (req, res, { email, firstName, lastName, phone, password,
     ]
     const body = mailFormater(template, params)
 
-    sendEmail(email, "Account Verification", body)
+    await sendEmail(email, "Account Verification", body)
 
     return res.status(201).json({
       message: "User created", user: {
