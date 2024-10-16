@@ -154,7 +154,7 @@ const Login = () => {
           {/* eslint-disable-next-line curly*/}
           <Dialog aria-describedby="sms-verification">
             <DialogTrigger asChild>
-              <Button type="submit" disabled={!passwordIsValid || !emailIsValid} onClick={() => { sendOTP() }}>
+              <Button type="submit" disabled={!passwordIsValid || !emailIsValid || (remainingTime > 0)} onClick={() => { sendOTP() }}>
                 Login
               </Button>
             </DialogTrigger>
