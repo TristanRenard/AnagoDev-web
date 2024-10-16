@@ -20,13 +20,18 @@ const sendOTP = async (email, phonenb) => {
       try {
         await User.query(knexInstance).patchAndFetchById(user.id, { verificationToken: codeOTP, otpCreation: new Date() })
 
-        if(process.env.NODE_ENV !== "production") {
+        if (process.env.NODE_ENV !== "production") {
           return { message: "If User exists, OTP has been sent to the phone number else check your mail or create an account", code: codeOTP }
         }
-        
+
         track("messageSent", {
           phone,
         })
+
+        if (process.env.NODE_ENV !== "production") {
+          return { message: "If User exists, OTP has been sent to the phone number else check your mail or create an account", code: codeOTP }
+        }
+
         await client.messages.create({
           body: `Votre code de vérification est ${codeOTP.substring(0, 3)}-${codeOTP.substring(3)}, si vous n'êtes pas à l'origine de cette demande veuillez ignorer ce message ET NE PARTAGEZ JAMAIS CE CODE.`,
           from: process.env.TWILIO_PHONE_NUMBER,
@@ -49,6 +54,11 @@ const sendOTP = async (email, phonenb) => {
       }
 
       track("messageSent", { phone: phonenb })
+
+      if (process.env.NODE_ENV !== "production") {
+        return { message: "If User exists, OTP has been sent to the phone number else check your mail or create an account", code: codeOTP }
+      }
+
       await client.messages.create({
         body: `Votre code de vérification est ${codeOTP.substring(0, 3)}-${codeOTP.substring(3)}, si vous n'êtes pas à l'origine de cette demande veuillez ignorer ce message ET NE PARTAGEZ JAMAIS CE CODE.`,
         from: process.env.TWILIO_PHONE_NUMBER,
