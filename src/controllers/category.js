@@ -20,13 +20,12 @@ const categoryController = async (req, res) => {
     const response = await Category.query(knexInstance).insert({
       title,
       description,
-      images: [],
+      images,
       order,
     })
 
     return res.status(200).json(response)
   } catch (error) {
-    console.error(error)
     return res.status(500).json({ message: "Internal Server Error" })
   }
 }
