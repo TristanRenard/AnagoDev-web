@@ -1,0 +1,23 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+# Détecter si pnpm ou npm est utilisé
+if [ -f pnpm-lock.yaml ]; then
+  echo "Detected pnpm, running pnpm lint"
+  pnpm lint
+  echo "start build"
+  pnpm build
+elif [ -f package-lock.json ]; then
+  echo "Detected npm, running npm run lint"
+  npm run lint
+  echo "start build"
+  npm run build
+  elif [ -f yarn.lock ]; then
+  echo "Detected yarn, running yarn lint"
+  yarn lint
+  echo "start build"
+  yarn build
+else
+  echo "Neither pnpm nor npm detected. Please ensure one is installed."
+  exit 1
+fi
