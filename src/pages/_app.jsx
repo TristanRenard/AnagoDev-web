@@ -1,3 +1,4 @@
+import Plausible from "@/components/Plausible"
 import { Toaster } from "@/components/ui/toaster"
 import "@/styles/globals.css"
 import { Analytics } from "@vercel/analytics/react"
@@ -8,6 +9,7 @@ const App = ({ Component, pageProps }) => (
     < Component {...pageProps} />
     <Toaster />
     <Analytics />
+    <Plausible />
   </div>
 )
 
