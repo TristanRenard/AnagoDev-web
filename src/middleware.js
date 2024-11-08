@@ -6,9 +6,19 @@ const middleware = async (req) => {
 
   if (token) {
     try {
-      await jwtVerify(token, new TextEncoder().encode(process.env.JWT_SECRET))
+      const { payload: userToken } = await jwtVerify(token, new TextEncoder().encode(process.env.JWT_SECRET))
+      const userId = userToken.id
+      const user = await fetch(`http://localhost:3000/api/user/${userId}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${process.env.API_KEY}`
+        }
+      }).then((res) => res.json())
+      const response = NextResponse.next()
+      response.headers.set("x-user-data", JSON.stringify(user.user))
 
-      return NextResponse.next()
+      return response
     } catch (error) {
       return NextResponse.redirect(new URL("/auth/login", req.url), {
         headers: {
@@ -19,6 +29,10 @@ const middleware = async (req) => {
   }
 
   return NextResponse.next()
+}
+
+export const config = {
+  matcher: ["/((?!static|.*\\..*|_next|favicon.ico|robots.txt).*)"]
 }
 
 export default middleware
