@@ -21,7 +21,7 @@ const login = async ({ email, password, otp, res }) => {
 
     await User.query(knexInstance).patchAndFetchById(user.id, { otpCreation: null, verificationToken: "" })
 
-    const token = await jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: "1d" })
+    const token = await jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: "1d" })
 
     res.setHeader("Set-Cookie", cookie.serialize("token", token, {
       httpOnly: true,
