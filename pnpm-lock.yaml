@@ -8,9 +8,15 @@ dependencies:
   '@radix-ui/react-dialog':
     specifier: ^1.1.2
     version: 1.1.2(react-dom@18.3.1)(react@18.3.1)
+  '@radix-ui/react-hover-card':
+    specifier: ^1.1.2
+    version: 1.1.2(react-dom@18.3.1)(react@18.3.1)
   '@radix-ui/react-label':
     specifier: ^2.1.0
     version: 2.1.0(react-dom@18.3.1)(react@18.3.1)
+  '@radix-ui/react-progress':
+    specifier: ^1.1.0
+    version: 1.1.0(react-dom@18.3.1)(react@18.3.1)
   '@radix-ui/react-select':
     specifier: ^2.1.2
     version: 2.1.2(react-dom@18.3.1)(react@18.3.1)
@@ -32,6 +38,9 @@ dependencies:
   '@tanstack/react-query':
     specifier: ^5.59.13
     version: 5.59.13(react@18.3.1)
+  '@tanstack/react-table':
+    specifier: ^8.20.5
+    version: 8.20.5(react-dom@18.3.1)(react@18.3.1)
   '@tanstack/yup-form-adapter':
     specifier: ^0.33.0
     version: 0.33.0(yup@1.4.0)
@@ -593,6 +602,32 @@ packages:
       react-dom: 18.3.1(react@18.3.1)
     dev: false
 
+  /@radix-ui/react-hover-card@1.1.2(react-dom@18.3.1)(react@18.3.1):
+    resolution: {integrity: sha512-Y5w0qGhysvmqsIy6nQxaPa6mXNKznfoGjOfBgzOjocLxr2XlSjqBMYQQL+FfyogsMuX+m8cZyQGYhJxvxUzO4w==}
+    peerDependencies:
+      '@types/react': '*'
+      '@types/react-dom': '*'
+      react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+      react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      '@types/react-dom':
+        optional: true
+    dependencies:
+      '@radix-ui/primitive': 1.1.0
+      '@radix-ui/react-compose-refs': 1.1.0(react@18.3.1)
+      '@radix-ui/react-context': 1.1.1(react@18.3.1)
+      '@radix-ui/react-dismissable-layer': 1.1.1(react-dom@18.3.1)(react@18.3.1)
+      '@radix-ui/react-popper': 1.2.0(react-dom@18.3.1)(react@18.3.1)
+      '@radix-ui/react-portal': 1.1.2(react-dom@18.3.1)(react@18.3.1)
+      '@radix-ui/react-presence': 1.1.1(react-dom@18.3.1)(react@18.3.1)
+      '@radix-ui/react-primitive': 2.0.0(react-dom@18.3.1)(react@18.3.1)
+      '@radix-ui/react-use-controllable-state': 1.1.0(react@18.3.1)
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+    dev: false
+
   /@radix-ui/react-id@1.1.0(react@18.3.1):
     resolution: {integrity: sha512-EJUrI8yYh7WOjNOqpoJaf1jlFIH2LvtgAl+YcFqNCa+4hj64ZXmPkAKOFs/ukjz3byN6bdb/AVUqHkI8/uWWMA==}
     peerDependencies:
@@ -703,6 +738,25 @@ packages:
         optional: true
     dependencies:
       '@radix-ui/react-slot': 1.1.0(react@18.3.1)
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+    dev: false
+
+  /@radix-ui/react-progress@1.1.0(react-dom@18.3.1)(react@18.3.1):
+    resolution: {integrity: sha512-aSzvnYpP725CROcxAOEBVZZSIQVQdHgBr2QQFKySsaD14u8dNT0batuXI+AAGDdAHfXH8rbnHmjYFqVJ21KkRg==}
+    peerDependencies:
+      '@types/react': '*'
+      '@types/react-dom': '*'
+      react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+      react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      '@types/react-dom':
+        optional: true
+    dependencies:
+      '@radix-ui/react-context': 1.1.0(react@18.3.1)
+      '@radix-ui/react-primitive': 2.0.0(react-dom@18.3.1)(react@18.3.1)
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
     dev: false
@@ -1090,8 +1144,25 @@ packages:
       use-sync-external-store: 1.2.2(react@18.3.1)
     dev: false
 
+  /@tanstack/react-table@8.20.5(react-dom@18.3.1)(react@18.3.1):
+    resolution: {integrity: sha512-WEHopKw3znbUZ61s9i0+i9g8drmDo6asTWbrQh8Us63DAk/M0FkmIqERew6P71HI75ksZ2Pxyuf4vvKh9rAkiA==}
+    engines: {node: '>=12'}
+    peerDependencies:
+      react: '>=16.8'
+      react-dom: '>=16.8'
+    dependencies:
+      '@tanstack/table-core': 8.20.5
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+    dev: false
+
   /@tanstack/store@0.5.5:
     resolution: {integrity: sha512-EOSrgdDAJExbvRZEQ/Xhh9iZchXpMN+ga1Bnk8Nmygzs8TfiE6hbzThF+Pr2G19uHL6+DTDTHhJ8VQiOd7l4tA==}
+    dev: false
+
+  /@tanstack/table-core@8.20.5:
+    resolution: {integrity: sha512-P9dF7XbibHph2PFRz8gfBKEXEY/HJPOhym8CHmjF8y3q5mWpKx9xtZapXQUWCgkqvsK0R46Azuz+VaxD4Xl+Tg==}
+    engines: {node: '>=12'}
     dev: false
 
   /@tanstack/yup-form-adapter@0.33.0(yup@1.4.0):
