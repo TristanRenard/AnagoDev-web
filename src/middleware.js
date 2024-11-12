@@ -16,7 +16,12 @@ const middleware = async (req) => {
         }
       }).then((res) => res.json())
       const response = NextResponse.next()
-      response.headers.set("x-user-data", JSON.stringify(user.user))
+
+      if (req.url.includes("/api")) {
+        response.headers.set("x-user-data", JSON.stringify(user.user))
+      } else {
+        response.headers.set("x-user-data", user.user.id)
+      }
 
       return response
     } catch (error) {
