@@ -38,7 +38,6 @@ const Login = () => {
           password: Boolean(value.password),
         })
         toast({
-          variant: "success",
           title: "Success",
           description: res.data.message,
           status: "success",

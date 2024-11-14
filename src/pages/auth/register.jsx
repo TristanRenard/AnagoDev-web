@@ -31,7 +31,6 @@ const Register = () => {
           confirmPassword: Boolean(value.confirmPassword)
         })
         toast({
-          variant: "success",
           title: "Success",
           description: "Account created check your email to verify",
           status: "success",

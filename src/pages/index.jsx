@@ -1,4 +1,3 @@
-import authProps from "@/serverSideProps/authProps"
 import localFont from "next/font/local"
 import Image from "next/image"
 
@@ -113,12 +112,3 @@ const Home = () => (
 )
 
 export default Home
-export const getServerSideProps = async (context) => {
-  const { user } = await authProps(context)
-
-  return {
-    props: {
-      user,
-    },
-  }
-}
