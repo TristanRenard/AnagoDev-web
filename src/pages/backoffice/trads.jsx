@@ -6,9 +6,8 @@ import { Label } from "@/components/ui/label"
 import { Progress } from "@/components/ui/progress"
 import { Separator } from "@/components/ui/separator"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import User from "@/db/models/User"
-import knexInstance from "@/lib/db"
 import { useI18n } from "@/locales"
+import authProps from "@/serverSideProps/authProps"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import axios from "axios"
 import { useRef, useState } from "react"
@@ -52,16 +51,12 @@ const Traductions = () => {
   })
 
   return (
-    <div className="flex-1 flex flex-col max-h-screen">
+    <div className="flex-1 flex flex-col h-full">
       <h1 className="p-8 font-black text-2xl py-8">{t("Traductions")}</h1>
 
       {/* <!-- Form with one input for the key and one input for a text and a button to add the text to the list of texts --> */}
       <form className="flex flex-col gap-2 px-8 max-w-96" onSubmit={(e) => {
         e.preventDefault()
-
-        if (e.target.text.value) {
-          setTexts([...texts, e.target.text.value])
-        }
 
         e.target.text.value = ""
       }
@@ -152,17 +147,7 @@ const Traductions = () => {
 export default Traductions
 
 export const getServerSideProps = async (context) => {
-  const userData = context.req.headers["x-user-data"]
-
-  if (!userData) {
-    return {
-      notFound: true,
-    }
-  }
-
-  const user = await User.query(knexInstance).findOne({
-    id: userData
-  })
+  const { user } = await authProps(context)
 
   if (!user || !user.isAdmin) {
     return {
@@ -171,6 +156,8 @@ export const getServerSideProps = async (context) => {
   }
 
   return {
-    props: {},
+    props: {
+      user,
+    },
   }
 }
