@@ -5,6 +5,15 @@ const nextConfig = {
     locales: ["en", "fr", "es", "de", "it", "ar"],
     defaultLocale: "en",
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "files.stripe.com",
+        port: ""
+      }
+    ]
+  }
 }
 
 export default nextConfig
