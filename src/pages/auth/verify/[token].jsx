@@ -14,7 +14,6 @@ const Verify = ({ token }) => {
     axios.post("/api/user/verify", { verificationToken: token })
       .then(() => {
         toast({
-          variant: "success",
           title: "Success",
           description: "Account verified",
           status: "success",
