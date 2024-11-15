@@ -98,61 +98,61 @@ const handler = async (req, res) => {
     })
 
     let lineItems = []
-    let targetSession = null
-    let itemInterval = "one_time"
 
-    // Vérifie si une session avec le même intervalle existe déjà
-    for (const session of sessions.data) {
-      // eslint-disable-next-line no-await-in-loop
-      const pricesInCart = await stripe.checkout.sessions.listLineItems(session.id)
-      const interval = pricesInCart.data[0]?.price.recurring?.interval || "one_time"
+    if (sessions.data.length > 0) {
+      const pricesInCart = await stripe.checkout.sessions.listLineItems(sessions.data[0].id)
+      lineItems = pricesInCart.data.map((item) => ({
+        price: item.price.id,
+        quantity: item.quantity,
+        interval: item.price.recurring?.interval || "one_time",
+      }))
 
-      if (pricesInCart.data.some((item) => item.price.id === priceId)) {
-        // Trouve l'élément existant et met à jour la quantité
-        lineItems = pricesInCart.data.map((item) => ({
-          price: item.price.id,
-          quantity: item.price.id === priceId ? item.quantity + quantity : item.quantity,
-        }))
-        targetSession = session
-        itemInterval = interval
+      const existingItem = lineItems.find((item) => item.price === priceId)
 
-        break
+      if (existingItem) {
+        existingItem.quantity += quantity
+      } else {
+        const priceData = await stripe.prices.retrieve(priceId)
+        lineItems.push({
+          price: priceId,
+          quantity,
+          interval: priceData.recurring?.interval || "one_time",
+        })
       }
 
-      if (!targetSession && interval === itemInterval) {
-        // Récupère les items et utilise la session existante
-        lineItems = pricesInCart.data.map((item) => ({
-          price: item.price.id,
-          quantity: item.quantity,
-        }))
-        lineItems.push({ price: priceId, quantity })
-        targetSession = session
-        itemInterval = interval
-      }
-    }
-
-    if (!targetSession) {
-      // Pas de session existante trouvée, crée une nouvelle session
+      await stripe.checkout.sessions.expire(sessions.data[0].id)
+    } else {
       const priceData = await stripe.prices.retrieve(priceId)
-      itemInterval = priceData.recurring?.interval || "one_time"
-      lineItems.push({ price: priceId, quantity })
+      lineItems.push({ price: priceId, quantity, interval: priceData.recurring?.interval || "one_time" })
     }
 
-    if (targetSession) {
-      await stripe.checkout.sessions.expire(targetSession.id)
+    const groupedItems = lineItems.reduce((acc, item) => {
+      // eslint-disable-next-line logical-assignment-operators
+      (acc[item.interval] = acc[item.interval] || []).push({
+        price: item.price,
+        quantity: item.quantity,
+      })
+
+      return acc
+    }, {})
+    const sessionResponses = []
+    for (const [interval, items] of Object.entries(groupedItems)) {
+      // eslint-disable-next-line no-await-in-loop
+      const session = await stripe.checkout.sessions.create({
+        "payment_method_types": ["card"],
+        "line_items": items,
+        mode: interval === "one_time" ? "payment" : "subscription",
+        "success_url": `${process.env.HOST_NAME}/success`,
+        "cancel_url": `${process.env.HOST_NAME}/cancel`,
+        customer: customerId,
+      })
+      sessionResponses.push(session)
     }
 
-    const session = await stripe.checkout.sessions.create({
-      "payment_method_types": ["card"],
-      "line_items": lineItems,
-      mode: itemInterval === "one_time" ? "payment" : "subscription",
-      "success_url": `${process.env.HOST_NAME}/success`,
-      "cancel_url": `${process.env.HOST_NAME}/cart`,
-      customer: customerId,
-    })
-
-    return res.status(200).json({ session, message: "Session mise à jour avec le panier complet" })
+    return res.status(200).json({ sessions: sessionResponses, message: "Sessions créées par intervalle de facturation" })
   }
+
+
 
   if (method === "DELETE") {
     try {
