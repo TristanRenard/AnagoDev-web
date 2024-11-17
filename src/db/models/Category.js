@@ -15,7 +15,13 @@ class Category extends Model {
         id: { type: "integer" },
         title: { type: "string" },
         description: { type: "string" },
-        images: { type: "json" },
+        images: {
+          type: "object",
+          patternProperties: {
+            "^[0-9]+$": { type: "string", format: "uri" }
+          },
+          additionalProperties: false
+        },
         order: { type: "integer" }
       }
     }
@@ -34,6 +40,5 @@ class Category extends Model {
     }
   }
 }
-
 
 export default Category
