@@ -81,7 +81,7 @@ const handler = async (req, res) => {
 
       return res.status(200).json(translationsObject)
     } catch (error) {
-      return res.status(500).json({ message: error.message })
+      return res.status(500).json({ message: error })
     }
   }
 
