@@ -1,5 +1,10 @@
-import ProductPage from "@/pages/product/[id]"
+import Carrousel from "@/components/ui/carrousel"
+import React from "react"
 
-const Home = () => <ProductPage />
+const Home = () => (
+  <>
+    <Carrousel />
+  </>
+)
 
 export default Home
