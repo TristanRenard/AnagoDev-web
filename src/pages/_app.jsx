@@ -10,10 +10,9 @@ const queryClient = new QueryClient()
 const App = ({ Component, pageProps }) => (
   <I18nProvider>
     <QueryClientProvider client={queryClient}>
-
       <div className="min-h-screen flex flex-col">
         <NavBar {...pageProps} />
-        < Component {...pageProps} />
+        <Component {...pageProps} />
         <Footer />
         <Toaster />
         <Analytics />
