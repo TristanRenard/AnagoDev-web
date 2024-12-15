@@ -1,23 +1,43 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-# Détecter si pnpm ou npm est utilisé
-if [ -f pnpm-lock.yaml ]; then
-  echo "Detected pnpm, running pnpm lint"
+# Fonction pour vérifier si une commande est disponible
+command_exists() {
+  command -v "$1" >/dev/null 2>&1
+}
+
+# Détection et exécution avec le gestionnaire de paquets approprié
+if command_exists pnpm; then
+  echo "pnpm is available"
+  echo "Running pnpm install"
+  pnpm install
+  echo "Adding pnpm-lock.yaml to the current commit"
+  git add pnpm-lock.yaml
+  echo "Running pnpm lint"
   pnpm lint
-  echo "start build"
+  echo "Start build"
   pnpm build
-elif [ -f package-lock.json ]; then
-  echo "Detected npm, running npm run lint"
+elif command_exists npm; then
+  echo "npm is available"
+  echo "Running npm install"
+  npm install
+  echo "Adding package-lock.json to the current commit"
+  git add package-lock.json
+  echo "Running npm lint"
   npm run lint
-  echo "start build"
+  echo "Start build"
   npm run build
-  elif [ -f yarn.lock ]; then
-  echo "Detected yarn, running yarn lint"
+elif command_exists yarn; then
+  echo "yarn is available"
+  echo "Running yarn install"
+  yarn install
+  echo "Adding yarn.lock to the current commit"
+  git add yarn.lock
+  echo "Running yarn lint"
   yarn lint
-  echo "start build"
+  echo "Start build"
   yarn build
 else
-  echo "Neither pnpm nor npm detected. Please ensure one is installed."
+  echo "No compatible package manager found. Please install pnpm, npm, or yarn."
   exit 1
 fi
