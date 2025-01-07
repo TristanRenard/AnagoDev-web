@@ -7,9 +7,6 @@ const knexConfig = {
       port: process.env.DB_PORT,
       password: process.env.DB_PASSWORD_DEVELOPMENT,
       database: process.env.DB_NAME_DEVELOPMENT,
-      ssl: {
-        rejectUnauthorized: false
-      }
     },
     migrations: {
       directory: "./src/db/migrations"
@@ -31,9 +28,6 @@ const knexConfig = {
       port: process.env.DB_PORT,
       password: process.env.DB_PASSWORD_STAGING,
       database: process.env.DB_NAME_STAGING,
-      ssl: {
-        rejectUnauthorized: false
-      }
     },
     migrations: {
       directory: "./src/db/migrations"
@@ -55,9 +49,6 @@ const knexConfig = {
       port: process.env.DB_PORT,
       password: process.env.DB_PASSWORD_PRODUCTION,
       database: process.env.DB_NAME_PRODUCTION,
-      ssl: {
-        rejectUnauthorized: false
-      }
     },
     migrations: {
       directory: "./src/db/migrations"
