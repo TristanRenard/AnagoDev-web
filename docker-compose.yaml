@@ -1,0 +1,44 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: umami
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  minio:
+    image: minio/minio
+    container_name: minio
+    restart: always
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    volumes:
+      - minio_data:/data
+    ports:
+      - "9000:9000"
+    command: server /data
+
+  umami:
+    image: docker.umami.is/umami-software/umami:postgresql-latest
+    container_name: umami
+    restart: always
+    environment:
+      DATABASE_URL: postgresql://admin:mypassword@postgres:5432/umami
+      DATABASE_TYPE: postgres
+      HASH_SALT: your-random-hash-salt
+    depends_on:
+      - postgres
+    ports:
+      - "3000:3000"
+
+volumes:
+  postgres_data:
+  minio_data:
