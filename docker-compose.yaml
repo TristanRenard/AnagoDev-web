@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   postgres:
     image: postgres:15
@@ -37,7 +36,17 @@ services:
     depends_on:
       - postgres
     ports:
-      - "3000:3000"
+      - "30938:3000"
+  
+  elastic:
+    image: docker.elastic.co/elasticsearch/elasticsearch-wolfi:8.17.0
+    container_name: elastic
+    restart: always
+    environment:
+      discovery.type: single-node
+    ports:
+      - "9200:9200"
+      - "9300:9300"
 
 volumes:
   postgres_data:
