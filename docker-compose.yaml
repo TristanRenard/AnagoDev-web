@@ -38,16 +38,6 @@ services:
     ports:
       - "30938:3000"
   
-  elastic:
-    image: docker.elastic.co/elasticsearch/elasticsearch-wolfi:8.17.0
-    container_name: elastic
-    restart: always
-    environment:
-      discovery.type: single-node
-    ports:
-      - "9200:9200"
-      - "9300:9300"
-
 volumes:
   postgres_data:
   minio_data:
