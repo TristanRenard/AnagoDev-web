@@ -5,7 +5,7 @@ const knexConfig = {
       host: process.env.DB_HOST,
       user: process.env.DB_USER,
       port: process.env.DB_PORT,
-      password: process.env.DB_PASSWORD_DEVELOPMENT,
+      password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME_DEVELOPMENT,
     },
     migrations: {
@@ -26,7 +26,7 @@ const knexConfig = {
       host: process.env.DB_HOST,
       user: process.env.DB_USER,
       port: process.env.DB_PORT,
-      password: process.env.DB_PASSWORD_STAGING,
+      password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME_STAGING,
     },
     migrations: {
@@ -47,7 +47,7 @@ const knexConfig = {
       host: process.env.DB_HOST,
       user: process.env.DB_USER,
       port: process.env.DB_PORT,
-      password: process.env.DB_PASSWORD_PRODUCTION,
+      password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME_PRODUCTION,
     },
     migrations: {

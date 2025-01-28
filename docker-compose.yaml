@@ -4,11 +4,12 @@ services:
     container_name: postgres
     restart: always
     environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: mypassword
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: umami
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "5432:5432"
 
@@ -17,27 +18,41 @@ services:
     container_name: minio
     restart: always
     environment:
-      MINIO_ROOT_USER: minioadmin
-      MINIO_ROOT_PASSWORD: minioadmin
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
     volumes:
       - minio_data:/data
     ports:
-      - "9000:9000"
-    command: server /data
+      - "9000:9000" # MinIO API
+      - "9001:9001" # MinIO Console
+    command: server /data --console-address ":9001"
 
   umami:
     image: docker.umami.is/umami-software/umami:postgresql-latest
     container_name: umami
     restart: always
     environment:
-      DATABASE_URL: postgresql://admin:mypassword@postgres:5432/umami
+      DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@postgres:5432/umami
       DATABASE_TYPE: postgres
-      HASH_SALT: your-random-hash-salt
+      HASH_SALT: ${UMAMI_HASH_SALT}
     depends_on:
       - postgres
     ports:
       - "30938:3000"
-  
+
+  # Reverse proxy
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    restart: always
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - "80:80"
+    depends_on:
+      - minio
+      - umami
+
 volumes:
   postgres_data:
   minio_data:
