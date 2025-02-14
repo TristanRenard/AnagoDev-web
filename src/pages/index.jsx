@@ -1,5 +1,5 @@
-import ProductPage from "@/pages/product/[id]"
 
-const Home = () => <ProductPage />
+const Home = () => <section className="flex-1">
+</section>
 
 export default Home

@@ -1,0 +1,35 @@
+services:
+  nextjs:
+    build:
+      context: .
+      dockerfile: ./docker/production/Dockerfile
+    container_name: nextjs
+    restart: always
+    environment:
+      NODE_ENV: production
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      EMAIL_HOST: ${EMAIL_HOST}
+      EMAIL_PORT: ${EMAIL_PORT}
+      EMAIL_USER: ${EMAIL_USER}
+      EMAIL_PASSWORD: ${EMAIL_PASSWORD}
+      EMAIL_SECURE: ${EMAIL_SECURE}
+      TWILIO_ACCOUNT_SID: ${TWILIO_ACCOUNT_SID}
+      TWILIO_AUTH_TOKEN: ${TWILIO_AUTH_TOKEN}
+      TWILIO_PHONE_NUMBER: ${TWILIO_PHONE_NUMBER}
+      DB_HOST: postgres
+      DB_PORT: ${DB_PORT}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME_PRODUCTION: anagoDev
+      DB_NAME_DEVELOPMENT: anagoDev-develop
+      DB_NAME_STAGING: anagoDev-preprod
+      API_KEY: ${API_KEY}
+      DEEPL_API_KEY: ${DEEPL_API_KEY}
+      HOST_NAME: ${HOST_NAME}
+
+    ports:
+      - "3000:3000" # Next.js tourne sur le port 3000
+    depends_on:
+      - postgres
+      - umami
+      - minio
