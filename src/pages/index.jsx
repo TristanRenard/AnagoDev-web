@@ -1,5 +1,4 @@
 
-const Home = () => <section className="flex-1">
-</section>
+const Home = () => <main className="flex-1"></main>
 
 export default Home
