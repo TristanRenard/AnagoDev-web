@@ -1,12 +1,19 @@
-
 import { FormInput } from "@/components/form/formInput"
 import { useEffect, useState } from "react"
 import * as yup from "yup"
 
 const formValidator = yup.object().shape({
   email: yup.string().email().required(),
-  passwordValidator: yup.string().required().matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/u, "Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, one number and one special character"),
-  confirmPasswordValidator: yup.string().required("Confirm password is required")
+  passwordValidator: yup
+    .string()
+    .required()
+    .matches(
+      /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/u,
+      "Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, one number and one special character",
+    ),
+  confirmPasswordValidator: yup
+    .string()
+    .required("Confirm password is required"),
 })
 const EmailAndPassWord = ({ form, setDisableNext }) => {
   const [email, setEmail] = useState("")
@@ -19,7 +26,9 @@ const EmailAndPassWord = ({ form, setDisableNext }) => {
 
   useEffect(() => {
     if (setDisableNext) {
-      setDisableNext(!(emailIsValid && passwordIsValid && confirmPasswordIsValid))
+      setDisableNext(
+        !(emailIsValid && passwordIsValid && confirmPasswordIsValid),
+      )
     }
   }, [setDisableNext, emailIsValid, passwordIsValid, confirmPasswordIsValid])
 
@@ -30,16 +39,14 @@ const EmailAndPassWord = ({ form, setDisableNext }) => {
       setError("")
       setConfirmPasswordIsValid(true)
     }
-  }
-    , [password, confirmPassword])
-
+  }, [password, confirmPassword])
 
   return (
     <div className="flex flex-col gap-8">
       <h2 className="text-center font-bold text-xl">About you</h2>
       <FormInput
         validators={{
-          onChange: formValidator.fields.email
+          onChange: formValidator.fields.email,
         }}
         value={email}
         setValue={setEmail}
@@ -51,7 +58,7 @@ const EmailAndPassWord = ({ form, setDisableNext }) => {
       />
       <FormInput
         validators={{
-          onChange: formValidator.fields.passwordValidator
+          onChange: formValidator.fields.passwordValidator,
         }}
         value={password}
         form={form}
@@ -63,7 +70,7 @@ const EmailAndPassWord = ({ form, setDisableNext }) => {
       />
       <FormInput
         validators={{
-          onChange: formValidator.fields.confirmPasswordValidator
+          onChange: formValidator.fields.confirmPasswordValidator,
         }}
         form={form}
         name="confirmPassword"
