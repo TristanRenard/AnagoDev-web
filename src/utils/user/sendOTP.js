@@ -27,7 +27,7 @@ const sendOTP = async (email, phonenb) => {
           otpCreation: new Date(),
         })
 
-        await sendEmail(email, "Account Verification".toLocaleLowerCase(), body)
+        await sendEmail(email, "Account Verification", body)
 
         if (process.env.NODE_ENV !== "production") {
           return { message: "OTP envoyé à votre email.", code: codeOTP }
