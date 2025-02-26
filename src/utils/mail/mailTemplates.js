@@ -7,3 +7,15 @@ Please click on the link below to verify your account:
 
 <a class="text-red-500" href="{{verificationLink}}">Verify Account</a>
 `
+
+export const sendOTPMailTemplate = `
+# OTP Verification
+
+Hello {{name}},
+
+Your OTP is {{otp}}.
+
+If you did not request this OTP, please ignore this email.
+
+Thank you.
+`
