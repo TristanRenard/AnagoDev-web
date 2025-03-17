@@ -28,6 +28,7 @@ const EmailAndPassWord = ({ form, setDisableNext }) => {
       setError("Passwords must match")
     } else {
       setError("")
+      setConfirmPasswordIsValid(true)
     }
   }
     , [password, confirmPassword])
