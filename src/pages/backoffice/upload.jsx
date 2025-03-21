@@ -52,11 +52,11 @@ const Upload = () => {
         onDragOver={(event) => event.preventDefault()}
         onDrop={handleDrop}
         onClick={() => inputRef.current.click()}
-        className="flex flex-col border-dashed rounded-lg border-2 mt-4 items-center justify-center border-black h-32 w-1/2 cursor-pointer hover:bg-indigo-200 bg-indigo-300"
+        className="flex flex-col border-dashed rounded-lg border-2 mt-4 items-center justify-center border-black h-48 w-1/2 cursor-pointer hover:bg-indigo-200 bg-indigo-300"
       >
-        <h1>Upload file</h1>
-        <p>
-          <span className="underline">Select file</span> or drag and drop here
+        <h1 className="text-3xl">Upload file</h1>
+        <p className="text-3xl">
+          <span className="underline text-purple-500">Select file</span> or drag and drop here
         </p>
         <input
           type="file"
