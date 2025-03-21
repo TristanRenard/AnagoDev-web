@@ -1,6 +1,6 @@
 import { useState, useRef } from "react"
 import { useToast } from "@/hooks/use-toast"
-import { X } from "lucide-react"
+import { X, Link } from "lucide-react"
 import axios from "axios"
 
 const Upload = () => {
@@ -42,6 +42,19 @@ const Upload = () => {
       })
     }
   }
+  const handleCopyImage = (index) => {
+    const file = files[index]
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      navigator.clipboard.writeText(event.target.result)
+      toast({
+        title: "Success",
+        description: "Image URL copied to clipboard",
+        status: "success",
+      })
+    }
+    reader.readAsDataURL(file)
+  }
   const handleDelete = (index) => {
     setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index))
   }
@@ -52,11 +65,12 @@ const Upload = () => {
         onDragOver={(event) => event.preventDefault()}
         onDrop={handleDrop}
         onClick={() => inputRef.current.click()}
-        className="flex flex-col border-dashed rounded-lg border-2 mt-4 items-center justify-center border-black h-48 w-1/2 cursor-pointer hover:bg-indigo-200 bg-indigo-300"
+        className="flex flex-col border-dashed rounded-lg border-2 mt-4 items-center justify-center border-[#A341F9] h-48 w-1/2 cursor-pointer bg-[#F6F6FB]"
       >
-        <h1 className="text-3xl">Upload file</h1>
-        <p className="text-3xl">
-          <span className="underline text-purple-500">Select file</span> or drag and drop here
+        <h1 className="text-2xl font-bold">Upload file</h1>
+        <p>
+          <span className="underline text-[#A341F9]">Select file</span> or drag
+          and drop here
         </p>
         <input
           type="file"
@@ -72,17 +86,27 @@ const Upload = () => {
       >
         Upload
       </button>
-      {files.map((file, index) => (
-        <div className="flex items-center p-2  gap-4" key={file.name}>
-          <p>{file.name}</p>
-          <button
-            onClick={() => handleDelete(index)}
-            className="rounded-lg bg-red-500 p-2 hover:bg-red-600"
+      <div className="flex gap-4 px-64 py-4 self-start w-full">
+        {files.map((file, index) => (
+          <div
+            className="flex flex-col items-center p-2 gap-4 bg-gray-300 rounded-lg w-48 h-48"
+            key={file.name}
           >
-            <X color="white" />
-          </button>
-        </div>
-      ))}
+            <p>{file.name}</p>
+            <div className="flex gap-1 mt-auto">
+              <button onClick={() => handleCopyImage(index)} className="rounded-full p-1 bg-[#7AACEF]">
+                <Link color="white" />
+              </button>
+              <button
+                onClick={() => handleDelete(index)}
+                className="rounded-full bg-red-500 p-1 hover:bg-red-600"
+              >
+                <X color="white" />
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
