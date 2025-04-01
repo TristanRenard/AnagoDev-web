@@ -11,6 +11,7 @@ import { useEffect, useState } from "react"
 
 const NavBar = () => {
   const t = useI18n()
+  const [userId, setUserId] = useState(null)
   const { isNavBarOpen, toggleNavBar } = useNavBar()
   const [connected, setConnected] = useState(false)
   const isLogged = async () => {
@@ -19,10 +20,20 @@ const NavBar = () => {
 
     setConnected(loggedIn)
   }
+  const getUserId = async () => {
+    const res = await axios("/api/me")
+    setUserId(res.data.user.id)
+  }
 
   useEffect(() => {
     isLogged()
   }, [])
+
+  useEffect(() => {
+    if (connected) {
+      getUserId()
+    }
+  }, [connected])
 
   return (
     <>
@@ -68,6 +79,9 @@ const NavBar = () => {
           </ul>
         ) : (
           <ul className="flex gap-8">
+            <li className="flex flex-col justify-center items-center">
+              <Link href={`/account/${userId}`}>{t("My account")}</Link>
+            </li>
             <li className="flex flex-col justify-center items-center">
               <Link href="/cart">
                 <ShoppingBasket size={24} />
@@ -202,6 +216,18 @@ const NavBar = () => {
             </ul>
           ) : (
             <ul className="flex gap-8 justify-around mb-24">
+              <li className="flex flex-col justify-center items-center">
+                <Link
+                  onClick={() => {
+                    if (isNavBarOpen) {
+                      toggleNavBar()
+                    }
+                  }}
+                  href={`/account/${userId}`}
+                >
+                  {t("My account")}
+                </Link>
+              </li>
               <li className="flex flex-col justify-center items-center">
                 <Link
                   onClick={() => {

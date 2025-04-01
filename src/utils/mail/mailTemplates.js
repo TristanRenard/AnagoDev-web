@@ -19,3 +19,13 @@ If you did not request this OTP, please ignore this email.
 
 Thank you.
 `
+
+export const accountDeletionMailTemplate = `
+# Account Deletion
+
+Hello {{name}},
+
+Please click on the link below to delete your account:
+
+<a class="text-red-500" href="{{accountDeletionLink}}">Delete Account</a>
+`
