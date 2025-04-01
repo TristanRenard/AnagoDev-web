@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: ./docker/production/Dockerfile
     container_name: nextjs
-    restart: always
+    restart: on-failure
     environment:
       NODE_ENV: production
       STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
