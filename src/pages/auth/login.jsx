@@ -13,7 +13,6 @@ import { Dialog, DialogTrigger } from "@radix-ui/react-dialog"
 // Iimport { useToast } from "@/hooks/use-toast"
 import { useForm } from "@tanstack/react-form"
 import { yupValidator } from "@tanstack/yup-form-adapter"
-import { track } from "@vercel/analytics"
 import axios from "axios"
 import { useRouter } from "next/router"
 // Iimport { useRouter } from "next/router"
@@ -38,7 +37,7 @@ const Login = () => {
       const res = await axios.post("/api/user/login", value)
 
       if (res.status === 200) {
-        track("loginSuccess", {
+        umami.track("loginSuccess", {
           ...value,
           // eslint-disable-next-line no-undefined
           password: Boolean(value.password),
@@ -51,7 +50,7 @@ const Login = () => {
         router.push("/")
       }
     } catch (err) {
-      track("registerError", {
+      umami.track("registerError", {
         ...value,
         // eslint-disable-next-line no-undefined
         password: Boolean(value.password),
@@ -76,7 +75,7 @@ const Login = () => {
     onSubmit: (values) => handleSubmit(values),
   })
   const sendOTP = async () => {
-    track("sendOTP", {
+    umami.track("sendOTP", {
       email,
     })
     setWaiting(true)

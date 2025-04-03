@@ -7,7 +7,6 @@ import { Separator } from "@/components/ui/separator"
 import { useToast } from "@/hooks/use-toast"
 import { useForm } from "@tanstack/react-form"
 import { yupValidator } from "@tanstack/yup-form-adapter"
-import { track } from "@vercel/analytics"
 import axios from "axios"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
@@ -25,7 +24,7 @@ const Register = () => {
       const res = await axios.post("/api/user/register", value)
 
       if (res.status === 201) {
-        track("registerSuccess", {
+        umami.track("registerSuccess", {
           ...value,
           // eslint-disable-next-line no-undefined
           password: Boolean(value.password),
@@ -40,7 +39,7 @@ const Register = () => {
         router.push("/")
       }
     } catch (err) {
-      track("registerError", {
+      umami.track("registerError", {
         ...value,
         // eslint-disable-next-line no-undefined
         password: Boolean(value.password),
