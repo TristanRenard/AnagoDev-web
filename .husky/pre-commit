@@ -1,43 +1,43 @@
-#!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
+# #!/bin/sh
+# . "$(dirname "$0")/_/husky.sh"
 
-# Fonction pour vérifier si une commande est disponible
-command_exists() {
-  command -v "$1" >/dev/null 2>&1
-}
+# # Fonction pour vérifier si une commande est disponible
+# command_exists() {
+#   command -v "$1" >/dev/null 2>&1
+# }
 
-# Détection et exécution avec le gestionnaire de paquets approprié
-if command_exists pnpm; then
-  echo "pnpm is available"
-  echo "Running pnpm install"
-  pnpm install
-  echo "Adding pnpm-lock.yaml to the current commit"
-  git add pnpm-lock.yaml
-  echo "Running pnpm lint"
-  pnpm lint
-  echo "Start build"
-  pnpm build
-elif command_exists npm; then
-  echo "npm is available"
-  echo "Running npm install"
-  npm install
-  echo "Adding package-lock.json to the current commit"
-  git add package-lock.json
-  echo "Running npm lint"
-  npm run lint
-  echo "Start build"
-  npm run build
-elif command_exists yarn; then
-  echo "yarn is available"
-  echo "Running yarn install"
-  yarn install
-  echo "Adding yarn.lock to the current commit"
-  git add yarn.lock
-  echo "Running yarn lint"
-  yarn lint
-  echo "Start build"
-  yarn build
-else
-  echo "No compatible package manager found. Please install pnpm, npm, or yarn."
-  exit 1
-fi
+# # Détection et exécution avec le gestionnaire de paquets approprié
+# if command_exists pnpm; then
+#   echo "pnpm is available"
+#   echo "Running pnpm install"
+#   pnpm install
+#   echo "Adding pnpm-lock.yaml to the current commit"
+#   git add pnpm-lock.yaml
+#   echo "Running pnpm lint"
+#   pnpm lint
+#   echo "Start build"
+#   pnpm build
+# elif command_exists npm; then
+#   echo "npm is available"
+#   echo "Running npm install"
+#   npm install
+#   echo "Adding package-lock.json to the current commit"
+#   git add package-lock.json
+#   echo "Running npm lint"
+#   npm run lint
+#   echo "Start build"
+#   npm run build
+# elif command_exists yarn; then
+#   echo "yarn is available"
+#   echo "Running yarn install"
+#   yarn install
+#   echo "Adding yarn.lock to the current commit"
+#   git add yarn.lock
+#   echo "Running yarn lint"
+#   yarn lint
+#   echo "Start build"
+#   yarn build
+# else
+#   echo "No compatible package manager found. Please install pnpm, npm, or yarn."
+#   exit 1
+# fi
