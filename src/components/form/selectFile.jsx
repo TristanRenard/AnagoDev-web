@@ -36,15 +36,19 @@ export const SingleFileSelector = ({
   const fetchFiles = async () => {
     setLoading(true)
     setError(null)
+
     try {
       const response = await axios.get(apiEndpoint)
 
       // If allowedTypes is provided, filter files by extension
       let filteredFiles = response.data
+
       if (allowedTypes.length > 0) {
         filteredFiles = response.data.filter(file => {
-          const extension = file.name.split('.').pop().toLowerCase()
-          return allowedTypes.includes(extension)
+          const extension = file.name.split(".").pop().toLowerCase()
+
+          
+return allowedTypes.includes(extension)
         })
       }
 
@@ -56,33 +60,33 @@ export const SingleFileSelector = ({
       setLoading(false)
     }
   }
-
   const handleSelectFile = (file) => {
     const fileUrl = `${fileBaseUrl}${file.name}`
     setSelectedFile(fileUrl)
     setIsOpen(false)
+
     if (onSelect) {
       onSelect({ ...file, url: fileUrl })
     }
   }
-
   const handleClearSelection = () => {
     setSelectedFile(null)
+
     if (onSelect) {
       onSelect(null)
     }
   }
-
   const getFileNameFromUrl = (url) => {
-    if (!url) return null
-    return url.split('/').pop()
+    if (!url) {return null}
+    
+return url.split("/").pop()
   }
-
   const isImageFile = (fileName) => {
     const extension = fileName.split(".").pop().toLowerCase()
-    return ["jpg", "jpeg", "png", "gif", "webp", "svg"].includes(extension)
-  }
 
+    
+return ["jpg", "jpeg", "png", "gif", "webp", "svg"].includes(extension)
+  }
   const filteredFiles = files.filter(file =>
     file.name.toLowerCase().includes(searchTerm.toLowerCase())
   )
@@ -305,15 +309,19 @@ export const MultiFileSelector = ({
   const fetchFiles = async () => {
     setLoading(true)
     setError(null)
+
     try {
       const response = await axios.get(apiEndpoint)
 
       // If allowedTypes is provided, filter files by extension
       let filteredFiles = response.data
+
       if (allowedTypes.length > 0) {
         filteredFiles = response.data.filter(file => {
-          const extension = file.name.split('.').pop().toLowerCase()
-          return allowedTypes.includes(extension)
+          const extension = file.name.split(".").pop().toLowerCase()
+
+          
+return allowedTypes.includes(extension)
         })
       }
 
@@ -325,20 +333,13 @@ export const MultiFileSelector = ({
       setLoading(false)
     }
   }
-
   const getFileNameFromUrl = (url) => {
-    if (!url) return null
-    return url.split('/').pop()
+    if (!url) {return null}
+    
+return url.split("/").pop()
   }
-
-  const getFileUrls = () => {
-    return selectedFiles.map(url => url)
-  }
-
-  const getFileNamesFromUrls = () => {
-    return selectedFiles.map(url => getFileNameFromUrl(url))
-  }
-
+  const getFileUrls = () => selectedFiles.map(url => url)
+  const getFileNamesFromUrls = () => selectedFiles.map(url => getFileNameFromUrl(url))
   const toggleFileSelection = (file) => {
     const fileUrl = `${fileBaseUrl}${file.name}`
     let newSelectedFiles = [...selectedFiles]
@@ -350,37 +351,42 @@ export const MultiFileSelector = ({
       // Add file if not at max limit
       if (maxFiles > 0 && selectedFiles.length >= maxFiles) {
         alert(`You can select a maximum of ${maxFiles} files.`)
-        return
+
+        
+return
       }
+
       newSelectedFiles.push(fileUrl)
     }
 
     setSelectedFiles(newSelectedFiles)
+
     if (onSelect) {
       onSelect(newSelectedFiles)
     }
   }
-
   const handleRemoveFile = (fileUrl) => {
     const newSelectedFiles = selectedFiles.filter(f => f !== fileUrl)
     setSelectedFiles(newSelectedFiles)
+
     if (onSelect) {
       onSelect(newSelectedFiles)
     }
   }
-
   const isImageFile = (fileName) => {
     const extension = fileName.split(".").pop().toLowerCase()
-    return ["jpg", "jpeg", "png", "gif", "webp", "svg"].includes(extension)
-  }
 
+    
+return ["jpg", "jpeg", "png", "gif", "webp", "svg"].includes(extension)
+  }
   const filteredFiles = files.filter(file =>
     file.name.toLowerCase().includes(searchTerm.toLowerCase())
   )
-
   const getSelectedFilesData = () => {
     const fileNames = getFileNamesFromUrls()
-    return files.filter(file => fileNames.includes(file.name)).map(file => ({
+
+    
+return files.filter(file => fileNames.includes(file.name)).map(file => ({
       ...file,
       url: `${fileBaseUrl}${file.name}`
     }))
