@@ -45,8 +45,8 @@ services:
     container_name: portainer
     restart: always
     ports:
-      - "9444:90012"
-      - "9443:90013"
+      - "9444:900"
+      - "9443:9443"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer_data:/data
