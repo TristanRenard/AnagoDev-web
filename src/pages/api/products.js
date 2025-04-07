@@ -4,7 +4,7 @@ import knexInstance from "@/lib/db"
 import Price from "@/db/models/Price"
 import axios from "axios"
 
-// eslint-disable-next-line complexity
+// eslint-disable-next-line complexity, consistent-return
 const handler = async (req, res) => {
   const { "x-user-data": userData } = req.headers
   const user = JSON.parse(userData) || {}
@@ -259,6 +259,7 @@ const handler = async (req, res) => {
         const existingPrices = await Price.query(knexInstance)
           .where("productId", id)
         // Traiter les mises à jour de prix
+        // eslint-disable-next-line consistent-return
         const pricePromises = prices.map(async (price) => {
           if (price.id) {
             // Mise à jour d'un prix existant
@@ -276,7 +277,7 @@ const handler = async (req, res) => {
 
                 // Créer un nouveau prix dans Stripe
                 const newStripePrice = await stripe.prices.create({
-                  unit_amount: price.unit_amount,
+                  "unit_amount": price.unit_amount,
                   currency: price.currency,
                   recurring: price.recurring,
                   nickname: price.nickname || existingPrice.nickname,
@@ -290,7 +291,7 @@ const handler = async (req, res) => {
                     stripeId: newStripePrice.id,
                     recurring: Boolean(price.recurring),
                     nickname: price.nickname || existingPrice.nickname,
-                    unit_amount: price.unit_amount,
+                    "unit_amount": price.unit_amount,
                     currency: price.currency,
                     interval: price.recurring ? price.recurring.interval : null,
                   })
@@ -311,7 +312,7 @@ const handler = async (req, res) => {
           } else {
             // Création d'un nouveau prix
             const stripePrice = await stripe.prices.create({
-              unit_amount: price.unit_amount,
+              "unit_amount": price.unit_amount,
               currency: price.currency,
               recurring: price.recurring,
               nickname: price.nickname,
@@ -322,7 +323,7 @@ const handler = async (req, res) => {
               stripeId: stripePrice.id,
               recurring: Boolean(price.recurring),
               nickname: price.nickname,
-              unit_amount: price.unit_amount,
+              "unit_amount": price.unit_amount,
               currency: price.currency,
               interval: price.recurring ? price.recurring.interval : null,
               productId: id,

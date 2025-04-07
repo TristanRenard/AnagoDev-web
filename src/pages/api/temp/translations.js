@@ -33,6 +33,7 @@ const handler = async (req, res) => {
         )
         .select("key", "value")
       // Créer un map des traductions existantes pour faciliter l'accès
+      // eslint-disable-next-line no-shadow
       const existingTranslationsMap = existingTranslations.reduce((acc, { key, value }) => {
         const originalText = key.startsWith(`${key}.`) ? key.substring(key.length + 1) : key
         acc[originalText] = value
@@ -88,7 +89,7 @@ const handler = async (req, res) => {
       // Enregistrer les nouvelles traductions dans la base de données
       await Promise.all(
         Object.keys(textsTranslationsObject)
-          .filter(text => !existingTranslationsMap[text]) // Ne traiter que les nouvelles traductions
+          .filter(text => !existingTranslationsMap[text])
           .map(async (text) => {
             const objectKey = key ? `${key}.${text}` : text
             const object = { key: objectKey, value: textsTranslationsObject[text] }

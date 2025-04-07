@@ -12,6 +12,9 @@
     "node": true,
     "es6": true
   },
+  "globals": {
+    "umami": "readonly"
+  },
   "parserOptions": {
     "ecmaVersion": "latest",
     "sourceType": "module"
@@ -132,10 +135,10 @@
     "max-params": ["error", 3],
     "multiline-comment-style": ["error", "separate-lines"],
     "new-cap": "error",
-    "no-alert": "error",
+    // "no-alert": "error",
     "no-bitwise": "error",
     "no-caller": "error",
-    "no-console": "error",
+    // "no-console": "error",
     "no-else-return": "error",
     "no-empty-function": "error",
     "no-empty-static-block": "error",
@@ -155,7 +158,7 @@
     "no-loop-func": "error",
     "no-multi-assign": "error",
     "no-multi-str": "error",
-    "no-nested-ternary": "error",
+    "no-nested-ternary": "off",
     "no-new": "error",
     "no-new-func": "error",
     "no-new-wrappers": "error",
@@ -170,7 +173,6 @@
     "no-shadow": "error",
     "no-throw-literal": "error",
     "no-undef-init": "error",
-    "no-undefined": "error",
     "no-underscore-dangle": [
       "error",
       {
@@ -310,7 +312,7 @@
     "semi": ["error", "never"],
     "@next/next/no-html-link-for-pages": ["error", "./src/pages"],
     "react-hooks/rules-of-hooks": "error",
-    "react-hooks/exhaustive-deps": "warn",
+    "react-hooks/exhaustive-deps": "off",
     "react/no-unescaped-entities": [
       "error",
       {

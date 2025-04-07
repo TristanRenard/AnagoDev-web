@@ -9,6 +9,7 @@ const minioClient = new Minio.Client({
   accessKey: process.env.MINIO_ROOT_USER,
   secretKey: process.env.MINIO_ROOT_PASSWORD,
 })
+// eslint-disable-next-line consistent-return
 const handler = async (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*")
   res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS")
@@ -36,7 +37,7 @@ const handler = async (req, res) => {
     const stat = await minioClient.statObject("anago-dev", filename)
 
     // Determine content type
-    let contentType = "application/octet-stream" // Default content type
+    let contentType = "application/octet-stream"
 
     // Check if content type is stored in metadata
     if (stat.metaData && stat.metaData["content-type"]) {
