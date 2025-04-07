@@ -25,7 +25,7 @@ const login = async ({ email, password, otp, res }) => {
 
     res.setHeader("Set-Cookie", cookie.serialize("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: false,
       maxAge: 60 * 60 * 24,
       sameSite: "strict",
       path: "/",
