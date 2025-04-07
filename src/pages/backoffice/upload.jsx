@@ -71,6 +71,7 @@ const Upload = () => {
       await axios.post("http://localhost:3000/api/backoffice/upload", formData)
       toast({
         title: t("Success"),
+        // eslint-disable-next-line no-undef
         description: files.length === S1 ? t("File uploaded successfully") : t("Files uploaded successfully"),
         status: "success",
       })

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react"
 import axios from "axios"
-import { X, Search, FileIcon, Image, File, Check, Loader2 } from "lucide-react"
+import { X, Search, FileIcon, File, Check, Loader2 } from "lucide-react"
+import Image from "next/image"
 
 /**
  * SingleFileSelector component for selecting a single file from previously uploaded files
@@ -47,8 +48,8 @@ export const SingleFileSelector = ({
         filteredFiles = response.data.filter(file => {
           const extension = file.name.split(".").pop().toLowerCase()
 
-          
-return allowedTypes.includes(extension)
+
+          return allowedTypes.includes(extension)
         })
       }
 
@@ -77,15 +78,15 @@ return allowedTypes.includes(extension)
     }
   }
   const getFileNameFromUrl = (url) => {
-    if (!url) {return null}
-    
-return url.split("/").pop()
+    if (!url) { return null }
+
+    return url.split("/").pop()
   }
   const isImageFile = (fileName) => {
     const extension = fileName.split(".").pop().toLowerCase()
 
-    
-return ["jpg", "jpeg", "png", "gif", "webp", "svg"].includes(extension)
+
+    return ["jpg", "jpeg", "png", "gif", "webp", "svg"].includes(extension)
   }
   const filteredFiles = files.filter(file =>
     file.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -99,7 +100,7 @@ return ["jpg", "jpeg", "png", "gif", "webp", "svg"].includes(extension)
           <div className="flex items-center">
             {isImageFile(selectedFile) ? (
               <div className="w-12 h-12 mr-3 rounded-md overflow-hidden bg-gray-100">
-                <img
+                <Image
                   src={selectedFile}
                   alt={getFileNameFromUrl(selectedFile)}
                   className="w-full h-full object-cover"
@@ -201,14 +202,14 @@ return ["jpg", "jpeg", "png", "gif", "webp", "svg"].includes(extension)
                       key={file.name}
                       onClick={() => handleSelectFile(file)}
                       className={`relative flex flex-col border rounded-lg overflow-hidden cursor-pointer transition-colors ${selectedFile === file.name
-                          ? "border-purple-600 bg-purple-50"
-                          : "border-gray-200 hover:border-purple-300 hover:bg-purple-50/30"
+                        ? "border-purple-600 bg-purple-50"
+                        : "border-gray-200 hover:border-purple-300 hover:bg-purple-50/30"
                         }`}
                     >
                       {/* Preview */}
                       <div className="h-24 bg-gray-100 flex items-center justify-center">
                         {isImageFile(file.name) ? (
-                          <img
+                          <Image
                             src={`${fileBaseUrl}${file.name}`}
                             alt={file.name}
                             className="w-full h-full object-cover"
@@ -320,8 +321,8 @@ export const MultiFileSelector = ({
         filteredFiles = response.data.filter(file => {
           const extension = file.name.split(".").pop().toLowerCase()
 
-          
-return allowedTypes.includes(extension)
+
+          return allowedTypes.includes(extension)
         })
       }
 
@@ -334,11 +335,10 @@ return allowedTypes.includes(extension)
     }
   }
   const getFileNameFromUrl = (url) => {
-    if (!url) {return null}
-    
-return url.split("/").pop()
+    if (!url) { return null }
+
+    return url.split("/").pop()
   }
-  const getFileUrls = () => selectedFiles.map(url => url)
   const getFileNamesFromUrls = () => selectedFiles.map(url => getFileNameFromUrl(url))
   const toggleFileSelection = (file) => {
     const fileUrl = `${fileBaseUrl}${file.name}`
@@ -352,8 +352,8 @@ return url.split("/").pop()
       if (maxFiles > 0 && selectedFiles.length >= maxFiles) {
         alert(`You can select a maximum of ${maxFiles} files.`)
 
-        
-return
+
+        return
       }
 
       newSelectedFiles.push(fileUrl)
@@ -376,8 +376,8 @@ return
   const isImageFile = (fileName) => {
     const extension = fileName.split(".").pop().toLowerCase()
 
-    
-return ["jpg", "jpeg", "png", "gif", "webp", "svg"].includes(extension)
+
+    return ["jpg", "jpeg", "png", "gif", "webp", "svg"].includes(extension)
   }
   const filteredFiles = files.filter(file =>
     file.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -385,8 +385,8 @@ return ["jpg", "jpeg", "png", "gif", "webp", "svg"].includes(extension)
   const getSelectedFilesData = () => {
     const fileNames = getFileNamesFromUrls()
 
-    
-return files.filter(file => fileNames.includes(file.name)).map(file => ({
+
+    return files.filter(file => fileNames.includes(file.name)).map(file => ({
       ...file,
       url: `${fileBaseUrl}${file.name}`
     }))
@@ -418,7 +418,7 @@ return files.filter(file => fileNames.includes(file.name)).map(file => ({
                   <div className="flex items-center">
                     {isImageFile(file.name) ? (
                       <div className="w-10 h-10 mr-3 rounded-md overflow-hidden bg-gray-100">
-                        <img
+                        <Image
                           src={file.url}
                           alt={file.name}
                           className="w-full h-full object-cover"
@@ -509,14 +509,14 @@ return files.filter(file => fileNames.includes(file.name)).map(file => ({
                       key={file.name}
                       onClick={() => toggleFileSelection(file)}
                       className={`relative flex flex-col border rounded-lg overflow-hidden cursor-pointer transition-colors ${selectedFiles.includes(`${fileBaseUrl}${file.name}`)
-                          ? "border-purple-600 bg-purple-50"
-                          : "border-gray-200 hover:border-purple-300 hover:bg-purple-50/30"
+                        ? "border-purple-600 bg-purple-50"
+                        : "border-gray-200 hover:border-purple-300 hover:bg-purple-50/30"
                         }`}
                     >
                       {/* Preview */}
                       <div className="h-20 bg-gray-100 flex items-center justify-center">
                         {isImageFile(file.name) ? (
-                          <img
+                          <Image
                             src={`/api/backoffice/files/${file.name}`}
                             alt={file.name}
                             className="w-full h-full object-cover"

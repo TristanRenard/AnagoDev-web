@@ -20,6 +20,7 @@ const EditProductSheet = ({ product, queryClient, categories }) => {
   const { toast } = useToast()
   const [productName, setProductName] = useState("")
   const [productDescription, setProductDescription] = useState("")
+  // eslint-disable-next-line no-unused-vars
   const [productImages, setProductImages] = useState([])
   const [productImage, setProductImage] = useState("")
   const [productIsSubscription, setProductIsSubscription] = useState(true)
@@ -112,27 +113,27 @@ const EditProductSheet = ({ product, queryClient, categories }) => {
       if (existingYearly) {
         updatedPrices.push({
           id: existingYearly.id,
-          unit_amount: productYearlyPrice * 100,
+          "unit_amount": productYearlyPrice * 100,
           currency: "eur",
           nickname: "yearly",
           recurring: {
             interval: "year",
-            interval_count: 1,
-            trial_period_days: 0,
-            usage_type: "licensed"
+            "interval_count": 1,
+            "trial_period_days": 0,
+            "usage_type": "licensed"
           }
         })
       } else {
         // Add new yearly price
         updatedPrices.push({
-          unit_amount: productYearlyPrice * 100,
+          "unit_amount": productYearlyPrice * 100,
           currency: "eur",
           nickname: "yearly",
           recurring: {
             interval: "year",
-            interval_count: 1,
-            trial_period_days: 0,
-            usage_type: "licensed"
+            "interval_count": 1,
+            "trial_period_days": 0,
+            "usage_type": "licensed"
           }
         })
       }
@@ -143,12 +144,12 @@ const EditProductSheet = ({ product, queryClient, categories }) => {
       if (existingPrice) {
         updatedPrices.push({
           id: existingPrice.id,
-          unit_amount: productPrice * 100,
+          "unit_amount": productPrice * 100,
           currency: "eur"
         })
       } else {
         updatedPrices.push({
-          unit_amount: productPrice * 100,
+          "unit_amount": productPrice * 100,
           currency: "eur"
         })
       }
