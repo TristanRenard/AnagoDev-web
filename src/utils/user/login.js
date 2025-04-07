@@ -29,6 +29,7 @@ const login = async ({ email, password, otp, res }) => {
       maxAge: 60 * 60 * 24,
       sameSite: "strict",
       path: "/",
+      domain: process.env.DOMAIN
     }))
 
     return res.status(200).json({ message: "User logged in" })
