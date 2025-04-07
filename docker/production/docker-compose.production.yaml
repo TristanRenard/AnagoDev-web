@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: ./docker/production/Dockerfile
-    container_name: nextjs
+    container_name: anago
     restart: on-failure
     environment:
       NODE_ENV: production
