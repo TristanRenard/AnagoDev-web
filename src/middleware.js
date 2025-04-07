@@ -21,7 +21,7 @@ const middleware = async (req) => {
       console.log("User Token:", userToken)
       const userId = userToken.id
       console.log("User ID:", userId)
-      const user = await fetch(`${process.env.HOST_NAME}api/user/${userId}`, {
+      const user = await fetch(`${process.env.HOST_NAME}/api/user/${userId}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
