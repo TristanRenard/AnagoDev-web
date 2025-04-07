@@ -10,7 +10,10 @@ const middleware = async (req) => {
     return NextResponse.next()
   }
 
+  console.log(middleware)
   const token = req.cookies.get("token")?.value
+
+  console.log("Token:", token)
 
   if (token) {
     try {
@@ -33,9 +36,11 @@ const middleware = async (req) => {
 
       return response
     } catch (error) {
+      console.error("Token verification failed:", error)
+
       return NextResponse.redirect(new URL("/auth/login", req.url), {
         headers: {
-          "Set-Cookie": "token=; Max-Age=0; Path=/; HttpOnly; Secure; SameSite=Strict",
+          "Set-Cookie": "token=; Max-Age=0; Path=/; HttpOnly; SameSite=Strict",
         },
       })
     }
