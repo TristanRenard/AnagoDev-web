@@ -4,7 +4,7 @@
  */
 exports.up = (knex) => knex.schema.createTable("translations", (table) => {
   table.increments("id").primary()
-  table.string("key").notNullable().unique()
+  table.text("key").notNullable().unique()
   table.json("value").notNullable()
   table.timestamps(true, true)
 })

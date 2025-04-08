@@ -1,4 +1,8 @@
 /* eslint-disable max-lines-per-function */
+import { useRef, useState } from "react"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import axios from "axios"
+import BackofficeLayout from "@/components/layouts/BackofficeLayout"
 import { Button } from "@/components/ui/button"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 import { Input } from "@/components/ui/input"
@@ -8,139 +12,260 @@ import { Separator } from "@/components/ui/separator"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { useI18n } from "@/locales"
 import authProps from "@/serverSideProps/authProps"
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import axios from "axios"
-import { useRef, useState } from "react"
+import { useToast } from "@/hooks/use-toast"
+import ExportTranslationsButton from "@/components/backoffice/ExportButtonTrads"
+import ImportTranslationsButton from "@/components/backoffice/ImportButtonTrads"
 
 const Traductions = () => {
   const [texts, setTexts] = useState([])
   const [key, setKey] = useState("")
   const queryClient = useQueryClient()
-  const query = useQuery({ queryKey: ["translations"], queryFn: () => axios(`/api/temp/translations`) })
-  const valueRef = useRef()
+  const textInputRef = useRef()
   const t = useI18n()
-  const deleteTraduction = async (dkey) => {
-    await axios.delete(`/api/temp/translations?key=${dkey}`)
-    await queryClient.invalidateQueries("translations")
-  }
-  const usage = useQuery({ queryKey: ["usage"], queryFn: () => axios.options("/api/temp/translations") })
-  const mutation = useMutation({
+  const { toast } = useToast()
+  const translationsQuery = useQuery({
+    queryKey: ["translations"],
+    queryFn: () => axios(`/api/temp/translations`)
+  })
+  const usageQuery = useQuery({
+    queryKey: ["usage"],
+    queryFn: () => axios.options("/api/temp/translations")
+  })
+  const addTranslationsMutation = useMutation({
     mutationFn: async () => {
+      // Vérification si on a au moins un texte à traduire
+      if (texts.length === 0 && !textInputRef.current.value) {
+        throw new Error("No text to translate")
+      }
+
       const postData = {
-        texts
+        texts: [...texts]
       }
 
-      if (valueRef.current.value) {
-        postData.texts.push(valueRef.current.value)
+      // Ajouter le texte présent dans l'input s'il existe
+      if (textInputRef.current.value) {
+        postData.texts.push(textInputRef.current.value)
       }
 
+      // Ajouter la clé si elle existe
       if (key) {
         postData.key = key
       }
 
-      await axios.post("/api/temp/translations", postData)
-
-      await setTexts([])
-      await setKey("")
-      await valueRef.current.focus()
+      return await axios.post("/api/temp/translations", postData)
     },
     onSuccess: () => {
-      queryClient.invalidateQueries("translations")
-      queryClient.invalidateQueries("usage")
+      // Réinitialiser les états et le formulaire
+      setTexts([])
+      setKey("")
+
+      if (textInputRef.current) {
+        textInputRef.current.value = ""
+        textInputRef.current.focus()
+      }
+
+      // Rafraîchir les données
+      queryClient.invalidateQueries(["translations"])
+      queryClient.invalidateQueries(["usage"])
+
+      // Notifier l'utilisateur du succès
+      toast({
+        title: t("Translations added"),
+        description: t("The texts have been successfully translated and saved."),
+        variant: "success"
+      })
     },
+    onError: (error) => {
+      toast({
+        title: t("Error"),
+        description: error.message || t("An error occurred while adding translations."),
+        variant: "destructive"
+      })
+    }
   })
+  const deleteTranslationMutation = useMutation({
+    mutationFn: async (translationKey) => await axios.delete(`/api/temp/translations?key=${encodeURIComponent(translationKey)}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["translations"])
+      toast({
+        title: t("Translation deleted"),
+        description: t("The translation has been successfully deleted."),
+        variant: "success"
+      })
+    },
+    onError: (error) => {
+      toast({
+        title: t("Error"),
+        description: error.message || t("An error occurred while deleting the translation."),
+        variant: "destructive"
+      })
+    }
+  })
+  const handleAddText = (e) => {
+    e.preventDefault()
+
+    const text = textInputRef.current.value.trim()
+
+    if (!text) {
+      toast({
+        title: t("Error"),
+        description: t("Please enter a text to add."),
+        variant: "destructive"
+      })
+
+
+      return
+    }
+
+    setTexts(prev => [...prev, text])
+    textInputRef.current.value = ""
+    textInputRef.current.focus()
+  }
 
   return (
-    <div className="flex-1 flex flex-col h-full">
-      <h1 className="p-8 font-black text-2xl py-8">{t("Traductions")}</h1>
+    <BackofficeLayout>
+      <div className="flex-1 flex flex-col h-full">
+        <div className="flex justify-between">
+          <h1 className="p-8 font-black text-2xl py-8">{t("Traductions")}</h1>
+          <div className="h-full flex justify-center items-center p-8 gap-2">
+            <ImportTranslationsButton queryClient={queryClient} />
+            <ExportTranslationsButton queryClient={queryClient} />
+          </div>
+        </div>
 
-      {/* <!-- Form with one input for the key and one input for a text and a button to add the text to the list of texts --> */}
-      <form className="flex flex-col gap-2 px-8 max-w-96" onSubmit={(e) => {
-        e.preventDefault()
+        {/* Formulaire pour ajouter des traductions */}
+        <form className="flex flex-col gap-2 px-8 max-w-96" onSubmit={handleAddText}>
+          <Label htmlFor="key">{t("Key")}</Label>
+          <Input
+            type="text"
+            id="key"
+            name="key"
+            value={key}
+            onChange={(e) => setKey(e.target.value)}
+            placeholder={t("Translation key prefix (optional)")}
+          />
 
-        e.target.text.value = ""
-      }
-      }>
-        <Label htmlFor="key">{t("Key")}</Label>
-        <Input type="text" name="key" value={key} onChange={(e) => setKey(e.target.value)} />
-        <Label htmlFor="text">{t("Text")}</Label>
-        <Input ref={valueRef} type="text" name="text" />
-        <Button type="submit">{t("Add text")}</Button>
-        {/* <!-- List of texts --> */}
-        {texts.length >= 1 && <ul className="list-disc px-8">
-          {texts.map((text, index) => (
-            <li key={index}>{text}</li>
-          ))}
-        </ul>}
-        {texts.length >= 1 && <Separator />}
+          <Label htmlFor="text">{t("Text")}</Label>
+          <Input
+            ref={textInputRef}
+            type="text"
+            id="text"
+            name="text"
+            placeholder={t("Enter text to translate")}
+          />
 
-        {/* <!-- Button to send the texts to the server --> */}
-        <Button onClick={() => mutation.mutate()}>{t("Send texts")}</Button>
-        {usage.isSuccess && (
-          <HoverCard>
-            <HoverCardTrigger>
-              <p>{t("Usage")}: {usage.data.data.count} / {usage.data.data.limit}</p>
-              <Progress value={(usage.data.data.count / usage.data.data.limit) * 100} />
-            </HoverCardTrigger>
-            <HoverCardContent className="w-full mx-8">
-              <h5 className="font-black">
-                {t("Use deepL API to translate texts")}
-              </h5>
-              <p>
-                {t("The usage is calculated by the number of characters translated. The usage is reset every month.")}
-              </p>
-              <p>
-                <b>{t("Limit")} :</b> {usage.data.data.limit}
-              </p>
-              <p>
-                <b>{t("Used")} :</b> {usage.data.data.count}
-              </p>
-              <p>
-                <b>{t("Remaining")} :</b> {usage.data.data.limit - usage.data.data.count}
-              </p>
-            </HoverCardContent>
+          <Button type="submit">{t("Add text")}</Button>
 
-          </HoverCard>
-        )}
-      </form>
+          {/* Liste des textes ajoutés */}
+          {texts.length > 0 && (
+            <>
+              <ul className="list-disc pl-5 mt-2">
+                {texts.map((text, index) => (
+                  <li key={index} className="mb-1">
+                    {text}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="ml-2 h-6 w-6 p-0"
+                      onClick={() => setTexts(texts.filter((_, i) => i !== index))}
+                    >
+                      ✕
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+              <Separator className="my-2" />
+            </>
+          )}
 
+          {/* Bouton pour envoyer les textes au serveur */}
+          <Button
+            type="button"
+            onClick={() => addTranslationsMutation.mutate()}
+            disabled={addTranslationsMutation.isLoading}
+          >
+            {addTranslationsMutation.isLoading ? t("Sending...") : t("Send texts")}
+          </Button>
 
-      {/* <--! List of translations --> */}
-      <section className="p-8 m-8 border rounded-md h-fit overflow-scroll">
-        {query.isLoading && <p>Loading...</p>}
-        {query.isError && <p>Error: {query.error.message}</p>}
-        {query.isSuccess && query.data.data[0]?.value && (
-          <Table className="h-fit overflow-scroll">
-            <TableHeader>
-              <TableRow className="sticky top-0 bg-white font-bold">
-                <TableHead>{t("Key")}</TableHead>
-                <>
-                  {Object.keys(query.data.data[0].value).map((lang, index) => (
-                    <TableHead key={index}>{lang}</TableHead>
+          {/* Affichage de l'utilisation de l'API DeepL */}
+          {usageQuery.isSuccess && (
+            <HoverCard>
+              <HoverCardTrigger asChild>
+                <div className="mt-2 cursor-pointer">
+                  <p>{t("Usage")}: {usageQuery.data.data.count} / {usageQuery.data.data.limit}</p>
+                  <Progress value={(usageQuery.data.data.count / usageQuery.data.data.limit) * 100} />
+                </div>
+              </HoverCardTrigger>
+              <HoverCardContent className="w-80">
+                <h5 className="font-bold mb-2">
+                  {t("DeepL API Usage")}
+                </h5>
+                <p className="text-sm mb-2">
+                  {t("The usage is calculated by the number of characters translated. The usage is reset every month.")}
+                </p>
+                <div className="grid grid-cols-2 gap-1 text-sm">
+                  <p><b>{t("Limit")}:</b></p>
+                  <p>{usageQuery.data.data.limit}</p>
+
+                  <p><b>{t("Used")}:</b></p>
+                  <p>{usageQuery.data.data.count}</p>
+
+                  <p><b>{t("Remaining")}:</b></p>
+                  <p>{usageQuery.data.data.limit - usageQuery.data.data.count}</p>
+                </div>
+              </HoverCardContent>
+            </HoverCard>
+          )}
+        </form>
+
+        {/* Liste des traductions existantes */}
+        <section className="p-8 m-8 border rounded-md overflow-auto">
+          {translationsQuery.isLoading && <p>{t("Loading translations...")}</p>}
+
+          {translationsQuery.isError && (
+            <p className="text-red-500">
+              {t("Error")}: {translationsQuery.error.message || t("Failed to load translations")}
+            </p>
+          )}
+
+          {translationsQuery.isSuccess && translationsQuery.data.data.length > 0 && translationsQuery.data.data[0]?.value ? (
+            <Table>
+              <TableHeader>
+                <TableRow className="sticky top-0 bg-white font-bold">
+                  <TableHead>{t("Key")}</TableHead>
+                  {Object.keys(translationsQuery.data.data[0].value).map((lang) => (
+                    <TableHead key={lang}>{lang}</TableHead>
                   ))}
-                </>
-                <TableHead>{t("Actions")}</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {query.data.data.map(({ key: k, value }) => (
-                <TableRow key={k}>
-                  <TableCell>{k}</TableCell>
-                  <>
-                    {Object.values(value).map((v, index) => (
-                      <TableCell key={index}>{v}</TableCell>
-                    ))}
-                  </>
-                  <TableCell>
-                    <Button onClick={() => deleteTraduction(k)}>{t("Delete")}</Button>
-                  </TableCell>
+                  <TableHead>{t("Actions")}</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        )}
-      </section>
-    </div>
+              </TableHeader>
+              <TableBody>
+                {translationsQuery.data.data.map(({ key: translationKey, value }) => (
+                  <TableRow key={translationKey}>
+                    <TableCell className="font-medium">{translationKey}</TableCell>
+                    {Object.entries(value).map(([lang, text]) => (
+                      <TableCell key={lang}>{text}</TableCell>
+                    ))}
+                    <TableCell>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => deleteTranslationMutation.mutate(translationKey)}
+                        disabled={deleteTranslationMutation.isLoading}
+                      >
+                        {t("Delete")}
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          ) : translationsQuery.isSuccess && (
+            <p>{t("No translations found.")}</p>
+          )}
+        </section>
+      </div>
+    </BackofficeLayout>
   )
 }
 

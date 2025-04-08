@@ -12,11 +12,12 @@ const middleware = async (req) => {
 
   const token = req.cookies.get("token")?.value
 
+
   if (token) {
     try {
       const { payload: userToken } = await jwtVerify(token, new TextEncoder().encode(process.env.JWT_SECRET))
       const userId = userToken.id
-      const user = await fetch(`http://localhost:3000/api/user/${userId}`, {
+      const user = await fetch(`${process.env.HOST_NAME}/api/user/${userId}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -24,6 +25,7 @@ const middleware = async (req) => {
         }
       }).then((res) => res.json())
       const response = NextResponse.next()
+
 
       if (pathname.includes("/api")) {
         response.headers.set("x-user-data", JSON.stringify(user.user))
@@ -35,7 +37,7 @@ const middleware = async (req) => {
     } catch (error) {
       return NextResponse.redirect(new URL("/auth/login", req.url), {
         headers: {
-          "Set-Cookie": "token=; Max-Age=0; Path=/; HttpOnly; Secure; SameSite=Strict",
+          "Set-Cookie": "token=; Max-Age=0; Path=/; HttpOnly; SameSite=Strict",
         },
       })
     }

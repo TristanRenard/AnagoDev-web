@@ -41,3 +41,5 @@ knexfile.js
 # old
 *.old.*
 *.old
+
+/.vscode

@@ -177,6 +177,10 @@ const NavBar = () => {
             <ul className="flex gap-4 md:gap-8 justify-around mb-24">
               <li className="flex flex-col justify-center items-center">
                 <Link
+                  data-umami-event="Login"
+                  data-umami-event-type="click"
+                  data-umami-event-name="Login"
+                  data-umami-event-value="Login"
                   onClick={() => {
                     if (isNavBarOpen) {
                       toggleNavBar()
@@ -189,6 +193,10 @@ const NavBar = () => {
               </li>
               <li className="flex flex-col justify-center items-center">
                 <Link
+                  data-umami-event="Register"
+                  data-umami-event-type="click"
+                  data-umami-event-name="Register"
+                  data-umami-event-value="Register"
                   onClick={() => {
                     if (isNavBarOpen) {
                       toggleNavBar()
@@ -204,6 +212,10 @@ const NavBar = () => {
             <ul className="flex gap-8 justify-around mb-24">
               <li className="flex flex-col justify-center items-center">
                 <Link
+                  data-umami-event="Cart"
+                  data-umami-event-type="click"
+                  data-umami-event-name="Cart"
+                  data-umami-event-value="Cart"
                   onClick={() => {
                     if (isNavBarOpen) {
                       toggleNavBar()
@@ -216,6 +228,10 @@ const NavBar = () => {
               </li>
               <li className="flex flex-col justify-center items-center">
                 <Link
+                  data-umami-event="Logout"
+                  data-umami-event-type="click"
+                  data-umami-event-name="Logout"
+                  data-umami-event-value="Logout"
                   onClick={() => {
                     if (isNavBarOpen) {
                       toggleNavBar()

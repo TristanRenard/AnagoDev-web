@@ -6,14 +6,14 @@
     "next/core-web-vitals",
     "plugin:react/recommended"
   ],
-  "plugins": [
-    "react",
-    "react-hooks"
-  ],
+  "plugins": ["react", "react-hooks"],
   "env": {
     "browser": true,
     "node": true,
     "es6": true
+  },
+  "globals": {
+    "umami": "readonly"
   },
   "parserOptions": {
     "ecmaVersion": "latest",
@@ -49,10 +49,7 @@
     "no-unmodified-loop-condition": "error",
     "no-unreachable-loop": "error",
     "no-unused-private-class-members": "error",
-    "arrow-body-style": [
-      "error",
-      "as-needed"
-    ],
+    "arrow-body-style": ["error", "as-needed"],
     "camelcase": [
       "error",
       {
@@ -75,21 +72,12 @@
         "enforceForClassFields": true
       }
     ],
-    "complexity": [
-      "warn",
-      40
-    ],
+    "complexity": ["warn", 40],
     "consistent-return": "error",
-    "curly": [
-      "error",
-      "all"
-    ],
+    "curly": ["error", "all"],
     "default-param-last": "error",
     "dot-notation": "error",
-    "eqeqeq": [
-      "error",
-      "always"
-    ],
+    "eqeqeq": ["error", "always"],
     "func-name-matching": "error",
     "func-names": "error",
     "func-style": [
@@ -110,15 +98,9 @@
         "message": "Avoid using function keyword in export default. Use arrow functions instead."
       }
     ],
-    "grouped-accessor-pairs": [
-      "error",
-      "getBeforeSet"
-    ],
+    "grouped-accessor-pairs": ["error", "getBeforeSet"],
     "guard-for-in": "error",
-    "init-declarations": [
-      "error",
-      "always"
-    ],
+    "init-declarations": ["error", "always"],
     "logical-assignment-operators": [
       "error",
       "always",
@@ -132,14 +114,11 @@
         "ignoreExpressions": true
       }
     ],
-    "max-depth": [
-      "error",
-      4
-    ],
+    "max-depth": ["error", 4],
     "max-lines": [
       "error",
       {
-        "max": 200,
+        "max": 600,
         "skipBlankLines": true,
         "skipComments": true
       }
@@ -147,28 +126,19 @@
     "max-lines-per-function": [
       "warn",
       {
-        "max": 100,
+        "max": 300,
         "skipBlankLines": true,
         "skipComments": true
       }
     ],
-    "max-nested-callbacks": [
-      "error",
-      3
-    ],
-    "max-params": [
-      "error",
-      3
-    ],
-    "multiline-comment-style": [
-      "error",
-      "separate-lines"
-    ],
+    "max-nested-callbacks": ["error", 3],
+    "max-params": ["error", 3],
+    "multiline-comment-style": ["error", "separate-lines"],
     "new-cap": "error",
-    "no-alert": "error",
+    // "no-alert": "error",
     "no-bitwise": "error",
     "no-caller": "error",
-    "no-console": "error",
+    // "no-console": "error",
     "no-else-return": "error",
     "no-empty-function": "error",
     "no-empty-static-block": "error",
@@ -188,7 +158,7 @@
     "no-loop-func": "error",
     "no-multi-assign": "error",
     "no-multi-str": "error",
-    "no-nested-ternary": "error",
+    "no-nested-ternary": "off",
     "no-new": "error",
     "no-new-func": "error",
     "no-new-wrappers": "error",
@@ -197,23 +167,17 @@
     "no-param-reassign": "error",
     "no-plusplus": "error",
     "no-proto": "error",
-    "no-return-assign": [
-      "error",
-      "always"
-    ],
+    "no-return-assign": ["error", "always"],
     "no-script-url": "error",
     "no-sequences": "error",
     "no-shadow": "error",
     "no-throw-literal": "error",
     "no-undef-init": "error",
-    "no-undefined": "error",
     "no-underscore-dangle": [
       "error",
       {
         "allowFunctionParams": false,
-        "allow": [
-          "_id"
-        ]
+        "allow": ["_id"]
       }
     ],
     "no-unneeded-ternary": [
@@ -249,23 +213,12 @@
     "no-warning-comments": [
       "error",
       {
-        "terms": [
-          "todo"
-        ]
+        "terms": ["todo"]
       }
     ],
-    "object-shorthand": [
-      "error",
-      "always"
-    ],
-    "one-var": [
-      "error",
-      "never"
-    ],
-    "operator-assignment": [
-      "error",
-      "always"
-    ],
+    "object-shorthand": ["error", "always"],
+    "one-var": ["error", "never"],
+    "operator-assignment": ["error", "always"],
     "prefer-arrow-callback": "error",
     "prefer-const": [
       "error",
@@ -301,16 +254,10 @@
       }
     ],
     "indent": "off",
-    "linebreak-style": [
-      "error",
-      "unix"
-    ],
+    "linebreak-style": ["error", "unix"],
     "newline-before-return": "error",
     "no-undef": "error",
-    "padded-blocks": [
-      "error",
-      "never"
-    ],
+    "padded-blocks": ["error", "never"],
     "padding-line-between-statements": [
       "error",
       {
@@ -349,10 +296,7 @@
       },
       {
         "blankLine": "never",
-        "prev": [
-          "const",
-          "export"
-        ],
+        "prev": ["const", "export"],
         "next": "const"
       }
     ],
@@ -365,23 +309,14 @@
       }
     ],
     "space-before-blocks": "error",
-    "semi": [
-      "error",
-      "never"
-    ],
-    "@next/next/no-html-link-for-pages": [
-      "error",
-      "./src/pages"
-    ],
+    "semi": ["error", "never"],
+    "@next/next/no-html-link-for-pages": ["error", "./src/pages"],
     "react-hooks/rules-of-hooks": "error",
-    "react-hooks/exhaustive-deps": "warn",
+    "react-hooks/exhaustive-deps": "off",
     "react/no-unescaped-entities": [
       "error",
       {
-        "forbid": [
-          ">",
-          "}"
-        ]
+        "forbid": [">", "}"]
       }
     ],
     "react/react-in-jsx-scope": "off",

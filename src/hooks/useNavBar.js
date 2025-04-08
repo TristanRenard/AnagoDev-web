@@ -4,6 +4,7 @@ const useNavBar = () => {
   const [isNavBarOpen, setIsNavBarOpen] = useState(false)
   const toggleNavBar = () => {
     setIsNavBarOpen(!isNavBarOpen)
+    umami.track("testtoggleNavBar", "click")
   }
 
   return { isNavBarOpen, toggleNavBar }
