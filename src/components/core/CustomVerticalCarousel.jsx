@@ -45,7 +45,6 @@ const slideTest = [
     textCta: "Voir la photo",
   },
 ]
-
 const CustomVerticalCarousel = ({ slides = slideTest }) => {
   const [currentIndex, setCurrentIndex] = useState(0)
   const nextSlide = () => {
@@ -59,7 +58,7 @@ const CustomVerticalCarousel = ({ slides = slideTest }) => {
     )
   }
   const t = useI18n()
-
+  
   return (
     <div className="relative mx-24 my-16">
       <h2 className="text-5xl font-medium mb-4">{t("More solutions")}</h2>

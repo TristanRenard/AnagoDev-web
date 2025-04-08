@@ -16,21 +16,26 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "files.stripe.com",
-        port: ""
+        port: "",
       },
       {
         protocol: "https",
         hostname: "placehold.co",
-        port: ""
+        port: "",
       },
       {
         protocol: "http",
         hostname: "localhost",
-        port: "3000"
-      }
-    ]
+        port: "3000",
+      },
+      {
+        protocol: "https",
+        hostname: "anagodev.com",
+        port: "",
+      },
+    ],
   },
-  output: "standalone"
+  output: "standalone",
 }
 
 export default nextConfig
