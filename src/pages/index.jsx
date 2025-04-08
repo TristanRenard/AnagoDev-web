@@ -1,4 +1,5 @@
 import CustomCarousel from "@/components/core/carrousel"
+import CustomVerticalCarousel from "@/components/core/CustomVerticalCarousel"
 import Description from "@/components/home/Description"
 import HeroHeader from "@/components/home/HeroHeader"
 
@@ -7,6 +8,7 @@ const Home = () => (
     <HeroHeader />
     <CustomCarousel />
     <Description />
+    <CustomVerticalCarousel />
   </main>
 )
 

@@ -1,5 +1,3 @@
-import { useI18n } from "@/locales"
-
 const ImageTextBlock = ({ titre, texte, image, isLeft = false }) => (
   <div className="flex flex-col md:flex-row items-center gap-8 mb-32">
     {isLeft && (
