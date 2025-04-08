@@ -25,6 +25,7 @@ const App = ({ Component, pageProps }) => {
         <Script
           async
           defer
+          data-do-not-track="true"
           data-website-id={umamiWebsiteId}
           src={umamiScript}
           strategy="afterInteractive"
