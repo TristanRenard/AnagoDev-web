@@ -72,7 +72,7 @@ const Upload = () => {
       toast({
         title: t("Success"),
         // eslint-disable-next-line no-undef
-        description: files.length === S1 ? t("File uploaded successfully") : t("Files uploaded successfully"),
+        description: files.length === 1 ? t("File uploaded successfully") : t("Files uploaded successfully"),
         status: "success",
       })
       setFiles([])
