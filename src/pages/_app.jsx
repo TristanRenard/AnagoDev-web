@@ -6,16 +6,18 @@ import "@/styles/globals.css"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import axios from "axios"
 import Script from "next/script"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 const queryClient = new QueryClient()
 const App = ({ Component, pageProps }) => {
   const [umamiScript, setUmamiScript] = useState(null)
   const [umamiWebsiteId, setUmamiWebsiteId] = useState(null)
-  axios.get("/api/umami").then((response) => {
-    setUmamiScript(response.data.umamiScript)
-    setUmamiWebsiteId(response.data.umamiWebsiteId)
-  })
+  useEffect(() => {
+    axios.get("/api/umami").then((response) => {
+      setUmamiScript(response.data.umamiScript)
+      setUmamiWebsiteId(response.data.umamiWebsiteId)
+    })
+  }, [])
 
   return (
     <>
