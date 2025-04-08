@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import axios from "axios"
 import Script from "next/script"
 import { useState } from "react"
+import CookieModal from "@/components/cookiemodal"
 
 const queryClient = new QueryClient()
 const App = ({ Component, pageProps }) => {
@@ -39,6 +40,7 @@ const App = ({ Component, pageProps }) => {
         <QueryClientProvider client={queryClient}>
           <div className="min-h-screen flex flex-col">
             <NavBar {...pageProps} />
+            <CookieModal {...pageProps} />
             <Component {...pageProps} />
             <Footer />
             <Toaster />
