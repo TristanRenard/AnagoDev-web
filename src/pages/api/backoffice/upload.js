@@ -57,7 +57,7 @@ const handler = async (req, res) => {
 
           try {
             await minioClient.fPutObject(
-              "anago-dev",
+              process.env.MINIO_BUCKET,
               destinationObject,
               file.path,
             )
