@@ -60,7 +60,9 @@ const NavBar = () => {
                 </Link>
               </li>
               <li className="flex flex-col justify-center items-center mr-16">
-                <UserRound size={24} />
+                <Link href="/profile">
+                  <UserRound size={24} />
+                </Link>
               </li>
             </>
           )}
