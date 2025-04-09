@@ -14,8 +14,9 @@ import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
 import { useState } from "react"
 import { useRouter } from "next/router"
+import { PhoneInput } from "@/components/ui/phone-input"
 
-const Profile = () => {
+const Account = () => {
   const t = useI18n()
   const router = useRouter()
   const { toast } = useToast()
@@ -58,10 +59,14 @@ const Profile = () => {
     <div className="flex-1 flex flex-col w-full p-4">
       <table>
         <tbody>
-          <Row title={t("First name")} value={user.firstName} />
-          <Row title={t("Last name")} value={user.lastName} />
-          <Row title={t("Email")} value={user.email} />
-          <Row title={t("Phone number")} value={user.phone} />
+          <Row
+            title={t("First name")}
+            value={user.firstName}
+            field="firstName"
+          />
+          <Row title={t("Last name")} value={user.lastName} field="lastName" />
+          <Row title={t("Email")} value={user.email} field="email" />
+          <Row title={t("Phone number")} value={user.phone} field="phone" />
         </tbody>
       </table>
       <Dialog>
@@ -87,32 +92,58 @@ const Profile = () => {
     </div>
   )
 }
-const Row = ({ title, value }) => {
+const Row = ({ title, value, field }) => {
   const [isEditing, setIsEditing] = useState(false)
   const [editedValue, setEditedValue] = useState(value)
+  const saveModification = async () => {
+    await axios.put("/api/user/modifyDetails", {
+      field,
+      editedValue,
+    })
+  }
 
   return (
     <tr>
       <th className="text-left w-48">{title}</th>
       <td className="text-left w-96">
-        {isEditing ? (
-          <input
-            type="text"
-            value={editedValue}
-            onChange={(e) => setEditedValue(e.target.value)}
-            className="border rounded p-1"
-          />
-        ) : (
-          editedValue
-        )}
+        {isEditing
+          ? field !== "email" &&
+            (field === "phone" ? (
+              <PhoneInput
+                value={editedValue}
+                onChange={(newValue) => {
+                  if (newValue !== "") {
+                    setEditedValue(newValue)
+                  }
+                }}
+              />
+            ) : (
+              <input
+                type="text"
+                value={editedValue}
+                onChange={(e) => setEditedValue(e.target.value)}
+                className="border rounded p-1"
+              />
+            ))
+          : editedValue}
       </td>
-      <td>
-        <Button onClick={() => setIsEditing(!isEditing)}>
-          {isEditing ? "Save" : "Edit"}
-        </Button>
-      </td>
+      {field !== "email" && (
+        <td>
+          <Button
+            onClick={() => {
+              setIsEditing(!isEditing)
+
+              if (isEditing && editedValue !== "") {
+                saveModification()
+              }
+            }}
+          >
+            {isEditing ? "Save" : "Edit"}
+          </Button>
+        </td>
+      )}
     </tr>
   )
 }
 
-export default Profile
+export default Account
