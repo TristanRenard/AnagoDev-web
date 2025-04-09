@@ -26,6 +26,7 @@ const handler = async (req, res) => {
       res.status(200).json(fileList)
     })
     files.on("error", (err) => {
+      console.error(err)
       res.status(500).json({ message: `Error listing files: ${err.message}` })
     })
 
@@ -74,6 +75,7 @@ const handler = async (req, res) => {
         message: `${files.file.length} files uploaded successfully.`,
       })
     } catch (error) {
+      console.error(error)
       res
         .status(500)
         .json({ message: `File upload failed: ${error.message}` })
