@@ -6,6 +6,7 @@ const links = {
   dashboard: "/backoffice",
   users: "/backoffice/users",
   products: "/backoffice/products",
+  categories: "/backoffice/categories",
   orders: "/backoffice/orders",
   translations: "/backoffice/trads",
   mediatech: "/backoffice/upload",

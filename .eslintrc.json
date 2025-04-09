@@ -165,7 +165,7 @@
     "no-object-constructor": "error",
     "no-octal-escape": "error",
     "no-param-reassign": "error",
-    "no-plusplus": "error",
+    // "no-plusplus": "error",
     "no-proto": "error",
     "no-return-assign": ["error", "always"],
     "no-script-url": "error",
