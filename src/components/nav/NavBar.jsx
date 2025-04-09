@@ -43,7 +43,7 @@ const NavBar = () => {
           <li className="flex flex-col justify-center items-center mr-16">
             <Link href="#">{t("Contact")}</Link>
           </li>
-          {!connected ? (
+          {connected ? (
             <>
               <li className="flex flex-col justify-center items-center mr-16">
                 <Link href="/auth/login">{t("Login")}</Link>
@@ -56,12 +56,12 @@ const NavBar = () => {
             <>
               <li className="flex flex-col justify-center items-center mr-16">
                 <Link href="/cart">
-                  <ShoppingBasket size={24} />
+                  <ShoppingBasket size={24} className="h-8 w-8" />
                 </Link>
               </li>
               <li className="flex flex-col justify-center items-center mr-16">
                 <Link href="/profile">
-                  <UserRound size={24} />
+                  <UserRound size={24} className="h-8 w-8" />
                 </Link>
               </li>
             </>
