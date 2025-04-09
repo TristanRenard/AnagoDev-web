@@ -20,7 +20,10 @@ class Product extends Model {
         isMarkdown: { type: "boolean" },
         price: { type: "number" },
         isSubscription: { type: "boolean" },
-        images: { type: "string" },
+        images: {
+          type: "array",
+          items: { type: "string" }
+        },
         stock: { type: "integer" },
         duties: { type: "number" },
         isTopProduct: { type: "boolean" },
