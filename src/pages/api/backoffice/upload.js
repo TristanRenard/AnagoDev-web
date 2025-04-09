@@ -1,5 +1,5 @@
-import * as Minio from "minio"
 import fs from "fs"
+import * as Minio from "minio"
 import multiparty from "multiparty"
 
 const minioClient = new Minio.Client({
@@ -17,18 +17,23 @@ export const config = {
 }
 const handler = async (req, res) => {
   if (req.method === "GET") {
-    const files = await minioClient.listObjectsV2("anago-dev", "", true)
-    const fileList = []
-    files.on("data", (obj) => {
-      fileList.push(obj)
-    })
-    files.on("end", () => {
-      res.status(200).json(fileList)
-    })
-    files.on("error", (err) => {
-      console.error(err)
-      res.status(500).json({ message: `Error listing files: ${err.message}` })
-    })
+    try {
+      const files = await minioClient.listObjectsV2("anago-dev", "", true)
+      const fileList = []
+      files.on("data", (obj) => {
+        fileList.push(obj)
+      })
+      files.on("end", () => {
+        res.status(200).json(fileList)
+      })
+      files.on("error", (err) => {
+        console.error(err)
+        res.status(500).json({ message: `Error listing files: ${err.message}`, error: err })
+      })
+    } catch (error) {
+      console.error(error)
+      res.status(500).json({ message: `Error listing files: ${error.message}`, error })
+    }
 
     return
   }
@@ -64,6 +69,12 @@ const handler = async (req, res) => {
             )
             await fs.promises.unlink(file.path)
           } catch (error) {
+            console.error(
+              `Failed to upload ${destinationObject}: ${error.message}`,
+            )
+            res.status(500).json({
+              message: `Failed to upload ${destinationObject}: ${error.message}`, error
+            })
             throw new Error(
               `Failed to upload ${destinationObject}: ${error.message}`,
             )
@@ -78,7 +89,7 @@ const handler = async (req, res) => {
       console.error(error)
       res
         .status(500)
-        .json({ message: `File upload failed: ${error.message}` })
+        .json({ message: `File upload failed: ${error.message}`, error })
     }
   }
 
