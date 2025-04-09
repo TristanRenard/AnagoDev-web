@@ -3,7 +3,6 @@ import { useToast } from "@/hooks/use-toast"
 import { useI18n } from "@/locales"
 import axios from "axios"
 import { Download, Eye, FileIcon, Image as Img, Link, Trash2, Upload as UploadIcon, X } from "lucide-react"
-import Image from "next/image"
 /* eslint-disable no-nested-ternary */
 /* eslint-disable max-lines */
 import { useEffect, useRef, useState } from "react"
