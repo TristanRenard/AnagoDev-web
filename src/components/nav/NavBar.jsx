@@ -43,7 +43,7 @@ const NavBar = () => {
           <li className="flex flex-col justify-center items-center mr-16">
             <Link href="#">{t("Contact")}</Link>
           </li>
-          {connected ? (
+          {!connected ? (
             <>
               <li className="flex flex-col justify-center items-center mr-16">
                 <Link href="/auth/login">{t("Login")}</Link>
@@ -56,12 +56,12 @@ const NavBar = () => {
             <>
               <li className="flex flex-col justify-center items-center mr-16">
                 <Link href="/cart">
-                  <ShoppingBasket size={24} className="h-8 w-8" />
+                  <ShoppingBasket className="h-8 w-8" />
                 </Link>
               </li>
               <li className="flex flex-col justify-center items-center mr-16">
                 <Link href="/profile">
-                  <UserRound size={24} className="h-8 w-8" />
+                  <UserRound className="h-8 w-8" />
                 </Link>
               </li>
             </>
@@ -92,7 +92,7 @@ const NavBar = () => {
             }}
             className="flex flex-col justify-center items-center"
           >
-            {isNavBarOpen ? <X size={32} /> : <Menu size={32} />}
+            {isNavBarOpen ? <X /> : <Menu />}
           </button>
         </div>
 
@@ -111,7 +111,7 @@ const NavBar = () => {
               }}
               className="flex flex-col justify-center items-center p-4 fixed right-2 top-3"
             >
-              <X size={32} />
+              <X />
             </button>
           </li>
           <li className="flex flex-col justify-center items-center p-4">
@@ -212,7 +212,7 @@ const NavBar = () => {
                   }}
                   href="/cart"
                 >
-                  <ShoppingBasket size={24} />
+                  <ShoppingBasket />
                 </Link>
               </li>
               <li className="flex flex-col justify-center items-center">
