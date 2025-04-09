@@ -35,5 +35,11 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-
 knexfile.js
+.vscode
+
+# old
+*.old.*
+*.old
+
+/.vscode

@@ -1,0 +1,15 @@
+services:
+  staging:
+    build:
+      context: .
+      dockerfile: ./docker/staging/Dockerfile
+    container_name: anago
+    restart: on-failure
+    environment:
+      NODE_ENV: production
+    ports:
+      - "3000:3000" # Next.js tourne sur le port 3000
+    depends_on:
+      - postgres
+      - umami
+      - minio

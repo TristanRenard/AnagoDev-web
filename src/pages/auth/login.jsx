@@ -1,13 +1,18 @@
 import { FormInput, FormOTP } from "@/components/form/formInput"
 import { Button } from "@/components/ui/button"
-import { DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import {
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import { Separator } from "@/components/ui/separator"
 import { useToast } from "@/hooks/use-toast"
 import { Dialog, DialogTrigger } from "@radix-ui/react-dialog"
 // Iimport { useToast } from "@/hooks/use-toast"
 import { useForm } from "@tanstack/react-form"
 import { yupValidator } from "@tanstack/yup-form-adapter"
-import { track } from "@vercel/analytics"
 import axios from "axios"
 import { useRouter } from "next/router"
 // Iimport { useRouter } from "next/router"
@@ -32,13 +37,12 @@ const Login = () => {
       const res = await axios.post("/api/user/login", value)
 
       if (res.status === 200) {
-        track("loginSuccess", {
+        umami.track("loginSuccess", {
           ...value,
           // eslint-disable-next-line no-undefined
           password: Boolean(value.password),
         })
         toast({
-          variant: "success",
           title: "Success",
           description: res.data.message,
           status: "success",
@@ -46,12 +50,12 @@ const Login = () => {
         router.push("/")
       }
     } catch (err) {
-      track("registerError", {
+      umami.track("registerError", {
         ...value,
         // eslint-disable-next-line no-undefined
         password: Boolean(value.password),
         // eslint-disable-next-line no-undefined
-        confirmPassword: Boolean(value.confirmPassword)
+        confirmPassword: Boolean(value.confirmPassword),
       })
       toast({
         variant: "destructive",
@@ -68,18 +72,17 @@ const Login = () => {
       password: "",
       otp: "",
     },
-    onSubmit: (values) => handleSubmit(values)
+    onSubmit: (values) => handleSubmit(values),
   })
   const sendOTP = async () => {
-    track("sendOTP", {
-      email
-    }
-    )
+    umami.track("sendOTP", {
+      email,
+    })
     setWaiting(true)
 
     if (email) {
       const res = await axios.post("/api/user/sendOTP", {
-        email
+        email,
       })
 
       if (res.status === 200) {
@@ -109,7 +112,6 @@ const Login = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [otp])
 
-
   return (
     <div className="flex-1 flex justify-center items-center flex-col gap-24 p-5">
       <h1 className="font-bold text-4xl">Login</h1>
@@ -132,13 +134,13 @@ const Login = () => {
             value={email}
             setValue={setEmail}
             validators={{
-              onChange: yup.string().required().email()
+              onChange: yup.string().required().email(),
             }}
             setIsValid={setEmailIsValid}
           />
           <FormInput
             validators={{
-              onChange: yup.string().required()
+              onChange: yup.string().required(),
             }}
             value={password}
             form={form}
@@ -154,14 +156,22 @@ const Login = () => {
           {/* eslint-disable-next-line curly*/}
           <Dialog aria-describedby="sms-verification">
             <DialogTrigger asChild>
-              <Button type="submit" disabled={!passwordIsValid || !emailIsValid || (remainingTime > 0)} onClick={() => { sendOTP() }}>
+              <Button
+                type="submit"
+                disabled={
+                  !passwordIsValid || !emailIsValid || remainingTime > 0
+                }
+                onClick={() => {
+                  sendOTP()
+                }}
+              >
                 Login
               </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
                 <DialogTitle className="underline">
-                  SMS Verification
+                  2FA Authentification
                 </DialogTitle>
               </DialogHeader>
               <div className="flex justify-center py-7">
@@ -171,7 +181,10 @@ const Login = () => {
                   label="OTP"
                   setValue={setOTP}
                   validators={{
-                    onChange: yup.string().required().matches(/^[0-9]{6}$/u, "OTP must be 6 digits")
+                    onChange: yup
+                      .string()
+                      .required()
+                      .matches(/^[0-9]{6}$/u, "OTP must be 6 digits"),
                   }}
                   error={OTPerror}
                 />
@@ -179,14 +192,15 @@ const Login = () => {
               <DialogFooter className="flex justify-between">
                 <div className="w-full flex justify-between">
                   <DialogClose asChild>
-                    <Button variant="secondary">
-                      Edit phone number
-                    </Button>
+                    <Button variant="secondary">Edit phone number</Button>
                   </DialogClose>
-                  <Button onClick={sendOTP} disabled={(remainingTime > 0) && false}>
-                    {(waiting) && "Sending OTP..."}
-                    {(!waiting && displayOTP) && `${remainingTime}s`}
-                    {(!waiting && !displayOTP) && "Resend OTP"}
+                  <Button
+                    onClick={sendOTP}
+                    disabled={remainingTime > 0 && false}
+                  >
+                    {waiting && "Sending OTP..."}
+                    {!waiting && displayOTP && `${remainingTime}s`}
+                    {!waiting && !displayOTP && "Resend OTP"}
                   </Button>
                 </div>
               </DialogFooter>

@@ -15,7 +15,10 @@ class Category extends Model {
         id: { type: "integer" },
         title: { type: "string" },
         description: { type: "string" },
-        images: { type: "json" },
+        images: {
+          type: "array",
+          items: { type: "string" }
+        },
         order: { type: "integer" }
       }
     }
@@ -34,6 +37,5 @@ class Category extends Model {
     }
   }
 }
-
 
 export default Category
