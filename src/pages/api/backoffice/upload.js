@@ -3,7 +3,7 @@ import fs from "fs"
 import multiparty from "multiparty"
 
 const minioClient = new Minio.Client({
-  endPoint: process.env.DOMAIN,
+  endPoint: process.env.MINIO_HOST,
   port: parseInt(process.env.MINIO_PORT, 10),
   useSSL: false,
   accessKey: process.env.MINIO_ROOT_USER,
