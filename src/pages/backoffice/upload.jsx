@@ -1,12 +1,12 @@
+import BackofficeLayout from "@/components/layouts/BackofficeLayout"
+import { useToast } from "@/hooks/use-toast"
+import { useI18n } from "@/locales"
+import axios from "axios"
+import { Download, Eye, FileIcon, Image as Img, Link, Trash2, Upload as UploadIcon, X } from "lucide-react"
+import Image from "next/image"
 /* eslint-disable no-nested-ternary */
 /* eslint-disable max-lines */
-import { useState, useRef, useEffect } from "react"
-import { useToast } from "@/hooks/use-toast"
-import { X, Link, Upload as UploadIcon, Trash2, Image as Img, FileIcon, Eye, Download } from "lucide-react"
-import axios from "axios"
-import BackofficeLayout from "@/components/layouts/BackofficeLayout"
-import Image from "next/image"
-import { useI18n } from "@/locales"
+import { useEffect, useRef, useState } from "react"
 
 // eslint-disable-next-line max-lines-per-function
 const Upload = () => {
@@ -28,7 +28,7 @@ const Upload = () => {
     setIsLoading(true)
 
     try {
-      const response = await axios.get("http://localhost:3000/api/backoffice/upload")
+      const response = await axios.get("/api/backoffice/upload")
       setUploadedFiles(response.data)
     } catch (error) {
       toast({
@@ -68,7 +68,7 @@ const Upload = () => {
     })
 
     try {
-      await axios.post("http://localhost:3000/api/backoffice/upload", formData)
+      await axios.post("/api/backoffice/upload", formData)
       toast({
         title: t("Success"),
         // eslint-disable-next-line no-undef
@@ -89,7 +89,7 @@ const Upload = () => {
     }
   }
   const handleCopyUrl = (fileName) => {
-    const fileUrl = `http://localhost:3000/api/backoffice/files/${fileName}`
+    const fileUrl = `/api/backoffice/files/${fileName}`
     navigator.clipboard.writeText(fileUrl)
     toast({
       title: t("Success"),
@@ -110,7 +110,7 @@ const Upload = () => {
     })
   }
   const handleDownload = (fileName) => {
-    const fileUrl = `http://localhost:3000/api/backoffice/files/${fileName}`
+    const fileUrl = `/api/backoffice/files/${fileName}`
     const link = document.createElement("a")
     link.href = fileUrl
     link.download = fileName
@@ -143,7 +143,7 @@ const Upload = () => {
     if (["jpg", "jpeg", "png", "gif", "webp", "ico"].includes(extension)) {
       if (isUploaded) {
         // For uploaded files, use the URL to the file
-        const fileUrl = `http://localhost:3000/api/backoffice/files/${fileName}`
+        const fileUrl = `/api/backoffice/files/${fileName}`
 
 
         return (
@@ -406,7 +406,7 @@ const Upload = () => {
                         <div className="flex gap-1">
                           {isPreviewable(file.name) && (
                             <button
-                              onClick={() => window.open(`http://localhost:3000/api/backoffice/files/${file.name}`, "_blank")}
+                              onClick={() => window.open(`/api/backoffice/files/${file.name}`, "_blank")}
                               className="flex items-center justify-center p-2 bg-blue-100 rounded-full hover:bg-blue-200 transition-colors"
                               title={t("Preview file")}
                             >
