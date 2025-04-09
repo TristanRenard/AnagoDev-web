@@ -9,6 +9,15 @@ const minioClient = new Minio.Client({
   accessKey: process.env.MINIO_ROOT_USER,
   secretKey: process.env.MINIO_ROOT_PASSWORD,
 })
+
+export const config = {
+  api: {
+    // Disable Next.js body parsing - important for streaming binary files
+    bodyParser: false,
+    // Disable response transformation
+    externalResolver: true,
+  },
+}
 // eslint-disable-next-line consistent-return
 const handler = async (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*")
@@ -100,7 +109,8 @@ const handler = async (req, res) => {
       }
     }
 
-    // Set the content type header
+    // Set cache control headers to prevent unnecessary API calls
+    res.setHeader("Cache-Control", "public, max-age=86400")
     res.setHeader("Content-Type", contentType)
 
     // Set content disposition based on query parameter
