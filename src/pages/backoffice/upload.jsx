@@ -148,7 +148,7 @@ const Upload = () => {
 
         return (
           <div className="relative w-full h-32 bg-gray-200 rounded-md overflow-hidden">
-            <Image
+            <img
               src={fileUrl}
               alt={fileName}
               width={256}
@@ -191,7 +191,7 @@ const Upload = () => {
     }, [file])
 
     return preview ? (
-      <Image src={preview} alt={file.name} className="w-full h-full object-cover" width={256} height={256} />
+      <img src={preview} alt={file.name} className="w-full h-full object-cover" width={256} height={256} />
     ) : (
       <div className="flex items-center justify-center w-full h-full">{t("Loading...")}</div>
     )
