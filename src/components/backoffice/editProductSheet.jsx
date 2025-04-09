@@ -1,18 +1,17 @@
 /* eslint-disable max-lines-per-function */
-
-import { SingleFileSelector } from "@/components/form/selectFile"
+import { MultiFileSelector } from "@/components/form/MultipleSelectFile"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { Switch } from "@/components/ui/switch"
 import { useToast } from "@/hooks/use-toast"
 import { useI18n } from "@/locales"
 import axios from "axios"
-import { useEffect, useState } from "react"
-import dynamic from "next/dynamic"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Pencil } from "lucide-react"
+import dynamic from "next/dynamic"
+import { useEffect, useState } from "react"
 
 const Editor = dynamic(() => import("@/components/Editor"), { ssr: false })
 const EditProductSheet = ({ product, queryClient, categories }) => {
@@ -22,7 +21,7 @@ const EditProductSheet = ({ product, queryClient, categories }) => {
   const [productDescription, setProductDescription] = useState("")
   // eslint-disable-next-line no-unused-vars
   const [productImages, setProductImages] = useState([])
-  const [productImage, setProductImage] = useState("")
+  const [productImage, setProductImage] = useState([])
   const [productIsSubscription, setProductIsSubscription] = useState(true)
   const [productMonthlyPrice, setProductMonthlyPrice] = useState(0)
   const [productYearlyPrice, setProductYearlyPrice] = useState(0)
@@ -41,9 +40,9 @@ const EditProductSheet = ({ product, queryClient, categories }) => {
       setProductDescription(product.description || "")
 
       // Parse images if stored as JSON string
-      const images = typeof product.images === "string" ? JSON.parse(product.images) : product.images || []
+      const { images } = product
       setProductImages(images)
-      setProductImage(images[0] || "")
+      setProductImage(images)
 
       setProductIsSubscription(Boolean(product.isSubscription))
       setProductIsActive(Boolean(product.isActive))
@@ -159,7 +158,7 @@ const EditProductSheet = ({ product, queryClient, categories }) => {
     const payload = {
       name: productName,
       description: productDescription,
-      images: productImage ? [productImage] : [],
+      images: productImage,
       isSubscription: productIsSubscription,
       categoryId,
       duties: Number(productDuties),
@@ -333,14 +332,9 @@ const EditProductSheet = ({ product, queryClient, categories }) => {
             <Label htmlFor="image" className="text-right col-span-1">
               {t("Product image URL")}
             </Label>
-            <SingleFileSelector selectedFile={productImage} setSelectedFile={setProductImage} />
-            <Input
-              className="col-span-3"
-              id="image"
-              type="text"
-              value={productImage}
-              onChange={(e) => setProductImage(e.target.value)}
-            />
+            <div className="col-span-3">
+              <MultiFileSelector selectedFiles={productImage} setSelectedFiles={setProductImage} />
+            </div>
           </div>
           <div className="grid grid-cols-6 items-center gap-4 h-fit">
             <Label htmlFor="stock" className="text-right col-span-1">
