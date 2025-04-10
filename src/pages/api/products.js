@@ -1,7 +1,7 @@
-import Product from "@/db/models/Product"
-import { stripe } from "@/lib/stripe"
-import knexInstance from "@/lib/db"
 import Price from "@/db/models/Price"
+import Product from "@/db/models/Product"
+import knexInstance from "@/lib/db"
+import { stripe } from "@/lib/stripe"
 import axios from "axios"
 
 // eslint-disable-next-line complexity, consistent-return
@@ -47,16 +47,19 @@ const handler = async (req, res) => {
         })
       }
 
-      const processedImages = [
-        ...images
-          .filter((image) => !image.startsWith("http"))
-          .map((image) => `${process.env.HOST_NAME}${image}`),
-        ...images.filter((image) => image.startsWith("http")),
-      ]
+      const processedImages = images.map((image) => {
+        if (image.startsWith("http")) {
+          return encodeURI(image)
+        }
+
+        return encodeURI(`${process.env.HOST_NAME_PRODUCTION}${image}`)
+      })
+
+      console.log("Processed images:", processedImages)
+
       const newProduct = await stripe.products.create({
         name,
         description,
-        images: processedImages,
         metadata: {
           isSubscription: isSubscription ? "true" : "false",
         },
@@ -69,7 +72,7 @@ const handler = async (req, res) => {
         isMarkdown: true,
         price: basePrice,
         isSubscription: Boolean(isSubscription),
-        images: JSON.stringify(processedImages),
+        images,
         stock,
         duties,
         isTopProduct,
@@ -114,6 +117,8 @@ const handler = async (req, res) => {
         prices: createdPrices,
       })
     } catch (error) {
+      console.error(error)
+
       return res.status(500).json({
         success: false,
         error: error.message,
@@ -199,19 +204,11 @@ const handler = async (req, res) => {
       }
 
       // Mettre à jour le produit dans Stripe
-      const processedImages = images ? [
-        ...images
-          .filter((image) => !image.startsWith("http"))
-          .map((image) => `${process.env.HOST_NAME}${image}`),
-        ...images.filter((image) => image.startsWith("http")),
-      ] : undefined
       const updateData = {}
 
       if (name) { updateData.name = name }
 
       if (description) { updateData.description = description }
-
-      if (processedImages) { updateData.images = processedImages }
 
       if (isSubscription !== undefined) {
         updateData.metadata = {
@@ -232,7 +229,7 @@ const handler = async (req, res) => {
 
       if (description) { dbUpdateData.description = description }
 
-      if (processedImages) { dbUpdateData.images = JSON.stringify(processedImages) }
+      if (images) { dbUpdateData.images = images }
 
       if (isSubscription !== undefined) { dbUpdateData.isSubscription = Boolean(isSubscription) }
 

@@ -1,6 +1,7 @@
 /* eslint-disable array-callback-return */
-import React, { useState } from "react"
 import { useI18n } from "@/locales"
+import Image from "next/image"
+import { useState } from "react"
 
 const slideTest = [
   {
@@ -88,7 +89,7 @@ const CustomCarousel = ({ slides = slideTest }) => {
                     </a>
                   )}
                 </div>
-                <img
+                <Image
                   src={slide.img}
                   alt="background image"
                   width={200}
@@ -105,7 +106,7 @@ const CustomCarousel = ({ slides = slideTest }) => {
           onClick={prevSlide}
           className="bg-cyna-purple-grey p-3 rounded-full hover:bg-cyna-purple-grey/90 transition-all duration-300"
         >
-          <img
+          <Image
             src="/ArrowLeft.svg"
             alt="left arrow"
             width={24}
@@ -119,7 +120,7 @@ const CustomCarousel = ({ slides = slideTest }) => {
             padding: `1.3rem`,
           }}
         >
-          <div className="w-full h-2 bg-slate-300 rounded-full">
+          <div className="w-full h-1.5 bg-slate-300 rounded-full">
             <div
               className="h-full bg-primary rounded-full transition-all duration-300"
               style={{
@@ -132,7 +133,7 @@ const CustomCarousel = ({ slides = slideTest }) => {
           onClick={nextSlide}
           className="bg-cyna-purple-grey p-3 rounded-full hover:bg-cyna-purple-grey/90 transition-all duration-300"
         >
-          <img
+          <Image
             src="/ArrowRight.svg"
             alt="right arrow"
             width={24}

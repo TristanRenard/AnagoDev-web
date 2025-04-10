@@ -32,13 +32,6 @@ const handler = async (req, res) => {
       })
     }
 
-    console.log({
-      title: name,
-      description,
-      images,
-      order,
-    })
-
     const newCategory = await Category.query(knexInstance).insert({
       title: name,
       description,
