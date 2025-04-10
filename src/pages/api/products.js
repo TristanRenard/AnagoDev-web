@@ -7,7 +7,7 @@ import axios from "axios"
 // eslint-disable-next-line complexity, consistent-return
 const handler = async (req, res) => {
   const { "x-user-data": userData } = req.headers
-  const user = JSON.parse(userData) || {}
+  const user = userData && JSON.parse(userData) || {}
   const isAdmin = user?.isAdmin || false
 
   if (req.method === "POST") {
