@@ -4,14 +4,16 @@ import useNavBar from "@/hooks/useNavBar"
 import { useI18n } from "@/locales"
 import axios from "axios"
 import clsx from "clsx"
-import { Menu, ShoppingBasket, X, UserRound } from "lucide-react"
+import { Menu, ShoppingBasket, X, UserRound, Search } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { useEffect, useState } from "react"
+import SearchBar from "./SearchBar"
 
 const NavBar = () => {
   const t = useI18n()
   const { isNavBarOpen, toggleNavBar } = useNavBar()
+  const [isSearchBarOpen, setIsSearchBarOpen] = useState(false)
   const [connected, setConnected] = useState(false)
   const isLogged = async () => {
     const res = await axios("/api/connection")
@@ -51,6 +53,17 @@ const NavBar = () => {
               <li className="flex flex-col justify-center items-center mr-16">
                 <Link href="/auth/register">{t("Register")}</Link>
               </li>
+              <li className="flex flex-col justify-center items-center">
+                <Search
+                  onClick={() => setIsSearchBarOpen(!isSearchBarOpen)}
+                  className="h-8 w-8"
+                />
+                <SearchBar
+                  open={isSearchBarOpen}
+                  onOpenChange={setIsSearchBarOpen}
+                  connected={connected}
+                />
+              </li>
             </>
           ) : (
             <>
@@ -63,6 +76,17 @@ const NavBar = () => {
                 <Link href="/profile">
                   <UserRound className="h-8 w-8" />
                 </Link>
+              </li>
+              <li className="flex flex-col justify-center items-center mr-16">
+                <Search
+                  onClick={() => setIsSearchBarOpen(!isSearchBarOpen)}
+                  className="h-8 w-8"
+                />
+                <SearchBar
+                  open={isSearchBarOpen}
+                  onOpenChange={setIsSearchBarOpen}
+                  connected={connected}
+                />
               </li>
             </>
           )}
