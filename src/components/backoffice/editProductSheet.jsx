@@ -333,7 +333,7 @@ const EditProductSheet = ({ product, queryClient, categories }) => {
               {t("Product image URL")}
             </Label>
             <div className="col-span-3">
-              <MultiFileSelector selectedFiles={productImage} setSelectedFiles={setProductImage} />
+              <MultiFileSelector selectedFiles={productImage} setSelectedFiles={setProductImage} organize />
             </div>
           </div>
           <div className="grid grid-cols-6 items-center gap-4 h-fit">
