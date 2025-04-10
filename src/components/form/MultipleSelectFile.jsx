@@ -1,14 +1,11 @@
-import axios from "axios"
-import { Check, FileIcon, GripVertical, Loader2, Search, X } from "lucide-react"
-import React, { useEffect, useState, useRef } from "react"
 import {
-  DndContext,
   closestCenter,
+  DndContext,
+  DragOverlay,
   KeyboardSensor,
   PointerSensor,
   useSensor,
-  useSensors,
-  DragOverlay
+  useSensors
 } from "@dnd-kit/core"
 import {
   SortableContext,
@@ -17,6 +14,10 @@ import {
   verticalListSortingStrategy
 } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
+import axios from "axios"
+import { Check, FileIcon, GripVertical, Loader2, Search, X } from "lucide-react"
+import Image from "next/image"
+import { useEffect, useRef, useState } from "react"
 
 /**
  * SortableFile component for handling individual file items in the sortable list
@@ -54,7 +55,9 @@ const SortableFile = ({ file, onRemove, isImageFile }) => {
 
         {isImageFile(file.name) ? (
           <div className="w-10 h-10 mr-3 rounded-md overflow-hidden bg-gray-100">
-            <img
+            <Image
+              width={1920}
+              height={1080}
               src={file.url}
               alt={file.name}
               className="w-full h-full object-cover"
@@ -92,7 +95,9 @@ const RegularFile = ({ file, onRemove, isImageFile }) => (
     <div className="flex items-center">
       {isImageFile(file.name) ? (
         <div className="w-10 h-10 mr-3 rounded-md overflow-hidden bg-gray-100">
-          <img
+          <Image
+            width={1920}
+            height={1080}
             src={file.url}
             alt={file.name}
             className="w-full h-full object-cover"
@@ -395,7 +400,9 @@ export const MultiFileSelector = ({
 
                         return isImageFile(activeFile.name) ? (
                           <div className="w-10 h-10 mr-3 rounded-md overflow-hidden bg-gray-100">
-                            <img
+                            <Image
+                              width={1920}
+                              height={1080}
                               src={activeFile.url}
                               alt={activeFile.name}
                               className="w-full h-full object-cover"
@@ -509,7 +516,9 @@ export const MultiFileSelector = ({
                       {/* Preview */}
                       <div className="h-20 bg-gray-100 flex items-center justify-center">
                         {isImageFile(file.name) ? (
-                          <img
+                          <Image
+                            width={1920}
+                            height={1080}
                             src={`${fileBaseUrl}${file.name}`}
                             alt={file.name}
                             className="w-full h-full object-cover"

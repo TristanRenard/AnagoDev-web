@@ -1,3 +1,5 @@
+import Image from "next/image"
+
 const ImageTextBlock = ({ titre, texte, image, isLeft = false }) => (
   <div className="flex flex-col md:flex-row items-center gap-8 mb-32">
     {isLeft && (
@@ -8,7 +10,9 @@ const ImageTextBlock = ({ titre, texte, image, isLeft = false }) => (
     )}
 
     <div className="w-full md:w-1/2">
-      <img
+      <Image
+        width={1920}
+        height={1080}
         src={image}
         alt={titre}
         className="w-full h-auto rounded-xl max-h-[200px]"
