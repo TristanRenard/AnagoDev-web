@@ -7,6 +7,7 @@ import {
 import { UserRound } from "lucide-react"
 import { useI18n } from "@/locales"
 import Link from "next/link"
+import axios from "axios"
 
 const IconProfil = () => {
   const t = useI18n()
