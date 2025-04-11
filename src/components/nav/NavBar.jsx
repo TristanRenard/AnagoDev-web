@@ -4,7 +4,7 @@ import useNavBar from "@/hooks/useNavBar"
 import { useI18n } from "@/locales"
 import axios from "axios"
 import clsx from "clsx"
-import { Menu, ShoppingBasket, X, UserRound } from "lucide-react"
+import { Menu, ShoppingBasket, UserRound, X } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { useEffect, useState } from "react"
@@ -38,7 +38,7 @@ const NavBar = () => {
         </Link>
         <ul className="flex">
           <li className="flex flex-col justify-center items-center mr-16">
-            <Link href="#">{t("Products")}</Link>
+            <Link href="/products">{t("Products")}</Link>
           </li>
           <li className="flex flex-col justify-center items-center mr-16">
             <Link href="#">{t("Contact")}</Link>
