@@ -7,16 +7,38 @@ import clsx from "clsx"
 import Image from "next/image"
 import { useState } from "react"
 import ReactMarkdown from "react-markdown"
+import axios from "axios"
+import { useToast } from "@/hooks/use-toast"
+import { useRouter } from "next/router"
 
 const ProductPage = ({ product, similarProducts }) => {
   const [selectedPrice, setSelectedPrice] = useState(product?.prices?.[0]?.id)
+  const { toast } = useToast()
+  const router = useRouter()
   const t = useI18n()
   const pt = useScopedI18n("products")
-  console.log(product)
+  console.log({ product })
   console.log(similarProducts)
 
-  const handleAddToCart = () => {
-    console.log(product.prices.find((price) => price.id === selectedPrice))
+  const handleAddToCart = async () => {
+    try {
+      await axios.post("/api/cart", {
+        productId: product.id,
+        action: "add",
+      })
+      toast({
+        title: t("Product added to cart"),
+        description: t("Product successfully added to your cart"),
+        status: "success",
+      })
+      router.push("/cart")
+    } catch (error) {
+      toast({
+        title: t("Error adding product to cart"),
+        description: error.response?.data?.message || t("Something went wrong"),
+        status: "error",
+      })
+    }
   }
 
   return (
@@ -32,7 +54,12 @@ const ProductPage = ({ product, similarProducts }) => {
                 alt=""
                 width={1920}
                 height={1080}
-                className={clsx("rounded-lg aspect-square object-cover w-full h-full ", k === 0 ? "col-span-2 sm:col-span-2 md:col-span-1  lg:col-span-2" : "col-span-2 md:col-span-1")}
+                className={clsx(
+                  "rounded-lg aspect-square object-cover w-full h-full ",
+                  k === 0
+                    ? "col-span-2 sm:col-span-2 md:col-span-1  lg:col-span-2"
+                    : "col-span-2 md:col-span-1",
+                )}
               />
             ))}
           </section>
@@ -40,13 +67,9 @@ const ProductPage = ({ product, similarProducts }) => {
           {/* Section description qui restera fixe pendant le défilement */}
           <section className="w-full lg:w-1/2">
             <div className="sticky top-24">
-              <h1 className="text-5xl font-bold">
-                {pt(product.title)}
-              </h1>
+              <h1 className="text-5xl font-bold">{pt(product.title)}</h1>
               <p className="text-lg mt-4">
-                <ReactMarkdown>
-                  {pt(product.description)}
-                </ReactMarkdown>
+                <ReactMarkdown>{pt(product.description)}</ReactMarkdown>
               </p>
               <div className="flex mt-6">
                 {product.prices.map((price) => (
@@ -56,7 +79,7 @@ const ProductPage = ({ product, similarProducts }) => {
                       "flex flex-col items-center rounded-md border-2 px-4 py-2 mr-4 w-full cursor-pointer",
                       selectedPrice === price.id
                         ? "border-primary bg-primary/10"
-                        : "border-gray-300 bg-gray-100"
+                        : "border-gray-300 bg-gray-100",
                     )}
                     onClick={() => setSelectedPrice(price.id)}
                   >
@@ -70,7 +93,10 @@ const ProductPage = ({ product, similarProducts }) => {
                   </button>
                 ))}
               </div>
-              <Button onClick={handleAddToCart} className="bg-primary text-primary-foreground rounded-md px-4 py-2 mt-6 w-full">
+              <Button
+                onClick={handleAddToCart}
+                className="bg-primary text-primary-foreground rounded-md px-4 py-2 mt-6 w-full"
+              >
                 Add to cart
               </Button>
             </div>
@@ -89,7 +115,9 @@ const ProductPage = ({ product, similarProducts }) => {
 
 export const getServerSideProps = async (context) => {
   const { title } = context.params
-  const product = await Product.query(knexInstance).findOne({ title }).withGraphFetched("[category, prices]")
+  const product = await Product.query(knexInstance)
+    .findOne({ title })
+    .withGraphFetched("[category, prices]")
 
   if (!product) {
     return {
@@ -97,7 +125,11 @@ export const getServerSideProps = async (context) => {
     }
   }
 
-  const similarProducts = await Product.query(knexInstance).select("*").where({ "categoryId": product.categoryId }).whereNot({ id: product.id }).orderBy("isTopProduct", "desc")
+  const similarProducts = await Product.query(knexInstance)
+    .select("*")
+    .where({ categoryId: product.categoryId })
+    .whereNot({ id: product.id })
+    .orderBy("isTopProduct", "desc")
   const slides = similarProducts.map((pr) => ({
     titre: pr.title,
     text: pr.description,
@@ -105,7 +137,6 @@ export const getServerSideProps = async (context) => {
     cta: `/product/${pr.title}`,
     textCta: "See more",
   }))
-
 
   return {
     props: {
