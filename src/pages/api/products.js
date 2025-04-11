@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import Price from "@/db/models/Price"
 import Product from "@/db/models/Product"
 import knexInstance from "@/lib/db"
@@ -79,21 +80,28 @@ const handler = async (req, res) => {
         categoryId,
       })
       const pricePromises = prices.map(async (price) => {
-        const stripePrice = await stripe.prices.create({
+        // Ne pas inclure recurring si ce n'est pas un abonnement
+        const stripePriceData = {
           "unit_amount": price.unit_amount,
           currency: price.currency,
-          recurring: price.recurring,
           nickname: price.nickname,
           product: newProduct.id,
-        })
+        }
+
+        // Ajouter recurring seulement si c'est un abonnement
+        if (isSubscription && price.recurring) {
+          stripePriceData.recurring = price.recurring
+        }
+
+        const stripePrice = await stripe.prices.create(stripePriceData)
 
         return Price.query(knexInstance).insert({
           stripeId: stripePrice.id,
-          recurring: Boolean(price.recurring),
+          recurring: Boolean(isSubscription && price.recurring),
           nickname: price.nickname,
           "unit_amount": price.unit_amount,
           currency: price.currency,
-          interval: price.recurring ? price.recurring.interval : null,
+          interval: isSubscription && price.recurring ? price.recurring.interval : "",
           productId: dbProduct.id,
         })
       })
@@ -272,25 +280,35 @@ const handler = async (req, res) => {
                 // Archiver l'ancien prix dans Stripe
                 await stripe.prices.update(existingPrice.stripeId, { active: false })
 
-                // Créer un nouveau prix dans Stripe
-                const newStripePrice = await stripe.prices.create({
+                // Préparer les données pour le nouveau prix Stripe
+                const newStripePriceData = {
                   "unit_amount": price.unit_amount,
                   currency: price.currency,
-                  recurring: price.recurring,
                   nickname: price.nickname || existingPrice.nickname,
                   product: dbProduct.stripeId,
-                })
+                }
+
+                // Ajouter recurring seulement si c'est un abonnement
+                if (isSubscription || dbProduct.isSubscription) {
+                  // eslint-disable-next-line max-depth
+                  if (price.recurring) {
+                    newStripePriceData.recurring = price.recurring
+                  }
+                }
+
+                // Créer un nouveau prix dans Stripe
+                const newStripePrice = await stripe.prices.create(newStripePriceData)
 
                 // Mettre à jour l'enregistrement de prix dans PostgreSQL
                 return Price.query(knexInstance)
                   .findById(price.id)
                   .patch({
                     stripeId: newStripePrice.id,
-                    recurring: Boolean(price.recurring),
+                    recurring: Boolean(isSubscription && price.recurring),
                     nickname: price.nickname || existingPrice.nickname,
                     "unit_amount": price.unit_amount,
                     currency: price.currency,
-                    interval: price.recurring ? price.recurring.interval : null,
+                    interval: isSubscription && price.recurring ? price.recurring.interval : "",
                   })
               }
 
@@ -308,21 +326,31 @@ const handler = async (req, res) => {
             }
           } else {
             // Création d'un nouveau prix
-            const stripePrice = await stripe.prices.create({
+            // Préparer les données pour le nouveau prix Stripe
+            const newStripePriceData = {
               "unit_amount": price.unit_amount,
               currency: price.currency,
-              recurring: price.recurring,
               nickname: price.nickname,
               product: dbProduct.stripeId,
-            })
+            }
+
+            // Ajouter recurring seulement si c'est un abonnement
+            if (isSubscription !== undefined ? isSubscription : dbProduct.isSubscription) {
+              if (price.recurring) {
+                newStripePriceData.recurring = price.recurring
+              }
+            }
+
+            const stripePrice = await stripe.prices.create(newStripePriceData)
+            const isProductSubscription = isSubscription !== undefined ? isSubscription : dbProduct.isSubscription
 
             return Price.query(knexInstance).insert({
               stripeId: stripePrice.id,
-              recurring: Boolean(price.recurring),
+              recurring: Boolean(isProductSubscription && price.recurring),
               nickname: price.nickname,
               "unit_amount": price.unit_amount,
               currency: price.currency,
-              interval: price.recurring ? price.recurring.interval : null,
+              interval: isProductSubscription && price.recurring ? price.recurring.interval : "",
               productId: id,
             })
           }

@@ -9,7 +9,7 @@ import ReactMarkdown from "react-markdown"
 
 
 const ProductPage = ({ product, similarProducts }) => {
-  const [selectedPrice, setSelectedPrice] = useState(product.prices[0].id)
+  const [selectedPrice, setSelectedPrice] = useState(product?.prices?.[0]?.id)
   const t = useI18n()
   const pt = useScopedI18n("products")
   console.log(product)
@@ -86,6 +86,13 @@ const ProductPage = ({ product, similarProducts }) => {
 export const getServerSideProps = async (context) => {
   const { title } = context.params
   const product = await Product.query(knexInstance).findOne({ title }).withGraphFetched("[category, prices]")
+
+  if (!product) {
+    return {
+      notFound: true,
+    }
+  }
+
   const similarProducts = await Product.query(knexInstance).select("*").where({ "categoryId": product.categoryId }).whereNot({ id: product.id }).orderBy("isTopProduct", "desc")
   const slides = similarProducts.map((pr) => ({
     titre: pr.title,
