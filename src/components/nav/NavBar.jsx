@@ -1,10 +1,11 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-lines-per-function */
+import IconProfil from "@/components/nav/ProfilIcon"
 import useNavBar from "@/hooks/useNavBar"
 import { useI18n } from "@/locales"
 import axios from "axios"
 import clsx from "clsx"
-import { Menu, ShoppingBasket, X, UserRound } from "lucide-react"
+import { Menu, ShoppingBasket, X } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { useEffect, useState } from "react"
@@ -60,9 +61,7 @@ const NavBar = () => {
                 </Link>
               </li>
               <li className="flex flex-col justify-center items-center mr-16">
-                <Link href="/profile">
-                  <UserRound className="h-8 w-8" />
-                </Link>
+                <IconProfil />
               </li>
             </>
           )}
