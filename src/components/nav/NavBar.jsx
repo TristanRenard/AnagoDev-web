@@ -39,7 +39,7 @@ const NavBar = () => {
         </Link>
         <ul className="flex">
           <li className="flex flex-col justify-center items-center mr-16">
-            <Link href="#">{t("Products")}</Link>
+            <Link href="/products">{t("Products")}</Link>
           </li>
           <li className="flex flex-col justify-center items-center mr-16">
             <Link href="#">{t("Contact")}</Link>

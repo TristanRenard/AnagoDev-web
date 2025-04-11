@@ -1,4 +1,5 @@
 import CustomVerticalCarousel from "@/components/core/CustomVerticalCarousel"
+import { Button } from "@/components/ui/button"
 import Product from "@/db/models/Product"
 import knexInstance from "@/lib/db"
 import { useI18n, useScopedI18n } from "@/locales"
@@ -7,13 +8,16 @@ import Image from "next/image"
 import { useState } from "react"
 import ReactMarkdown from "react-markdown"
 
-
 const ProductPage = ({ product, similarProducts }) => {
-  const [selectedPrice, setSelectedPrice] = useState(product.prices[0].id)
+  const [selectedPrice, setSelectedPrice] = useState(product?.prices?.[0]?.id)
   const t = useI18n()
   const pt = useScopedI18n("products")
   console.log(product)
   console.log(similarProducts)
+
+  const handleAddToCart = () => {
+    console.log(product.prices.find((price) => price.id === selectedPrice))
+  }
 
   return (
     <div className="flex flex-1 justify-center flex-col items-center">
@@ -66,9 +70,9 @@ const ProductPage = ({ product, similarProducts }) => {
                   </button>
                 ))}
               </div>
-              <button className="bg-primary text-primary-foreground rounded-md px-4 py-2 mt-6 w-full">
+              <Button onClick={handleAddToCart} className="bg-primary text-primary-foreground rounded-md px-4 py-2 mt-6 w-full">
                 Add to cart
-              </button>
+              </Button>
             </div>
           </section>
         </div>
@@ -86,6 +90,13 @@ const ProductPage = ({ product, similarProducts }) => {
 export const getServerSideProps = async (context) => {
   const { title } = context.params
   const product = await Product.query(knexInstance).findOne({ title }).withGraphFetched("[category, prices]")
+
+  if (!product) {
+    return {
+      notFound: true,
+    }
+  }
+
   const similarProducts = await Product.query(knexInstance).select("*").where({ "categoryId": product.categoryId }).whereNot({ id: product.id }).orderBy("isTopProduct", "desc")
   const slides = similarProducts.map((pr) => ({
     titre: pr.title,
