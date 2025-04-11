@@ -12,9 +12,7 @@ const IconProfil = () => {
   const t = useI18n()
   const handleLogout = async () => {
     try {
-      const res = await fetch("/api/user/login", {
-        method: "DELETE",
-      })
+      const res = axios.delete("/api/user/login")
 
       if (res.ok) {
         window.location.href = "/"
