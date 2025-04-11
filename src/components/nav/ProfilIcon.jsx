@@ -10,6 +10,21 @@ import Link from "next/link"
 
 const IconProfil = () => {
   const t = useI18n()
+  const handleLogout = async () => {
+    try {
+      const res = await fetch("/api/user/login", {
+        method: "PUT",
+      })
+
+      if (res.ok) {
+        window.location.href = "/"
+      } else {
+        console.error("Erreur lors de la déconnexion")
+      }
+    } catch (err) {
+      console.error("Erreur réseau :", err)
+    }
+  }
 
   return (
     <DropdownMenu>
@@ -20,7 +35,9 @@ const IconProfil = () => {
         <DropdownMenuItem>
           <Link href="/profile">{t("Mon profil")}</Link>
         </DropdownMenuItem>
-        <DropdownMenuItem>{t("Deconnexion")}</DropdownMenuItem>
+        <DropdownMenuItem>
+          <button onClick={handleLogout}>{t("Deconnexion")}</button>
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   )
