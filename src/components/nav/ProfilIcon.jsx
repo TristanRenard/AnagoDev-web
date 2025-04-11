@@ -13,9 +13,10 @@ const IconProfil = () => {
   const t = useI18n()
   const handleLogout = async () => {
     try {
-      const res = axios.delete("/api/user/login")
+      const res = await axios.delete("/api/user/login")
+      console.log(res)
 
-      if (res.ok) {
+      if (res.statusText === "OK") {
         window.location.href = "/"
       } else {
         console.error("Erreur lors de la déconnexion")
