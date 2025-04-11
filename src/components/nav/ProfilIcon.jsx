@@ -13,7 +13,7 @@ const IconProfil = () => {
   const handleLogout = async () => {
     try {
       const res = await fetch("/api/user/login", {
-        method: "PUT",
+        method: "DELETE",
       })
 
       if (res.ok) {

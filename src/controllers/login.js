@@ -2,7 +2,7 @@ import login from "@/utils/user/login"
 import cookie from "cookie"
 
 const loginController = async (req, res) => {
-  if (req.method === "PUT") {
+  if (req.method === "DELETE") {
     res.setHeader(
       "Set-Cookie",
       cookie.serialize("token", "", {
