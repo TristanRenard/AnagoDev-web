@@ -3,8 +3,8 @@ services:
     build:
       context: .
       dockerfile: ./docker/production/Dockerfile
-    container_name: nextjs
-    restart: always
+    container_name: anago
+    restart: on-failure
     environment:
       NODE_ENV: production
       STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
@@ -13,9 +13,7 @@ services:
       EMAIL_USER: ${EMAIL_USER}
       EMAIL_PASSWORD: ${EMAIL_PASSWORD}
       EMAIL_SECURE: ${EMAIL_SECURE}
-      TWILIO_ACCOUNT_SID: ${TWILIO_ACCOUNT_SID}
-      TWILIO_AUTH_TOKEN: ${TWILIO_AUTH_TOKEN}
-      TWILIO_PHONE_NUMBER: ${TWILIO_PHONE_NUMBER}
+      JWT_SECRET: ${JWT_SECRET}
       DB_HOST: postgres
       DB_PORT: ${DB_PORT}
       DB_USER: ${DB_USER}
@@ -26,6 +24,14 @@ services:
       API_KEY: ${API_KEY}
       DEEPL_API_KEY: ${DEEPL_API_KEY}
       HOST_NAME: ${HOST_NAME}
+      UMAMI_HOST: ${UMAMI_HOST}
+      NEXT_PUBLIC_UMAMI_SCRIPT: ${NEXT_PUBLIC_UMAMI_SCRIPT}
+      NEXT_PUBLIC_UMAMI_WEBSITE_ID: ${NEXT_PUBLIC_UMAMI_WEBSITE_ID}
+      MINIO_HOST: ${MINIO_HOST}
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      MINIO_PORT: ${MINIO_PORT}
+      MINIO_BUCKET: ${MINIO_BUCKET}
 
     ports:
       - "3000:3000" # Next.js tourne sur le port 3000

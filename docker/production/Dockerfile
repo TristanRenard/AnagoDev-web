@@ -43,7 +43,7 @@ ENV NODE_ENV=production
 
 # Ajout d'un utilisateur non-root
 RUN addgroup --system --gid 1001 nodejs \
- && adduser --system --uid 1001 nextjs
+  && adduser --system --uid 1001 nextjs
 
 # Copier les fichiers nécessaires depuis le build
 COPY --from=builder /app/.next/standalone ./

@@ -16,11 +16,8 @@ class Category extends Model {
         title: { type: "string" },
         description: { type: "string" },
         images: {
-          type: "object",
-          patternProperties: {
-            "^[0-9]+$": { type: "string", format: "uri" }
-          },
-          additionalProperties: false
+          type: "array",
+          items: { type: "string" }
         },
         order: { type: "integer" }
       }

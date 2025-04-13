@@ -3,8 +3,8 @@ services:
     build:
       context: .
       dockerfile: ./docker/staging/Dockerfile
-    container_name: nextjs
-    restart: always
+    container_name: anago
+    restart: on-failure
     environment:
       NODE_ENV: production
     ports:

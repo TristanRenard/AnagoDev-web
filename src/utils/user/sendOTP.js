@@ -5,10 +5,14 @@ import mailFormater from "@/utils/mail/mailFormater"
 import { sendOTPMailTemplate } from "@/utils/mail/mailTemplates"
 import sendEmail from "@/utils/mail/sendMail"
 import generateOTP from "@/utils/user/generateOTP"
-import { track } from "@vercel/analytics/server"
+import umami from "@umami/node"
 
 const sendOTP = async (email, phonenb) => {
   const codeOTP = generateOTP()
+  umami.init({
+    hostUrl: process.env.UMAMI_HOST,
+    websiteId: process.env.UMAMI_WEBSITE_ID,
+  })
 
   if (email) {
     const user = await User.query(knexInstance).findOne({ email })
@@ -33,7 +37,7 @@ const sendOTP = async (email, phonenb) => {
           return { message: "OTP envoyé à votre email.", code: codeOTP }
         }
 
-        track("emailSent", { email })
+        umami.track("emailSent", { email })
       } catch (error) {
         // eslint-disable-next-line no-console
         console.error(error)
@@ -56,7 +60,7 @@ const sendOTP = async (email, phonenb) => {
         }
       }
 
-      track("emailSent", { email })
+      umami.track("emailSent", { email })
 
       await sendEmail(
         email,

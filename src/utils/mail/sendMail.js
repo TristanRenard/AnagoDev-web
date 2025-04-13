@@ -1,4 +1,5 @@
-import { track } from "@vercel/analytics/server"
+
+import umami from "@umami/node"
 import nodemailer from "nodemailer"
 
 /**
@@ -8,6 +9,10 @@ import nodemailer from "nodemailer"
  * @param {string} body - Le contenu HTML de l'email
  */
 const sendEmail = async (email, subject, body) => {
+  umami.init({
+    hostUrl: process.env.UMAMI_HOST,
+    websiteId: process.env.UMAMI_WEBSITE_ID,
+  })
   const transporter = nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
     port: process.env.EMAIL_PORT,
@@ -24,7 +29,7 @@ const sendEmail = async (email, subject, body) => {
     text: body,
     html: body,
   }
-  track("sendEmail", {
+  umami.track("sendEmail", {
     to: email,
     subject,
     body,

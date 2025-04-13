@@ -1,5 +1,6 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-lines-per-function */
+import IconProfil from "@/components/nav/ProfilIcon"
 import useNavBar from "@/hooks/useNavBar"
 import { useI18n } from "@/locales"
 import axios from "axios"
@@ -37,36 +38,44 @@ const NavBar = () => {
 
   return (
     <>
-      <nav className="hidden md:flex text-white font-black text-xl justify-between bg-gradient-to-r from-[#420A8F] to-[#240198] p-4">
+      <nav className="hidden md:flex font-black text-xl p-4">
         <Link href="/">
           <Image
-            className="h-12 w-auto hidden lg:block "
-            src="/logo.png"
-            alt="logo"
-            height={358}
-            width={1080}
-          />
-          <Image
-            className="h-12 w-12 aspect-square lg:hidden block object-scale-down"
-            src="/logo-r.png"
+            className="h-12 w-auto mr-16"
+            src="/cyna_icone_purple.png"
             alt="logo"
             height={358}
             width={1080}
           />
         </Link>
-        <ul className="flex gap-8 md:gap-16">
-          <li className="flex flex-col justify-center items-center">
-            <Link href="#">{t("Our services")}</Link>
+        <ul className="flex">
+          <li className="flex flex-col justify-center items-center mr-16">
+            <Link href="/products">{t("Products")}</Link>
           </li>
-          <li className="flex flex-col justify-center items-center">
-            <Link href="#">{t("Case studies")}</Link>
+          <li className="flex flex-col justify-center items-center mr-16">
+            <Link href="#">{t("Contact")}</Link>
           </li>
-          <li className="flex flex-col justify-center items-center">
-            <Link href="#">{t("Blog")}</Link>
-          </li>
-          <li className="flex flex-col justify-center items-center">
-            <Link href="#">{t("About us")}</Link>
-          </li>
+          {!connected ? (
+            <>
+              <li className="flex flex-col justify-center items-center mr-16">
+                <Link href="/auth/login">{t("Login")}</Link>
+              </li>
+              <li className="flex flex-col justify-center items-center mr-16">
+                <Link href="/auth/register">{t("Register")}</Link>
+              </li>
+            </>
+          ) : (
+            <>
+              <li className="flex flex-col justify-center items-center mr-16">
+                <Link href="/cart">
+                  <ShoppingBasket className="h-8 w-8" />
+                </Link>
+              </li>
+              <li className="flex flex-col justify-center items-center mr-16">
+                <IconProfil />
+              </li>
+            </>
+          )}
         </ul>
         {!connected ? (
           <ul className="flex gap-4 md:gap-8">
@@ -93,7 +102,7 @@ const NavBar = () => {
           </ul>
         )}
       </nav>
-      <nav className="md:hidden flex text-white font-black text-xl flex-col bg-gradient-to-r from-[#420A8F] to-[#240198] p-4">
+      <nav className="md:hidden flex font-black text-xl flex-col p-4">
         <div className="flex justify-between">
           <Link
             onClick={() => {
@@ -117,13 +126,13 @@ const NavBar = () => {
             }}
             className="flex flex-col justify-center items-center"
           >
-            {isNavBarOpen ? <X size={32} /> : <Menu size={32} />}
+            {isNavBarOpen ? <X /> : <Menu />}
           </button>
         </div>
 
         <ul
           className={clsx(
-            "flex flex-col justify-around fixed top-0 left-0 gap-4 px-8 bg-gradient-to-r from-[#420A8F] to-[#240198] w-screen h-screen z-50 md:hidden",
+            "flex flex-col justify-around fixed top-0 left-0 gap-4 px-8 w-screen h-screen z-50 md:hidden",
             isNavBarOpen ? "flex" : "hidden",
           )}
         >
@@ -136,7 +145,7 @@ const NavBar = () => {
               }}
               className="flex flex-col justify-center items-center p-4 fixed right-2 top-3"
             >
-              <X size={32} />
+              <X />
             </button>
           </li>
           <li className="flex flex-col justify-center items-center p-4">
@@ -191,6 +200,10 @@ const NavBar = () => {
             <ul className="flex gap-4 md:gap-8 justify-around mb-24">
               <li className="flex flex-col justify-center items-center">
                 <Link
+                  data-umami-event="Login"
+                  data-umami-event-type="click"
+                  data-umami-event-name="Login"
+                  data-umami-event-value="Login"
                   onClick={() => {
                     if (isNavBarOpen) {
                       toggleNavBar()
@@ -203,6 +216,10 @@ const NavBar = () => {
               </li>
               <li className="flex flex-col justify-center items-center">
                 <Link
+                  data-umami-event="Register"
+                  data-umami-event-type="click"
+                  data-umami-event-name="Register"
+                  data-umami-event-value="Register"
                   onClick={() => {
                     if (isNavBarOpen) {
                       toggleNavBar()
@@ -218,6 +235,10 @@ const NavBar = () => {
             <ul className="flex gap-8 justify-around mb-24">
               <li className="flex flex-col justify-center items-center">
                 <Link
+                  data-umami-event="Cart"
+                  data-umami-event-type="click"
+                  data-umami-event-name="Cart"
+                  data-umami-event-value="Cart"
                   onClick={() => {
                     if (isNavBarOpen) {
                       toggleNavBar()
@@ -237,11 +258,15 @@ const NavBar = () => {
                   }}
                   href="/cart"
                 >
-                  <ShoppingBasket size={24} />
+                  <ShoppingBasket />
                 </Link>
               </li>
               <li className="flex flex-col justify-center items-center">
                 <Link
+                  data-umami-event="Logout"
+                  data-umami-event-type="click"
+                  data-umami-event-name="Logout"
+                  data-umami-event-value="Logout"
                   onClick={() => {
                     if (isNavBarOpen) {
                       toggleNavBar()
