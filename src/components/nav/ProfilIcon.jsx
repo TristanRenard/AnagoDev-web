@@ -14,7 +14,6 @@ const IconProfil = () => {
   const handleLogout = async () => {
     try {
       const res = await axios.delete("/api/user/login")
-      console.log(res)
 
       if (res.statusText === "OK") {
         window.location.href = "/"
