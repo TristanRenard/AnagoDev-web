@@ -1,9 +1,8 @@
 
 // You can use this code in a separate component that's imported in your pages.
-import React from "react"
-const { MDXEditor, codeBlockPlugin, headingsPlugin, listsPlugin, linkPlugin, quotePlugin, markdownShortcutPlugin } = await import("@mdxeditor/editor")
-import "@mdxeditor/editor/style.css"
 import { AdmonitionDirectiveDescriptor, BoldItalicUnderlineToggles, codeMirrorPlugin, diffSourcePlugin, directivesPlugin, frontmatterPlugin, imagePlugin, InsertTable, InsertThematicBreak, linkDialogPlugin, ListsToggle, Separator, StrikeThroughSupSubToggles, tablePlugin, thematicBreakPlugin, toolbarPlugin, UndoRedo } from "@mdxeditor/editor"
+import "@mdxeditor/editor/style.css"
+const { MDXEditor, codeBlockPlugin, headingsPlugin, listsPlugin, linkPlugin, quotePlugin, markdownShortcutPlugin } = await import("@mdxeditor/editor")
 
 export const YoutubeDirectiveDescriptor = {
   name: "youtube",
@@ -36,7 +35,7 @@ export const YoutubeDirectiveDescriptor = {
     </div>
   )
 }
-const Editor = (props) => <div className="w-full h-full p-2 border rounded-md">
+const Editor = (props) => <div className="w-full h-full overflow-scroll p-2 border rounded-md">
   <MDXEditor
     {...props}
     plugins={[

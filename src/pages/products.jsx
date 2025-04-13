@@ -9,6 +9,7 @@ import { ArrowLeft, ArrowRight } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { useState } from "react"
+import ReactMarkdown from "react-markdown"
 
 
 const ProductsPage = ({ categories, products }) => {
@@ -63,7 +64,7 @@ const ProductsPage = ({ categories, products }) => {
         <section className="w-5/6 pl-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {
             products.filter((product) => selectedCategories.includes(product.categoryId)).map((product) => (
-              <div key={product.id} className="border p-4 mb-4 rounded-lg col-span-1">
+              <div key={product.id} className="border p-4 mb-4 rounded-lg col-span-1 h-[500px] flex flex-col">
 
                 <div className="mb-2 relative">
                   {product.images && product.images.length > 0 && (
@@ -116,8 +117,10 @@ const ProductsPage = ({ categories, products }) => {
                 <h3 className="text-xl font-bold mb-2">
                   {product.title}
                 </h3>
-                <p className="text-gray-600 mb-4">
-                  {product.description}
+                <p className="text-gray-600 mb-4  overflow-hidden text-ellipsis">
+                  <ReactMarkdown>
+                    {product.description}
+                  </ReactMarkdown>
                 </p>
                 <div className="flex flex-col gap-2">
                   <span className="text-lg font-semibold">
