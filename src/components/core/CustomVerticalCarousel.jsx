@@ -1,4 +1,8 @@
-import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel"
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+} from "@/components/ui/carousel"
 import { ArrowLeft, ArrowRight } from "lucide-react"
 import Image from "next/image"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
@@ -8,7 +12,11 @@ const slideTest = [
   {
     titre: "Titre 1",
     text: "Lorem ipsum dolor sit amet consectetur. Nulla egestas fringilla tincidunt maecenas in mauris quis arcu. ",
-    img: ["https://tse2.mm.bing.net/th?id=OIP.3EUlVP8Kj7LJqpPg3ARRwwHaE8&pid=Api", "https://tse2.mm.bing.net/th?id=OIP.1XSv8DcyMLXx8lYwXd6-1QHaEo&pid=Api", "https://tse3.mm.bing.net/th?id=OIP.lwwQeVivLFPnoCQ9PqDxpQHaEK&pid=Api"],
+    img: [
+      "https://tse2.mm.bing.net/th?id=OIP.3EUlVP8Kj7LJqpPg3ARRwwHaE8&pid=Api",
+      "https://tse2.mm.bing.net/th?id=OIP.1XSv8DcyMLXx8lYwXd6-1QHaEo&pid=Api",
+      "https://tse3.mm.bing.net/th?id=OIP.lwwQeVivLFPnoCQ9PqDxpQHaEK&pid=Api",
+    ],
     cta: "https://tse2.mm.bing.net/th?id=OIP.3EUlVP8Kj7LJqpPg3ARRwwHaE8&pid=Api",
     textCta: "Voir la photo",
   },
@@ -50,10 +58,11 @@ const slideTest = [
 ]
 const CustomVerticalCarousel = ({ slides = slideTest }) => {
   const multiImageApisRef = useRef({})
+  const slidesContainerRef = useRef(null)
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isMobile, setIsMobile] = useState(false)
-  const [slideDirection, setSlideDirection] = useState("none")
   const [isAnimating, setIsAnimating] = useState(false)
+  const [transitionEnabled, setTransitionEnabled] = useState(true)
   const checkMobile = useCallback(() => {
     const mobile = window.innerWidth < 768
 
@@ -66,161 +75,151 @@ const CustomVerticalCarousel = ({ slides = slideTest }) => {
   useEffect(() => {
     if (typeof window !== "undefined") {
       checkMobile()
-
-
       window.addEventListener("resize", checkMobile)
-
 
       return () => window.removeEventListener("resize", checkMobile)
     }
   }, [checkMobile])
 
-
-  const getSlideWidthClass = useMemo(() => {
-    if (isMobile) { return "w-full" }
-
-    switch (Math.min(slides.length, 3)) {
-      default:
-        return "w-1/3"
-    }
-  }, [slides.length, isMobile])
+  const slideWidth = useMemo(() => (isMobile ? 100 : 33.33), [isMobile])
+  const visibleSlides = useMemo(
+    () => (isMobile ? 1 : Math.min(slides.length, 3)),
+    [isMobile, slides.length],
+  )
   const carouselConfig = useMemo(() => {
-    const visibleSlides = isMobile ? 1 : Math.min(slides.length, 3)
     const maxIndex = Math.max(0, slides.length - 1)
     const isCarouselEnabled = slides.length > visibleSlides
 
     return {
       visibleSlides,
       maxIndex,
-      isCarouselEnabled
+      isCarouselEnabled,
     }
-  }, [slides.length, isMobile])
+  }, [slides.length, visibleSlides])
+  const getOrderedSlides = useCallback(() => {
+    if (slides.length <= visibleSlides) {
+      return slides
+    }
+
+    const orderedSlides = []
+
+    for (let i = slides.length - visibleSlides; i < slides.length; i++) {
+      orderedSlides.push(slides[i])
+    }
+
+    orderedSlides.push(...slides)
+
+    for (let i = 0; i < visibleSlides; i++) {
+      orderedSlides.push(slides[i])
+    }
+
+    return orderedSlides
+  }, [slides, visibleSlides])
+  const orderedSlides = useMemo(() => getOrderedSlides(), [getOrderedSlides])
+  const getTransformValue = useCallback(() => {
+    const startOffset = visibleSlides * slideWidth
+
+    return -(startOffset + currentIndex * slideWidth)
+  }, [currentIndex, slideWidth, visibleSlides])
   const nextSlide = useCallback(() => {
-    if (!carouselConfig.isCarouselEnabled || isAnimating) { return }
+    if (!carouselConfig.isCarouselEnabled || isAnimating) {
+      return
+    }
 
     setIsAnimating(true)
-    setSlideDirection("left")
 
-    setTimeout(() => {
-      setCurrentIndex((prevIndex) => {
-        if (prevIndex >= slides.length - 1) {
-          return 0
-        }
-
-
-        return prevIndex + 1
-      })
-
+    if (currentIndex >= slides.length - 1) {
+      setCurrentIndex(slides.length - 1)
 
       setTimeout(() => {
-        setSlideDirection("none")
+        setTransitionEnabled(false)
+        setCurrentIndex(-1)
+
+        setTimeout(() => {
+          setTransitionEnabled(true)
+          setCurrentIndex(0)
+          setIsAnimating(false)
+        }, 50)
+      }, 300)
+    } else {
+      setCurrentIndex((prev) => prev + 1)
+      setTimeout(() => {
         setIsAnimating(false)
-      }, 50)
-    }, 300)
-  }, [carouselConfig.isCarouselEnabled, slides.length, isAnimating])
+      }, 300)
+    }
+  }, [
+    carouselConfig.isCarouselEnabled,
+    currentIndex,
+    slides.length,
+    isAnimating,
+  ])
   const prevSlide = useCallback(() => {
-    if (!carouselConfig.isCarouselEnabled || isAnimating) { return }
+    if (!carouselConfig.isCarouselEnabled || isAnimating) {
+      return
+    }
 
     setIsAnimating(true)
-    setSlideDirection("right")
 
-    setTimeout(() => {
-      setCurrentIndex((prevIndex) => {
-        if (prevIndex <= 0) {
-          return slides.length - 1
-        }
-
-
-        return prevIndex - 1
-      })
-
+    if (currentIndex <= 0) {
+      setCurrentIndex(0)
 
       setTimeout(() => {
-        setSlideDirection("none")
+        setTransitionEnabled(false)
+        setCurrentIndex(slides.length)
+
+        setTimeout(() => {
+          setTransitionEnabled(true)
+          setCurrentIndex(slides.length - 1)
+          setIsAnimating(false)
+        }, 50)
+      }, 300)
+    } else {
+      setCurrentIndex((prev) => prev - 1)
+      setTimeout(() => {
         setIsAnimating(false)
-      }, 50)
-    }, 300)
-  }, [carouselConfig.isCarouselEnabled, slides.length, isAnimating])
-  const visibleIndices = useMemo(() => {
-    if (isMobile) {
-      return [currentIndex]
+      }, 300)
     }
-
-
-    if (slides.length <= 3) {
-      return Array.from({ length: slides.length }, (_, i) => i)
-    }
-
-
-    const indices = [currentIndex]
-    for (let i = 1; i < 3; i++) {
-      const nextIndex = (currentIndex + i) % slides.length
-      indices.push(nextIndex)
-    }
-
-    return indices
-  }, [currentIndex, isMobile, slides.length])
-  const progressPercentage = carouselConfig.maxIndex > 0
-    ? (currentIndex / carouselConfig.maxIndex) * 100
-    : 100
+  }, [
+    carouselConfig.isCarouselEnabled,
+    currentIndex,
+    slides.length,
+    isAnimating,
+  ])
+  const progressPercentage =
+    carouselConfig.maxIndex > 0
+      ? (currentIndex / carouselConfig.maxIndex) * 100
+      : 100
   const setApiForIndex = useCallback((api, index) => {
     if (api) {
       multiImageApisRef.current[index] = api
     }
   }, [])
-  const getAnimationClasses = useCallback(() => {
-    switch (slideDirection) {
-      case "left":
-        return "animate-slide-left"
-
-      case "right":
-        return "animate-slide-right"
-
-      default:
-        return ""
-    }
-  }, [slideDirection])
 
   return (
     <div className="relative w-full">
-      {/* Styles pour les animations */}
-      {/* eslint-disable-next-line react/no-unknown-property */}
-      <style jsx global>{`
-        @keyframes slideLeft {
-          0% { opacity: 0; transform: translateX(30px); }
-          100% { opacity: 1; transform: translateX(0); }
-        }
-        @keyframes slideRight {
-          0% { opacity: 0; transform: translateX(-30px); }
-          100% { opacity: 1; transform: translateX(0); }
-        }
-        .animate-slide-left {
-          animation: slideLeft 0.3s ease-out forwards;
-        }
-        .animate-slide-right {
-          animation: slideRight 0.3s ease-out forwards;
-        }
-      `}</style>
-
-      {/* Conteneur principal strict avec overflow caché */}
+      {/* Conteneur principal avec overflow caché */}
       <div className="overflow-hidden rounded-2xl">
-        {/* Conteneur de slides avec justification automatique */}
+        {/* Conteneur de slides avec animation de transition */}
         <div
-          className={`flex ${getAnimationClasses()}`}
+          ref={slidesContainerRef}
+          className="flex"
           style={{
-            justifyContent: "flex-start"
+            transform: `translateX(${getTransformValue()}%)`,
+            transition: transitionEnabled
+              ? "transform 300ms ease-in-out"
+              : "none",
           }}
         >
-          {visibleIndices.map((slideIndex) => {
-            const slide = slides[slideIndex]
-
+          {orderedSlides.map((slide, index) => {
+            const uniqueKey = `slide-${index}`
 
             return (
               <div
-                key={`visible-${slideIndex}`}
-                className={`flex-none ${getSlideWidthClass} h-[30rem] p-4 box-border`}
+                key={uniqueKey}
+                className="flex-none h-[30rem] p-4 box-border"
+                style={{ width: `${slideWidth}%` }}
               >
-                {/* Carte avec conteneur strict pour éviter les débordements */}
+                {/* Carte avec conteneur pour éviter les débordements */}
                 <div className="flex flex-col h-full rounded-2xl bg-cyna-purple-grey overflow-hidden">
                   {/* Conteneur d'image avec hauteur fixe et overflow hidden */}
                   <div className="h-[40%] w-full overflow-hidden">
@@ -238,12 +237,15 @@ const CustomVerticalCarousel = ({ slides = slideTest }) => {
                     ) : (
                       <Carousel
                         opts={{ loop: true }}
-                        setApi={(api) => setApiForIndex(api, slideIndex)}
-                        className="w-full h-full overflow-hidden"
+                        setApi={(api) => setApiForIndex(api, index)}
+                        className={`w-full h-full overflow-hidden`}
                       >
                         <CarouselContent className="h-full">
                           {slide.img.map((image, k) => (
-                            <CarouselItem key={k} className="h-full overflow-hidden">
+                            <CarouselItem
+                              key={k}
+                              className="h-full overflow-hidden"
+                            >
                               <div className="relative h-full w-full overflow-hidden">
                                 <Image
                                   src={image}
@@ -251,7 +253,10 @@ const CustomVerticalCarousel = ({ slides = slideTest }) => {
                                   width={400}
                                   height={300}
                                   className="object-cover object-center w-full h-full"
-                                  style={{ maxWidth: "100%", maxHeight: "100%" }}
+                                  style={{
+                                    maxWidth: "100%",
+                                    maxHeight: "100%",
+                                  }}
                                 />
                               </div>
                             </CarouselItem>
@@ -262,9 +267,11 @@ const CustomVerticalCarousel = ({ slides = slideTest }) => {
                           <button
                             onClick={(e) => {
                               e.stopPropagation()
-                              const api = multiImageApisRef.current[slideIndex]
+                              const api = multiImageApisRef.current[index]
 
-                              if (api) { api.scrollPrev() }
+                              if (api) {
+                                api.scrollPrev()
+                              }
                             }}
                             className="bg-white rounded-full p-1 backdrop-blur-sm pointer-events-auto"
                             aria-label="Image précédente"
@@ -274,9 +281,11 @@ const CustomVerticalCarousel = ({ slides = slideTest }) => {
                           <button
                             onClick={(e) => {
                               e.stopPropagation()
-                              const api = multiImageApisRef.current[slideIndex]
+                              const api = multiImageApisRef.current[index]
 
-                              if (api) { api.scrollNext() }
+                              if (api) {
+                                api.scrollNext()
+                              }
                             }}
                             className="bg-white rounded-full p-1 backdrop-blur-sm pointer-events-auto"
                             aria-label="Image suivante"
@@ -290,11 +299,11 @@ const CustomVerticalCarousel = ({ slides = slideTest }) => {
 
                   {/* Section de contenu */}
                   <div className="flex-1 flex flex-col p-4 overflow-hidden">
-                    <h3 className="text-2xl font-bold truncate">{slide.titre}</h3>
+                    <h3 className="text-2xl font-bold truncate">
+                      {slide.titre}
+                    </h3>
                     <p className="text-lg mb-4 flex-1 overflow-y-auto">
-                      <ReactMarkdown>
-                        {slide.text}
-                      </ReactMarkdown>
+                      <ReactMarkdown>{slide.text}</ReactMarkdown>
                     </p>
                     {slide.cta && slide.textCta && (
                       <a
@@ -312,14 +321,16 @@ const CustomVerticalCarousel = ({ slides = slideTest }) => {
         </div>
       </div>
 
-      {/* Contrôles de navigation - n'apparaissent que si le carousel est activé et s'il y a plus de 3 slides */}
+      {/* Contrôles de navigation */}
       {carouselConfig.isCarouselEnabled && (
         <div className="relative flex justify-end gap-2 items-center p-2 mt-2">
           <button
             onClick={prevSlide}
-            className={`p-3 rounded-full transition-all duration-300 ${isAnimating
-              ? "bg-cyna-purple-grey/50 cursor-not-allowed"
-              : "bg-cyna-purple-grey hover:bg-cyna-purple-grey/90"}`}
+            className={`p-3 rounded-full transition-all duration-300 ${
+              isAnimating
+                ? "bg-cyna-purple-grey/50 cursor-not-allowed"
+                : "bg-cyna-purple-grey hover:bg-cyna-purple-grey/90"
+            }`}
             disabled={isAnimating}
           >
             <Image
@@ -343,9 +354,11 @@ const CustomVerticalCarousel = ({ slides = slideTest }) => {
           </div>
           <button
             onClick={nextSlide}
-            className={`p-3 rounded-full transition-all duration-300 ${isAnimating
-              ? "bg-cyna-purple-grey/50 cursor-not-allowed"
-              : "bg-cyna-purple-grey hover:bg-cyna-purple-grey/90"}`}
+            className={`p-3 rounded-full transition-all duration-300 ${
+              isAnimating
+                ? "bg-cyna-purple-grey/50 cursor-not-allowed"
+                : "bg-cyna-purple-grey hover:bg-cyna-purple-grey/90"
+            }`}
             disabled={isAnimating}
           >
             <Image
