@@ -9,9 +9,9 @@ exports.up = (knex) => knex.schema.createTable("orders", (table) => {
 
   table.integer("userId").unsigned().notNullable()
   table.foreign("userId").references("users.id").onDelete("CASCADE")
-  table.integer("addressId").unsigned().notNullable()
+  table.integer("addressId").unsigned()
   table.foreign("addressId").references("addresses.id").onDelete("CASCADE")
-  table.integer("paymentMethodId").unsigned().notNullable()
+  table.integer("paymentMethodId").unsigned()
   table.foreign("paymentMethodId").references("paymentMethods.id").onDelete("CASCADE")
 })
 

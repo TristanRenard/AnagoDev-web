@@ -1,13 +1,12 @@
 /* eslint-disable camelcase */
 /* eslint-disable max-lines-per-function */
 /* eslint-disable no-unused-vars */
+import Order from "@/db/models/Order"
+import OrderProduct from "@/db/models/OrderProduct"
+import Product from "@/db/models/Product"
 import knexInstance from "@/lib/db"
 import { stripe } from "@/lib/stripe"
 import cookie from "cookie"
-import Order from "@/db/models/Order"
-import { User } from "lucide-react"
-import OrderProduct from "@/db/models/OrderProduct"
-import Product from "@/db/models/Product"
 
 const handler = async (req, res) => {
   const { "x-user-data": userData } = req.headers
@@ -119,8 +118,6 @@ const handler = async (req, res) => {
       order = await Order.query(knexInstance).insert({
         status: "inProgress",
         userId: user.id,
-        addressId: 1,
-        paymentMethodId: 1,
       })
 
       await OrderProduct.query(knexInstance).insert({
