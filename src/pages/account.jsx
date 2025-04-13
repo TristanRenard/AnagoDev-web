@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import { useI18n } from "@/locales"
 import axios from "axios"
 import { useQuery } from "@tanstack/react-query"
@@ -93,6 +94,7 @@ const Account = () => {
   )
 }
 const Row = ({ title, value, field }) => {
+  const t = useI18n()
   const [isEditing, setIsEditing] = useState(false)
   const [editedValue, setEditedValue] = useState(value)
   const saveModification = async () => {
@@ -103,12 +105,14 @@ const Row = ({ title, value, field }) => {
   }
 
   return (
-    <tr>
-      <th className="text-left w-48">{title}</th>
-      <td className="text-left w-96">
-        {isEditing
-          ? field !== "email" &&
-            (field === "phone" ? (
+    <tr className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
+      <th className="py-4 px-6 text-left text-sm font-bold text-gray-700 w-48">
+        {title}
+      </th>
+      <td className="py-4 px-6 text-left text-sm text-gray-900 w-96">
+        {isEditing && field !== "email" ? (
+          field === "phone" ? (
+            <div className="relative">
               <PhoneInput
                 value={editedValue}
                 onChange={(newValue) => {
@@ -116,19 +120,24 @@ const Row = ({ title, value, field }) => {
                     setEditedValue(newValue)
                   }
                 }}
+                className="w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
-            ) : (
-              <input
-                type="text"
-                value={editedValue}
-                onChange={(e) => setEditedValue(e.target.value)}
-                className="border rounded p-1"
-              />
-            ))
-          : editedValue}
+            </div>
+          ) : (
+            <input
+              type="text"
+              value={editedValue}
+              onChange={(e) => setEditedValue(e.target.value)}
+              className="w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              autoFocus
+            />
+          )
+        ) : (
+          <span className="inline-block py-1">{editedValue}</span>
+        )}
       </td>
       {field !== "email" && (
-        <td>
+        <td className="py-4 px-6 text-right">
           <Button
             onClick={() => {
               setIsEditing(!isEditing)
@@ -137,8 +146,19 @@ const Row = ({ title, value, field }) => {
                 saveModification()
               }
             }}
+            className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+              isEditing && "bg-green-600 hover:bg-green-500 text-white"
+            }`}
           >
-            {isEditing ? "Save" : "Edit"}
+            {isEditing ? (
+              <span className="flex items-center gap-2">
+                <span>{t("Save")}</span>
+              </span>
+            ) : (
+              <span className="flex items-center gap-2">
+                <span>{t("Modify")}</span>
+              </span>
+            )}
           </Button>
         </td>
       )}
