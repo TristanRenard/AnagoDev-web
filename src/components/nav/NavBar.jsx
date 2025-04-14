@@ -77,30 +77,6 @@ const NavBar = () => {
             </>
           )}
         </ul>
-        {!connected ? (
-          <ul className="flex gap-4 md:gap-8">
-            <li className="flex flex-col justify-center items-center">
-              <Link href="/auth/login">{t("Login")}</Link>
-            </li>
-            <li className="flex flex-col justify-center items-center">
-              <Link href="/auth/register">{t("Inscription")}</Link>
-            </li>
-          </ul>
-        ) : (
-          <ul className="flex gap-8">
-            <li className="flex flex-col justify-center items-center">
-              <Link href={`/account/${userId}`}>{t("My account")}</Link>
-            </li>
-            <li className="flex flex-col justify-center items-center">
-              <Link href="/cart">
-                <ShoppingBasket size={24} />
-              </Link>
-            </li>
-            <li className="flex flex-col justify-center items-center">
-              <Link href="/auth/logout">{t("Logout")}</Link>
-            </li>
-          </ul>
-        )}
       </nav>
       <nav className="md:hidden flex font-black text-xl flex-col p-4">
         <div className="flex justify-between">

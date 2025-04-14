@@ -17,7 +17,7 @@ import { useState } from "react"
 import { useRouter } from "next/router"
 import { PhoneInput } from "@/components/ui/phone-input"
 
-const Account = () => {
+const Profile = () => {
   const t = useI18n()
   const router = useRouter()
   const { toast } = useToast()
@@ -68,6 +68,22 @@ const Account = () => {
           <Row title={t("Last name")} value={user.lastName} field="lastName" />
           <Row title={t("Email")} value={user.email} field="email" />
           <Row title={t("Phone number")} value={user.phone} field="phone" />
+          <Row title={t("Street")} value={user.street} field="street" />
+          <Row title={t("City")} value={user.city} field="city" />
+          <Row title={t("State")} value={user.state} field="state" />
+          <Row title={t("Zip")} value={user.zip} field="zip" />
+          <Row title={t("Country")} value={user.country} field="country" />
+          <Row
+            title={t("Complement")}
+            value={user.complement}
+            field="complement"
+          />
+          <Row title={t("Name")} value={user.name} field="name" />
+          <Row
+            title={t("Is default")}
+            value={user.isDefault}
+            field="isDefault"
+          />
         </tbody>
       </table>
       <Dialog>
@@ -106,10 +122,10 @@ const Row = ({ title, value, field }) => {
 
   return (
     <tr className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-      <th className="py-4 px-6 text-left text-sm font-bold text-gray-700 w-48">
+      <th className="py-2 px-4 text-left text-sm font-bold text-gray-700 w-48">
         {title}
       </th>
-      <td className="py-4 px-6 text-left text-sm text-gray-900 w-96">
+      <td className="py-2 px-4 text-left text-sm text-gray-900 w-96">
         {isEditing && field !== "email" ? (
           field === "phone" ? (
             <div className="relative">
@@ -137,7 +153,7 @@ const Row = ({ title, value, field }) => {
         )}
       </td>
       {field !== "email" && (
-        <td className="py-4 px-6 text-right">
+        <td className="py-2 px-4 text-right">
           <Button
             onClick={() => {
               setIsEditing(!isEditing)
@@ -166,4 +182,4 @@ const Row = ({ title, value, field }) => {
   )
 }
 
-export default Account
+export default Profile
