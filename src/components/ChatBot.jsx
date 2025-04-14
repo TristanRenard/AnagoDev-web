@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import axios from "axios"
 import { AlertTriangle, Clock, ExternalLink, MessageSquare, MessagesSquare, PlusCircle, Send, X } from "lucide-react"
 import Link from "next/link"
+import { useRouter } from "next/router"
 import { useEffect, useRef, useState } from "react"
 import ReactMarkdown from "react-markdown"
 
@@ -24,6 +25,7 @@ const ChatBot = () => {
   const messagesContainerRef = useRef(null)
   const [showConversationsList, setShowConversationsList] = useState(false)
   const t = useI18n()
+  const router = useRouter()
   // Queries
   const { data: authData } = useQuery({
     queryKey: ["auth"],
@@ -55,14 +57,19 @@ const ChatBot = () => {
       // eslint-disable-next-line init-declarations
       let parsedResponse
 
-      try {
-        parsedResponse = JSON.parse(assistantResponse)
-      } catch (error) {
-        console.error("Error parsing JSON response:", error)
-        // Fallback to raw response
-        parsedResponse = {
-          event: "message",
-          message: assistantResponse
+      // Vérifier si assistantResponse est déjà un objet
+      if (typeof assistantResponse === "object" && assistantResponse !== null) {
+        parsedResponse = assistantResponse
+      } else {
+        try {
+          parsedResponse = JSON.parse(assistantResponse)
+        } catch (error) {
+          console.error("Error parsing JSON response:", error)
+          // Fallback to raw response
+          parsedResponse = {
+            event: "message",
+            message: assistantResponse
+          }
         }
       }
 
@@ -77,42 +84,142 @@ const ChatBot = () => {
         console.log("Action:", parsedResponse.action)
 
         if (parsedResponse.productList && parsedResponse.productList.length > 0) {
-          console.log("Products:", parsedResponse.productList)
-        }
+          switch (parsedResponse.action) {
+            case "add to cart":
+              Promise.all(parsedResponse.productList.map(async (product) => {
+                const res = await axios.post("/api/cart", {
+                  productId: product.id,
+                  action: "add",
+                  quantity: product.quantity || 1
+                })
 
-        // If the action is "go to page" and there's a page specified, redirect could be handled here
-        if (parsedResponse.action === "go to page" && parsedResponse.page) {
-          console.log("Redirection to:", parsedResponse.page)
-          // Window.location.href = parsedResponse.page
-        }
-      }
 
-      // Enrich product list with full product data if needed
-      let enrichedProductList = parsedResponse.productList
+                return res.data
+              }
+              )).then((results) => {
+                console.log("Products added to cart:", results)
+                queryClient.invalidateQueries({ queryKey: ["cart"] })
+              }
+              ).catch((error) => {
+                console.error("Error adding products to cart:", error)
+                // Optionally, you can show an error toast notification here
+              })
 
-      if (parsedResponse.productList && products.length > 0) {
-        enrichedProductList = parsedResponse.productList.map(item => {
-          // Try to find the full product data by ID
-          const fullProduct = products.find(p => p.id === item.id)
+              break
 
-          if (fullProduct) {
-            return { ...item, title: fullProduct.title }
+            case "remove from cart":
+              Promise.all(parsedResponse.productList.map(async (product) => {
+                const res = await axios.post("/api/cart", {
+                  productId: product.id,
+                  action: "remove",
+                  quantity: product.quantity || 1
+                })
+
+
+                return res.data
+              }
+              )).then((results) => {
+                console.log("Products removed from cart:", results)
+                queryClient.invalidateQueries({ queryKey: ["cart"] })
+              }
+              ).catch((error) => {
+                console.error("Error removing products from cart:", error)
+                // Optionally, you can show an error toast notification here
+              })
+
+              break
+
+            default:
+              console.log("Unknown action:", parsedResponse.action)
+
+              break
           }
 
 
-          return item
-        })
-      }
+          // If the action is "go to page" and there's a page specified, redirect could be handled here
+          if (parsedResponse.action === "go to page" && parsedResponse.page) {
+            console.log("Redirection to:", parsedResponse.page)
+            // Window.location.href = parsedResponse.page
+            router.push(parsedResponse.page)
+          }
+        } else {
+          switch (parsedResponse.action) {
+            case "go to page":
+              console.log("Redirection to:", parsedResponse.page)
+              router.push(parsedResponse.page)
 
-      // Add assistant response to chat
-      setMessages(prev => [...prev, {
-        role: "assistant",
-        content: parsedResponse.message,
-        event: parsedResponse.event,
-        productList: enrichedProductList || parsedResponse.productList,
-        action: parsedResponse.action,
-        page: parsedResponse.page
-      }])
+              break
+          }
+        }
+
+        // Enrich product list with full product data if needed
+        let enrichedProductList = parsedResponse.productList
+
+        if (parsedResponse.productList && products.length > 0) {
+          enrichedProductList = parsedResponse.productList.map(item => {
+            // Try to find the full product data by ID
+            const fullProduct = products.find(p => p.id === item.id)
+
+            if (fullProduct) {
+              return { ...item, title: fullProduct.title }
+            }
+
+
+            return item
+          })
+        }
+
+        // Add assistant response to chat
+        setMessages(prev => [...prev, {
+          role: "assistant",
+          content: parsedResponse.message,
+          event: parsedResponse.event,
+          productList: enrichedProductList || parsedResponse.productList,
+          action: parsedResponse.action,
+          page: parsedResponse.page
+        }])
+      } else if (parsedResponse.event === "message") {
+        // Gestion des événements de type "message"
+        setMessages(prev => [...prev, {
+          role: "assistant",
+          content: parsedResponse.message
+        }])
+      } else if (parsedResponse.event === "suggest") {
+        // Gestion des événements de type "suggest"
+        // Enrich product list with full product data if needed
+        let enrichedProductList = parsedResponse.productList
+
+        if (parsedResponse.productList && products.length > 0) {
+          enrichedProductList = parsedResponse.productList.map(item => {
+            // Try to find the full product data by ID
+            const fullProduct = products.find(p => p.id === item.id)
+
+            if (fullProduct) {
+              return { ...item, title: fullProduct.title }
+            }
+
+            return item
+          })
+        }
+
+        setMessages(prev => [...prev, {
+          role: "assistant",
+          content: parsedResponse.message,
+          event: parsedResponse.event,
+          productList: enrichedProductList || parsedResponse.productList
+        }])
+      }
+    },
+    onError: (error) => {
+      console.error("Error sending message:", error)
+      // Optionally, you can show a toast notification here
+      setMessages(prev => [
+        ...prev,
+        {
+          role: "assistant",
+          content: t("Sorry, I couldn't process your request. Please try again later.")
+        }
+      ])
     }
   })
 
