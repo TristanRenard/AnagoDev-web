@@ -1,6 +1,4 @@
-import Address from "@/db/models/Address"
-import OrderProduct from "@/db/models/OrderProduct"
-import PaymentMethod from "@/db/models/PaymentMethod"
+import OrderPrice from "@/db/models/OrderPrice"
 import User from "@/db/models/User"
 import { Model } from "objection"
 
@@ -19,8 +17,8 @@ class Order extends Model {
         status: { type: "string" },
         userId: { type: "integer" },
         addressId: { type: "integer" },
-        paymentMethodId: { type: "integer" }
-      }
+        paymentMethodId: { type: "integer" },
+      },
     }
   }
 
@@ -31,37 +29,21 @@ class Order extends Model {
         modelClass: User,
         join: {
           from: "orders.userId",
-          to: "users.id"
-        }
-      },
-      address: {
-        relation: Model.BelongsToOneRelation,
-        modelClass: Address,
-        join: {
-          from: "orders.addressId",
-          to: "addresses.id"
-        }
-      },
-      paymentMethod: {
-        relation: Model.BelongsToOneRelation,
-        modelClass: PaymentMethod,
-        join: {
-          from: "orders.paymentMethodId",
-          to: "paymentMethods.id"
-        }
+          to: "users.id",
+        },
       },
       products: {
         relation: Model.ManyToManyRelation,
-        modelClass: OrderProduct,
+        modelClass: OrderPrice,
         join: {
           from: "orders.id",
           through: {
-            from: "orderProducts.orderId",
-            to: "orderProducts.productId"
+            from: "orderPrice.orderId",
+            to: "orderPrice.priceId",
           },
-          to: "products.id"
-        }
-      }
+          to: "products.id",
+        },
+      },
     }
   }
 }
