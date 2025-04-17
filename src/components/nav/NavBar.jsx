@@ -1,17 +1,22 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-lines-per-function */
+import IconProfil from "@/components/nav/ProfilIcon"
 import useNavBar from "@/hooks/useNavBar"
 import { useI18n } from "@/locales"
 import axios from "axios"
 import clsx from "clsx"
-import { Menu, ShoppingBasket, UserRound, X } from "lucide-react"
+import { Menu, Search, ShoppingBasket, X } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { useEffect, useState } from "react"
 
+import SearchBar from "./SearchBar"
+
 const NavBar = () => {
   const t = useI18n()
+  const [userId, setUserId] = useState(null)
   const { isNavBarOpen, toggleNavBar } = useNavBar()
+  const [isSearchBarOpen, setIsSearchBarOpen] = useState(false)
   const [connected, setConnected] = useState(false)
   const isLogged = async () => {
     const res = await axios("/api/connection")
@@ -19,10 +24,31 @@ const NavBar = () => {
 
     setConnected(loggedIn)
   }
+  const getUserId = async () => {
+    const res = await axios("/api/me")
+    setUserId(res.data.user.id)
+  }
+  const handleKeyDown = (event) => {
+    if (event.key === "k" && (event.ctrlKey || event.metaKey)) {
+      event.preventDefault()
+      setIsSearchBarOpen(true)
+    }
+
+    if (event.key === "Escape" && isSearchBarOpen) {
+      setIsSearchBarOpen(false)
+    }
+  }
 
   useEffect(() => {
     isLogged()
+    window.addEventListener("keydown", handleKeyDown)
   }, [])
+
+  useEffect(() => {
+    if (connected) {
+      getUserId()
+    }
+  }, [connected])
 
   return (
     <>
@@ -51,6 +77,19 @@ const NavBar = () => {
               <li className="flex flex-col justify-center items-center mr-16">
                 <Link href="/auth/register">{t("Register")}</Link>
               </li>
+              <li className="flex flex-col justify-center items-center">
+                <button className="hover:cursor-pointer">
+                  <Search
+                    onClick={() => setIsSearchBarOpen(!isSearchBarOpen)}
+                    className="h-6 w-6"
+                  />
+                </button>
+                <SearchBar
+                  open={isSearchBarOpen}
+                  onOpenChange={setIsSearchBarOpen}
+                  connected={connected}
+                />
+              </li>
             </>
           ) : (
             <>
@@ -60,9 +99,20 @@ const NavBar = () => {
                 </Link>
               </li>
               <li className="flex flex-col justify-center items-center mr-16">
-                <Link href="/profile">
-                  <UserRound className="h-8 w-8" />
-                </Link>
+                <IconProfil />
+              </li>
+              <li className="flex flex-col justify-center items-center mr-16">
+                <button className="hover:cursor-pointer">
+                  <Search
+                    onClick={() => setIsSearchBarOpen(!isSearchBarOpen)}
+                    className="h-8 w-8"
+                  />
+                </button>
+                <SearchBar
+                  open={isSearchBarOpen}
+                  onOpenChange={setIsSearchBarOpen}
+                  connected={connected}
+                />
               </li>
             </>
           )}
@@ -98,7 +148,7 @@ const NavBar = () => {
 
         <ul
           className={clsx(
-            "flex flex-col justify-around fixed top-0 left-0 gap-4 px-8 w-screen h-screen z-50 md:hidden",
+            "flex flex-col justify-around fixed top-0 left-0 gap-4 px-8 w-screen h-screen z-50 bg-white md:hidden",
             isNavBarOpen ? "flex" : "hidden",
           )}
         >
@@ -205,6 +255,18 @@ const NavBar = () => {
                   data-umami-event-type="click"
                   data-umami-event-name="Cart"
                   data-umami-event-value="Cart"
+                  onClick={() => {
+                    if (isNavBarOpen) {
+                      toggleNavBar()
+                    }
+                  }}
+                  href={`/account/${userId}`}
+                >
+                  {t("My account")}
+                </Link>
+              </li>
+              <li className="flex flex-col justify-center items-center">
+                <Link
                   onClick={() => {
                     if (isNavBarOpen) {
                       toggleNavBar()

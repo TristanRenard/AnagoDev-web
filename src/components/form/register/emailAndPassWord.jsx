@@ -1,4 +1,5 @@
 import { FormInput } from "@/components/form/formInput"
+import CheckPassword from "@/components/form/register/checkPassword"
 import { useEffect, useState } from "react"
 import * as yup from "yup"
 
@@ -8,7 +9,7 @@ const formValidator = yup.object().shape({
     .string()
     .required()
     .matches(
-      /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/u,
+      /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{7,}$/u,
       "Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, one number and one special character",
     ),
   confirmPasswordValidator: yup
@@ -67,7 +68,9 @@ const EmailAndPassWord = ({ form, setDisableNext }) => {
         type="password"
         setValue={setPassword}
         setIsValid={setPasswordIsValid}
+        showError={false}
       />
+      <CheckPassword password={password} />
       <FormInput
         validators={{
           onChange: formValidator.fields.confirmPasswordValidator,

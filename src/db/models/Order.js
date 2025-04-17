@@ -10,7 +10,7 @@ class Order extends Model {
   static get jsonSchema() {
     return {
       type: "object",
-      required: ["status", "userId", "addressId", "paymentMethodId"],
+      required: ["status", "userId"],
 
       properties: {
         id: { type: "integer" },

@@ -1,12 +1,36 @@
 import AddCategorySheet from "@/components/backoffice/addCategorySheet"
 import BackofficeLayout from "@/components/layouts/BackofficeLayout"
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 import { useToast } from "@/hooks/use-toast"
 import { useI18n, useScopedI18n } from "@/locales"
 import authProps from "@/serverSideProps/authProps"
-import { closestCenter, DndContext, DragOverlay, KeyboardSensor, PointerSensor, useSensor, useSensors } from "@dnd-kit/core"
-import { SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable"
+import {
+  closestCenter,
+  DndContext,
+  DragOverlay,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core"
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import axios from "axios"
@@ -21,10 +45,10 @@ const SortableTableRow = ({ category, t, categoriesT, index }) => {
     setNodeRef,
     transform,
     transition,
-    isDragging
+    isDragging,
   } = useSortable({
     id: category.id,
-    data: { index, category }
+    data: { index, category },
   })
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -52,24 +76,16 @@ const SortableTableRow = ({ category, t, categoriesT, index }) => {
           </div>
         </div>
       </TableCell>
-      <TableCell>
-        {categoriesT(category.id)}
-      </TableCell>
-      <TableCell>
-        {categoriesT(category.title)}
-      </TableCell>
+      <TableCell>{categoriesT(category.id)}</TableCell>
+      <TableCell>{categoriesT(category.title)}</TableCell>
       <TableCell>
         <HoverCard>
           <HoverCardTrigger className="text-ellipsis flex flex-col whitespace-nowrap max-w-xs overflow-hidden">
             {categoriesT(category.description)}
           </HoverCardTrigger>
           <HoverCardContent className="w-96">
-            <h5 className="font-bold mb-2">
-              {t("Description")}
-            </h5>
-            <p className="text-sm mb-2">
-              {categoriesT(category.description)}
-            </p>
+            <h5 className="font-bold mb-2">{t("Description")}</h5>
+            <p className="text-sm mb-2">{categoriesT(category.description)}</p>
           </HoverCardContent>
         </HoverCard>
       </TableCell>
@@ -106,20 +122,20 @@ const Categories = () => {
     }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    })
+    }),
   )
-
 
   useEffect(() => {
     if (categories && categories.data) {
       if (orderedCategories.length === 0 || !hasChanges) {
-        const sortedCategories = [...categories.data].sort((a, b) => b.order - a.order)
+        const sortedCategories = [...categories.data].sort(
+          (a, b) => b.order - a.order,
+        )
         setOrderedCategories(sortedCategories)
-        prevOrderedRef.current = sortedCategories.map(cat => cat.id)
+        prevOrderedRef.current = sortedCategories.map((cat) => cat.id)
       }
     }
   }, [categories, hasChanges])
-
 
   const handleDragStart = (event) => {
     setActiveId(event.active.id)
@@ -128,40 +144,42 @@ const Categories = () => {
     const { active, over } = event
     setActiveId(null)
 
-    if (!over) { return }
+    if (!over) {
+      return
+    }
 
     if (active.id !== over.id) {
-      const oldIndex = orderedCategories.findIndex(cat => cat.id === active.id)
-      const newIndex = orderedCategories.findIndex(cat => cat.id === over.id)
+      const oldIndex = orderedCategories.findIndex(
+        (cat) => cat.id === active.id,
+      )
+      const newIndex = orderedCategories.findIndex((cat) => cat.id === over.id)
 
       if (oldIndex !== -1 && newIndex !== -1) {
         const newOrderedCategories = [...orderedCategories]
         const [movedItem] = newOrderedCategories.splice(oldIndex, 1)
 
-
         newOrderedCategories.splice(newIndex, 0, movedItem)
 
-
-        const currentIds = orderedCategories.map(cat => cat.id)
-        const newIds = newOrderedCategories.map(cat => cat.id)
+        const currentIds = orderedCategories.map((cat) => cat.id)
+        const newIds = newOrderedCategories.map((cat) => cat.id)
         const hasRealChange = currentIds.some((id, idx) => id !== newIds[idx])
 
         if (hasRealChange) {
           setOrderedCategories(newOrderedCategories)
           setHasChanges(true)
-          setRenderKey(prev => prev + 1)
+          setRenderKey((prev) => prev + 1)
         }
       }
     }
   }
   const handleSubmitNewOrder = () => {
-    if (isSubmitting) { return }
-
+    if (isSubmitting) {
+      return
+    }
 
     setIsSubmitting(true)
 
-
-    const newOrderIds = orderedCategories.map(cat => cat.id)
+    const newOrderIds = orderedCategories.map((cat) => cat.id)
     const currentOrder = JSON.stringify(newOrderIds)
     const previousOrder = JSON.stringify(prevOrderedRef.current)
 
@@ -169,15 +187,13 @@ const Categories = () => {
       setIsSubmitting(false)
       setHasChanges(false)
 
-
       return
     }
 
-
     console.log("Nouvel ordre des catégories:", newOrderIds)
 
-
-    axios.put("/api/categories?action=reorder", { categoryIds: newOrderIds })
+    axios
+      .put("/api/categories?action=reorder", { categoryIds: newOrderIds })
       .then(() => {
         toast({
           title: t("Success"),
@@ -185,13 +201,12 @@ const Categories = () => {
           variant: "default",
         })
 
-
         prevOrderedRef.current = [...newOrderIds]
 
         setHasChanges(false)
         queryClient.invalidateQueries(["categories"])
       })
-      .catch(error => {
+      .catch((error) => {
         console.error("Error saving new order:", error)
         toast({
           title: t("Error"),
@@ -204,15 +219,15 @@ const Categories = () => {
       })
   }
 
-
   useEffect(() => {
     if (hasChanges && !isSubmitting) {
       handleSubmitNewOrder()
     }
   }, [hasChanges])
 
-
-  const activeCategory = activeId ? orderedCategories.find(cat => cat.id === activeId) : null
+  const activeCategory = activeId
+    ? orderedCategories.find((cat) => cat.id === activeId)
+    : null
 
   return (
     <BackofficeLayout>
@@ -220,7 +235,10 @@ const Categories = () => {
         <div className="flex flex-col items-start gap-5 m-4 py-8 px-4">
           <h1 className="text-3xl font-black">{t("Categories")}</h1>
           <div className="text-lg font-bold flex gap-4 w-full justify-between">
-            <AddCategorySheet categories={categories?.data} queryClient={queryClient} />
+            <AddCategorySheet
+              categories={categories?.data}
+              queryClient={queryClient}
+            />
           </div>
         </div>
 
@@ -282,7 +300,7 @@ const Categories = () => {
                   </TableHeader>
                   <TableBody className="w-full overflow-y-scroll">
                     <SortableContext
-                      items={orderedCategories.map(cat => cat.id)}
+                      items={orderedCategories.map((cat) => cat.id)}
                       strategy={verticalListSortingStrategy}
                     >
                       {orderedCategories.map((category, index) => (
@@ -306,20 +324,14 @@ const Categories = () => {
                           <GripVertical className="w-4 h-4 mr-2 text-gray-400" />
                         </div>
                       </TableCell>
-                      <TableCell>
-                        {categoriesT(activeCategory.id)}
-                      </TableCell>
-                      <TableCell>
-                        {categoriesT(activeCategory.title)}
-                      </TableCell>
+                      <TableCell>{categoriesT(activeCategory.id)}</TableCell>
+                      <TableCell>{categoriesT(activeCategory.title)}</TableCell>
                       <TableCell>
                         <div className="text-ellipsis whitespace-nowrap max-w-xs overflow-hidden">
                           {categoriesT(activeCategory.description)}
                         </div>
                       </TableCell>
-                      <TableCell>
-                        {activeCategory.order}
-                      </TableCell>
+                      <TableCell>{activeCategory.order}</TableCell>
                       <TableCell>
                         {/* Actions */}
                       </TableCell>
@@ -371,7 +383,7 @@ export default Categories
 export const getServerSideProps = async (context) => {
   const { user } = await authProps(context)
 
-  if (!user || !user.isAdmin) {
+  if (!user || !user.role || user.role !== "admin") {
     return {
       notFound: true,
     }

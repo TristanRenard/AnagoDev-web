@@ -1,11 +1,11 @@
 /* eslint-disable camelcase */
 import { Button } from "@/components/ui/button"
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { useToast } from "@/hooks/use-toast"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import axios from "axios"
 import { LoaderCircle, ShoppingCart } from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
-import { useRouter } from "next/router"
 import Image from "next/image"
+import { useRouter } from "next/router"
 
 const CartPage = () => {
   const { toast } = useToast()
