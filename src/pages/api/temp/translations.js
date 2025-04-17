@@ -15,7 +15,7 @@ const handler = async (req, res) => {
 
     const user = JSON.parse(userData)
 
-    if ((!user || !user.role === "admin") && apiKey !== process.env.API_KEY) {
+    if ((!user || user.role !== "admin") && apiKey !== process.env.API_KEY) {
       return res.status(401).json({ message: "Unauthorized" })
     }
 
@@ -162,7 +162,7 @@ const handler = async (req, res) => {
 
     const user = JSON.parse(userData)
 
-    if (!user || !user.role === "admin") {
+    if (!user || user.role !== "admin") {
       return res.status(401).json({ message: "Unauthorized" })
     }
 

@@ -20,6 +20,29 @@ const handler = async (req, res) => {
     return res.status(401).json({ message: "Unauthorized" })
   }
 
+  if (req.method === "PATCH") {
+    if (!isAdmin) {
+      return res.status(401).json({ message: "Unauthorized" })
+    }
+
+    const { id, role } = req.body
+
+    if (!id || !["admin", "user"].includes(role)) {
+      return res.status(400).json({ message: "Invalid request data" })
+    }
+
+    try {
+      const updatedUser = await User.query(knexInstance)
+        .patchAndFetchById(id, { role })
+
+      return res.status(200).json(updatedUser)
+    } catch (error) {
+      console.error("Error updating user role:", error)
+
+      return res.status(500).json({ message: "Failed to update user role" })
+    }
+  }
+
   // Définir les méthodes autorisées
   res.setHeader("Allow", ["POST", "GET", "DELETE", "PATCH"])
 

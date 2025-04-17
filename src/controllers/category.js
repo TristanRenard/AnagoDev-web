@@ -7,7 +7,7 @@ const categoryController = async (req, res) => {
   const user = userData ? JSON.parse(userData) : null
 
   if (req.method === "POST") {
-    if (!user || !user.role === "admin") {
+    if (!user || user.role !== "admin") {
       return res.status(401).json({ message: "Unauthorized" })
     }
 

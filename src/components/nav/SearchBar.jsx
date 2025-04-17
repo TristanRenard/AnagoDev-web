@@ -17,14 +17,12 @@ const SearchBar = ({ open, onOpenChange, connected }) => {
   const [products, setProducts] = useState([])
 
   useEffect(() => {
-    ;(async () => {
+    ; (async () => {
       const { data } = await axios("/api/products")
 
       setProducts(data)
     })()
   }, [])
-
-  console.log(products)
 
   return (
     <CommandDialog open={open} onOpenChange={onOpenChange}>

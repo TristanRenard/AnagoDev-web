@@ -89,12 +89,12 @@ const Users = () => {
                       {t("Téléphone")}
                     </TableHead>
                     <TableHead className="font-bold capitalize">
-                      {t("Admin")}
+                      {t("Rôle")}
                     </TableHead>
                     <TableHead className="font-bold capitalize">
                       {t("Vérifié")}
                     </TableHead>
-                    <TableHead className="font-bold capitalize">
+                    <TableHead className="font-bold">
                       {t("Créé le")}
                     </TableHead>
                     <TableHead className="font-bold capitalize">
@@ -125,11 +125,34 @@ const Users = () => {
                         <TableCell>{user.email}</TableCell>
                         <TableCell>{user.phone}</TableCell>
                         <TableCell>
-                          {user.role === "admin" ? (
-                            <Check className="text-green-500" />
-                          ) : (
-                            <X className="text-red-500" />
-                          )}
+                          <select
+                            value={user.role}
+                            onChange={async (e) => {
+                              const newRole = e.target.value
+
+                              try {
+                                await axios.patch("/api/backoffice/users?backoffice=1", {
+                                  id: user.id,
+                                  role: newRole,
+                                })
+                                await queryClient.invalidateQueries(["users"])
+                                toast({
+                                  title: t("Role updated"),
+                                  description: t(`Role for ${user.email} is now ${newRole}`),
+                                })
+                              } catch (err) {
+                                toast({
+                                  title: t("Error"),
+                                  description: t("Failed to update user role"),
+                                  variant: "destructive",
+                                })
+                              }
+                            }}
+                            className="border rounded px-2 py-1 text-sm"
+                          >
+                            <option value="user">user</option>
+                            <option value="admin">admin</option>
+                          </select>
                         </TableCell>
                         <TableCell>
                           {user.isVerified ? (
@@ -175,8 +198,9 @@ export default Users
 
 export const getServerSideProps = async (context) => {
   const { user } = await authProps(context)
+  console.log("tag", user)
 
-  if (!user || !user.role === "admin") {
+  if (!user || user.role !== "admin") {
     return {
       notFound: true,
     }
