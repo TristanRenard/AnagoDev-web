@@ -5,10 +5,11 @@ import useNavBar from "@/hooks/useNavBar"
 import { useI18n } from "@/locales"
 import axios from "axios"
 import clsx from "clsx"
-import { Menu, ShoppingBasket, X, UserRound, Search } from "lucide-react"
+import { Menu, Search, ShoppingBasket, X } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { useEffect, useState } from "react"
+
 import SearchBar from "./SearchBar"
 
 const NavBar = () => {
