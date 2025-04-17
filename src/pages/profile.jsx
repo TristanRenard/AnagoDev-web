@@ -1,8 +1,8 @@
 /* eslint-disable no-nested-ternary */
 import { useI18n } from "@/locales"
 import axios from "axios"
-import { useQuery } from "@tanstack/react-query"
-import { LoaderCircle } from "lucide-react"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { LoaderCircle, User } from "lucide-react"
 import {
   Dialog,
   DialogContent,
@@ -22,12 +22,14 @@ const Profile = () => {
   const router = useRouter()
   const { toast } = useToast()
   const [user, setUser] = useState(null)
+  const [userAddress, setUserAddress] = useState(null)
   const { isLoading } = useQuery({
     queryKey: ["user"],
     queryFn: async () => {
       try {
         const res = await axios("/api/me")
         setUser(res.data.user)
+        setUserAddress(res.data.userAddress[0])
       } catch (error) {
         router.push("/auth/login")
       }
@@ -56,56 +58,130 @@ const Profile = () => {
     )
   }
 
+  console.log(userAddress)
+
   return (
-    <div className="flex-1 flex flex-col w-full p-4">
-      <table>
-        <tbody>
-          <Row
-            title={t("First name")}
-            value={user.firstName}
-            field="firstName"
-          />
-          <Row title={t("Last name")} value={user.lastName} field="lastName" />
-          <Row title={t("Email")} value={user.email} field="email" />
-          <Row title={t("Phone number")} value={user.phone} field="phone" />
-          <Row title={t("Street")} value={user.street} field="street" />
-          <Row title={t("City")} value={user.city} field="city" />
-          <Row title={t("State")} value={user.state} field="state" />
-          <Row title={t("Zip")} value={user.zip} field="zip" />
-          <Row title={t("Country")} value={user.country} field="country" />
-          <Row
-            title={t("Complement")}
-            value={user.complement}
-            field="complement"
-          />
-          <Row title={t("Name")} value={user.name} field="name" />
-          <Row
-            title={t("Is default")}
-            value={user.isDefault}
-            field="isDefault"
-          />
-        </tbody>
-      </table>
-      <Dialog>
-        <DialogTrigger className="self-end mt-auto text-white p-2 rounded-md bg-red-500 hover:bg-red-600">
-          <button>{t("Delete my account")}</button>
-        </DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Are you absolutely sure?</DialogTitle>
-            <DialogDescription>
-              This action cannot be undone. This will permanently delete your
-              account and remove your data from our servers.
-              <Button
-                onClick={() => sendAccountDeletionEmail()}
-                className="absolute bottom-0 right-0 m-4"
-              >
-                {t("Yes")}
+    <div className="flex-1 flex justify-center py-10 bg-gray-100 min-h-screen">
+      <div className="w-full max-w-4xl space-y-8 px-4">
+        <div className="flex items-center justify-between bg-white p-6 rounded-lg shadow-sm">
+          <div className="flex items-center space-x-6">
+            <div className="w-24 h-24 bg-purple-100 rounded-full flex items-center justify-center">
+              <User size={48} className="text-purple-600" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">
+                {user.firstName} {user.lastName}
+              </h1>
+              <p className="text-sm text-gray-500">{user.email}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white p-6 rounded-lg shadow-sm">
+          <h2 className="text-lg font-semibold mb-4 border-b pb-2 text-gray-700">
+            {t("Personal information")}
+          </h2>
+          <div className="divide-y divide-gray-200">
+            <table className="w-full text-sm">
+              <tbody>
+                <Row
+                  title={t("First name")}
+                  value={user.firstName}
+                  field="firstName"
+                />
+                <Row
+                  title={t("Last name")}
+                  value={user.lastName}
+                  field="lastName"
+                />
+                <Row
+                  title={t("Phone number")}
+                  value={user.phone}
+                  field="phone"
+                />
+                <Row
+                  title={t("Street")}
+                  value={userAddress.street}
+                  field="street"
+                />
+                <Row
+                  title={t("City")}
+                  value={userAddress.city ?? "-"}
+                  field="city"
+                />
+                <Row
+                  title={t("State")}
+                  value={userAddress.state ?? "-"}
+                  field="state"
+                />
+                <Row
+                  title={t("Zip")}
+                  value={userAddress.zip ?? "-"}
+                  field="zip"
+                />
+                <Row
+                  title={t("Country")}
+                  value={userAddress.country ?? "-"}
+                  field="country"
+                />
+                <Row
+                  title={t("Complement")}
+                  value={userAddress.complement ?? "-"}
+                  field="complement"
+                />
+                <Row
+                  title={t("Name")}
+                  value={userAddress.name ?? "-"}
+                  field="name"
+                />
+                <Row
+                  title={t("Is default")}
+                  value={
+                    userAddress.isDefault === true ? t("True") : t("False")
+                  }
+                  field="isDefault"
+                />
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div className="bg-white p-6 rounded-lg shadow-sm border-t-4 border-red-500">
+          <h2 className="text-lg font-semibold mb-4 text-red-600">
+            {t("Danger Zone")}
+          </h2>
+          <p className="text-sm text-gray-600 mb-4">
+            {t(
+              "Delete your account permanently. This action cannot be undone.",
+            )}
+          </p>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button className="bg-red-500 hover:bg-red-600 text-white">
+                {t("Delete my account")}
               </Button>
-            </DialogDescription>
-          </DialogHeader>
-        </DialogContent>
-      </Dialog>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>{t("Are you absolutely sure?")}</DialogTitle>
+                <DialogDescription>
+                  {t(
+                    "This action cannot be undone. This will permanently delete your account and remove your data from our servers.",
+                  )}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="flex justify-end mt-4">
+                <Button
+                  onClick={() => sendAccountDeletionEmail()}
+                  className="bg-red-600 hover:bg-red-700 text-white"
+                >
+                  {t("Yes, delete it")}
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
+      </div>
     </div>
   )
 }
@@ -113,11 +189,24 @@ const Row = ({ title, value, field }) => {
   const t = useI18n()
   const [isEditing, setIsEditing] = useState(false)
   const [editedValue, setEditedValue] = useState(value)
-  const saveModification = async () => {
-    await axios.put("/api/user/modifyDetails", {
-      field,
-      editedValue,
-    })
+  const queryClient = useQueryClient()
+  const mutation = useMutation({
+    mutationFn: async () => {
+      await axios.put("/api/user/modifyDetails", {
+        field,
+        editedValue,
+      })
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["user"] })
+    },
+  })
+  const handleSave = () => {
+    if (editedValue && editedValue !== value) {
+      mutation.mutate()
+    }
+
+    setIsEditing(false)
   }
 
   return (
@@ -153,18 +242,19 @@ const Row = ({ title, value, field }) => {
         )}
       </td>
       {field !== "email" && (
-        <td className="py-2 px-4 text-right">
+        <td className="py-2 px-4 text-right space-x-2">
           <Button
             onClick={() => {
-              setIsEditing(!isEditing)
-
-              if (isEditing && editedValue !== "") {
-                saveModification()
+              if (isEditing) {
+                handleSave()
+              } else {
+                setIsEditing(true)
               }
             }}
             className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-              isEditing && "bg-green-600 hover:bg-green-500 text-white"
+              isEditing ? "bg-green-600 hover:bg-green-500 text-white" : ""
             }`}
+            disabled={mutation.isPending}
           >
             {isEditing ? (
               <span className="flex items-center gap-2">
@@ -176,6 +266,20 @@ const Row = ({ title, value, field }) => {
               </span>
             )}
           </Button>
+
+          {isEditing && (
+            <Button
+              onClick={() => {
+                setEditedValue(value)
+                setIsEditing(false)
+              }}
+              className="px-4 py-2 text-sm font-medium rounded-md transition-colors bg-red-600 hover:bg-red-500 text-white"
+            >
+              <span className="flex items-center gap-2">
+                <span>{t("Cancel")}</span>
+              </span>
+            </Button>
+          )}
         </td>
       )}
     </tr>
