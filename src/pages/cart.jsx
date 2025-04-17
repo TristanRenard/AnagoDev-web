@@ -57,8 +57,8 @@ const CartPage = () => {
   }
   const handlePayment = async () => {
     const res = await axios.post("/api/payment", {
-      products: data.orderPrice,
-      price: calculateTotal(),
+      products: data.allProducts,
+      quantity: data.quantity,
     })
     await router.push(res.data.url)
   }

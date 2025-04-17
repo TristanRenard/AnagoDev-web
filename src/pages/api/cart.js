@@ -6,6 +6,8 @@ import { stripe } from "@/lib/stripe"
 import cookie from "cookie"
 import Order from "@/db/models/Order"
 import OrderPrice from "@/db/models/OrderPrice"
+import Product from "@/db/models/Product"
+import Price from "@/db/models/Price"
 
 const handler = async (req, res) => {
   const { "x-user-data": userData } = req.headers
@@ -42,7 +44,7 @@ const handler = async (req, res) => {
   if (method === "GET") {
     try {
       const order = await Order.query(knexInstance)
-        .where({ userId, status: "inProgress" })
+        .where({ userId, status: "cart" })
         .first()
 
       if (!order) {
@@ -79,18 +81,24 @@ const handler = async (req, res) => {
 
   if (method === "POST") {
     const { selectedPrice, action } = req.body
+    const price = await Price.query(knexInstance)
+      .select("productId")
+      .where("id", selectedPrice)
+      .first()
+    const quantityProduct = await Product.query(knexInstance)
+      .select("stock")
+      .where("id", price.productId)
+      .first()
 
     try {
       let order = await Order.query(knexInstance)
-        .where({ userId, status: "inProgress" })
+        .where({ userId, status: "cart" })
         .first()
 
       order ||= await Order.query(knexInstance)
         .insert({
-          status: "inProgress",
+          status: "cart",
           userId,
-          addressId: 1,
-          paymentMethodId: 1,
         })
         .returning("*")
 
@@ -101,12 +109,31 @@ const handler = async (req, res) => {
         })
         .first()
 
-      if (existing) {
-        if (action === "add") {
+      if (action === "add") {
+        const currentQty = existing?.quantity ?? 0
+
+        if (
+          quantityProduct.stock !== -1 &&
+          currentQty + 1 > quantityProduct.stock
+        ) {
+          return res.status(400).json({
+            message: "Not enough stock available",
+          })
+        }
+
+        if (existing) {
           await OrderPrice.query(knexInstance)
             .where({ id: existing.id })
             .increment("quantity", 1)
-        } else if (action === "remove") {
+        } else {
+          await OrderPrice.query(knexInstance).insert({
+            orderId: order.id,
+            priceId: selectedPrice,
+            quantity: 1,
+          })
+        }
+      } else if (action === "remove") {
+        if (existing) {
           if (existing.quantity <= 1) {
             await OrderPrice.query(knexInstance).deleteById(existing.id)
           } else {
@@ -115,12 +142,6 @@ const handler = async (req, res) => {
               .decrement("quantity", 1)
           }
         }
-      } else {
-        await OrderPrice.query(knexInstance).insert({
-          orderId: order.id,
-          priceId: selectedPrice,
-          quantity: 1,
-        })
       }
 
       return res.status(200).json({ message: "Cart updated successfully" })

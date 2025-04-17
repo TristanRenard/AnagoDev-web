@@ -8,6 +8,7 @@ exports.up = (knex) => knex.schema.createTable("orders", (table) => {
   table.timestamps(true, true)
   table.integer("userId").unsigned().notNullable()
   table.foreign("userId").references("users.id").onDelete("CASCADE")
+  table.string("stripeSessionId").unsigned()
   table.integer("addressId").unsigned()
   table.foreign("addressId").references("addresses.id").onDelete("CASCADE")
   table.integer("paymentMethodId").unsigned()
