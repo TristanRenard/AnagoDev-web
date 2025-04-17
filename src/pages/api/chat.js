@@ -10,9 +10,9 @@ You will always reply with json with this format :
   title : <title of the conversation only for the first message>
   event* : "message" | "suggest" | "do" | "need a human"
   message* : <the message in the user language>
-  productList : <if suggest or do> [{id:<id>,quantity:<quantity>},...]
+  productList : <if suggest or do> [{id:<product.price[?].id>,quantity:<quantity>},...]
   action : <if do> "add to cart" | "go to page | remove from cart"
-  page : <if action is "go to page"> "product/<product.title>"
+  page : <if action is "go to page"> "/product/<product.title>"
 }
 
 Products :

@@ -4,12 +4,12 @@ import NavBar from "@/components/nav/NavBar"
 import { Toaster } from "@/components/ui/toaster"
 import { I18nProvider } from "@/locales"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 import axios from "axios"
 import Script from "next/script"
 import { useEffect, useState } from "react"
 
 import "@/styles/globals.css"
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 
 const queryClient = new QueryClient()
 const App = ({ Component, pageProps }) => {
