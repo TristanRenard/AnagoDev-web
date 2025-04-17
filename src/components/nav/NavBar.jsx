@@ -148,72 +148,31 @@ const NavBar = () => {
 
         <ul
           className={clsx(
-            "flex flex-col justify-around fixed top-0 left-0 gap-4 px-8 w-screen h-screen z-50 bg-white md:hidden",
+            "flex flex-col justify-around fixed top-0 left-0 gap-4 px-8 py-44 w-screen h-screen z-50 bg-white md:hidden",
             isNavBarOpen ? "flex" : "hidden",
           )}
         >
-          <li>
-            <button
-              onClick={() => {
-                if (isNavBarOpen) {
-                  toggleNavBar()
-                }
-              }}
-              className="flex flex-col justify-center items-center p-4 fixed right-2 top-3"
-            >
-              <X />
+          <li className="w-full flex justify-center">
+            <button className="hover:cursor-pointer">
+              <Search
+                onClick={() => setIsSearchBarOpen(!isSearchBarOpen)}
+                className="h-8 w-8"
+              />
             </button>
+            <SearchBar
+              open={isSearchBarOpen}
+              onOpenChange={setIsSearchBarOpen}
+              connected={connected}
+            />
           </li>
           <li className="flex flex-col justify-center items-center p-4">
-            <Link
-              onClick={() => {
-                if (isNavBarOpen) {
-                  toggleNavBar()
-                }
-              }}
-              href="#"
-            >
-              {t("Our services")}
-            </Link>
+            <Link href="/products">{t("Products")}</Link>
           </li>
           <li className="flex flex-col justify-center items-center">
-            <Link
-              onClick={() => {
-                if (isNavBarOpen) {
-                  toggleNavBar()
-                }
-              }}
-              href="#"
-            >
-              {t("Case studies")}
-            </Link>
-          </li>
-          <li className="flex flex-col justify-center items-center">
-            <Link
-              onClick={() => {
-                if (isNavBarOpen) {
-                  toggleNavBar()
-                }
-              }}
-              href="#"
-            >
-              {t("Blog")}
-            </Link>
-          </li>
-          <li className="flex flex-col justify-center items-center">
-            <Link
-              onClick={() => {
-                if (isNavBarOpen) {
-                  toggleNavBar()
-                }
-              }}
-              href="#"
-            >
-              {t("About us")}
-            </Link>
+            <Link href="#">{t("Contact")}</Link>
           </li>
           {!connected ? (
-            <ul className="flex gap-4 md:gap-8 justify-around mb-24">
+            <>
               <li className="flex flex-col justify-center items-center">
                 <Link
                   data-umami-event="Login"
@@ -246,9 +205,9 @@ const NavBar = () => {
                   {t("Inscription")}
                 </Link>
               </li>
-            </ul>
+            </>
           ) : (
-            <ul className="flex gap-8 justify-around mb-24">
+            <>
               <li className="flex flex-col justify-center items-center">
                 <Link
                   data-umami-event="Cart"
@@ -293,8 +252,20 @@ const NavBar = () => {
                   {t("Logout")}
                 </Link>
               </li>
-            </ul>
+            </>
           )}
+          <li>
+            <button
+              onClick={() => {
+                if (isNavBarOpen) {
+                  toggleNavBar()
+                }
+              }}
+              className="flex flex-col justify-center items-center p-4 fixed right-2 top-3"
+            >
+              <X />
+            </button>
+          </li>
         </ul>
       </nav>
     </>

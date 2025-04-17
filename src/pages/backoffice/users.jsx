@@ -198,7 +198,6 @@ export default Users
 
 export const getServerSideProps = async (context) => {
   const { user } = await authProps(context)
-  console.log("tag", user)
 
   if (!user || user.role !== "admin") {
     return {
