@@ -34,7 +34,7 @@ const AddProductSheet = ({ queryClient, categories }) => {
       images: newProductImages,
       isSubscription: newProductIsSubscription,
       categoryId: newCategoryId,
-      stock: newProducrStock === "" ? -1 : newProducrStock,
+      stock: newProducrStock === "" ? -1 : Number(newProducrStock),
     }
 
     if (newProductIsSubscription) {
@@ -216,7 +216,7 @@ const AddProductSheet = ({ queryClient, categories }) => {
             <Label htmlFor="description" className="text-right col-span-1 pt-2">
               {t("Product description")}
             </Label>
-            <div className="col-span-3" data-color-mode="light">
+            <div className="col-span-3 max-h-80 h-full" data-color-mode="light">
               <Editor
                 id="description"
                 markdown={newProductDescription}

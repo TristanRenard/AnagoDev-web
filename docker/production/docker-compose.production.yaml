@@ -32,6 +32,7 @@ services:
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
       MINIO_PORT: ${MINIO_PORT}
       MINIO_BUCKET: ${MINIO_BUCKET}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
 
     ports:
       - "3000:3000" # Next.js tourne sur le port 3000

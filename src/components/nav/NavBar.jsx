@@ -1,5 +1,6 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-lines-per-function */
+import IconProfil from "@/components/nav/ProfilIcon"
 import useNavBar from "@/hooks/useNavBar"
 import { useI18n } from "@/locales"
 import axios from "axios"
@@ -12,6 +13,7 @@ import SearchBar from "./SearchBar"
 
 const NavBar = () => {
   const t = useI18n()
+  const [userId, setUserId] = useState(null)
   const { isNavBarOpen, toggleNavBar } = useNavBar()
   const [isSearchBarOpen, setIsSearchBarOpen] = useState(false)
   const [connected, setConnected] = useState(false)
@@ -21,10 +23,20 @@ const NavBar = () => {
 
     setConnected(loggedIn)
   }
+  const getUserId = async () => {
+    const res = await axios("/api/me")
+    setUserId(res.data.user.id)
+  }
 
   useEffect(() => {
     isLogged()
   }, [])
+
+  useEffect(() => {
+    if (connected) {
+      getUserId()
+    }
+  }, [connected])
 
   return (
     <>
@@ -40,7 +52,7 @@ const NavBar = () => {
         </Link>
         <ul className="flex">
           <li className="flex flex-col justify-center items-center mr-16">
-            <Link href="#">{t("Products")}</Link>
+            <Link href="/products">{t("Products")}</Link>
           </li>
           <li className="flex flex-col justify-center items-center mr-16">
             <Link href="#">{t("Contact")}</Link>
@@ -73,9 +85,7 @@ const NavBar = () => {
                 </Link>
               </li>
               <li className="flex flex-col justify-center items-center mr-16">
-                <Link href="/profile">
-                  <UserRound className="h-8 w-8" />
-                </Link>
+                <IconProfil />
               </li>
               <li className="flex flex-col justify-center items-center mr-16">
                 <Search
@@ -229,6 +239,18 @@ const NavBar = () => {
                   data-umami-event-type="click"
                   data-umami-event-name="Cart"
                   data-umami-event-value="Cart"
+                  onClick={() => {
+                    if (isNavBarOpen) {
+                      toggleNavBar()
+                    }
+                  }}
+                  href={`/account/${userId}`}
+                >
+                  {t("My account")}
+                </Link>
+              </li>
+              <li className="flex flex-col justify-center items-center">
+                <Link
                   onClick={() => {
                     if (isNavBarOpen) {
                       toggleNavBar()
