@@ -28,9 +28,20 @@ const NavBar = () => {
     const res = await axios("/api/me")
     setUserId(res.data.user.id)
   }
+  const handleKeyDown = (event) => {
+    if (event.key === "k" && (event.ctrlKey || event.metaKey)) {
+      event.preventDefault()
+      setIsSearchBarOpen(true)
+    }
+
+    if (event.key === "Escape" && isSearchBarOpen) {
+      setIsSearchBarOpen(false)
+    }
+  }
 
   useEffect(() => {
     isLogged()
+    window.addEventListener("keydown", handleKeyDown)
   }, [])
 
   useEffect(() => {
@@ -67,10 +78,12 @@ const NavBar = () => {
                 <Link href="/auth/register">{t("Register")}</Link>
               </li>
               <li className="flex flex-col justify-center items-center">
-                <Search
-                  onClick={() => setIsSearchBarOpen(!isSearchBarOpen)}
-                  className="h-8 w-8"
-                />
+                <button className="hover:cursor-pointer">
+                  <Search
+                    onClick={() => setIsSearchBarOpen(!isSearchBarOpen)}
+                    className="h-6 w-6"
+                  />
+                </button>
                 <SearchBar
                   open={isSearchBarOpen}
                   onOpenChange={setIsSearchBarOpen}
@@ -89,10 +102,12 @@ const NavBar = () => {
                 <IconProfil />
               </li>
               <li className="flex flex-col justify-center items-center mr-16">
-                <Search
-                  onClick={() => setIsSearchBarOpen(!isSearchBarOpen)}
-                  className="h-8 w-8"
-                />
+                <button className="hover:cursor-pointer">
+                  <Search
+                    onClick={() => setIsSearchBarOpen(!isSearchBarOpen)}
+                    className="h-8 w-8"
+                  />
+                </button>
                 <SearchBar
                   open={isSearchBarOpen}
                   onOpenChange={setIsSearchBarOpen}
@@ -133,7 +148,7 @@ const NavBar = () => {
 
         <ul
           className={clsx(
-            "flex flex-col justify-around fixed top-0 left-0 gap-4 px-8 w-screen h-screen z-50 md:hidden",
+            "flex flex-col justify-around fixed top-0 left-0 gap-4 px-8 w-screen h-screen z-50 bg-white md:hidden",
             isNavBarOpen ? "flex" : "hidden",
           )}
         >
