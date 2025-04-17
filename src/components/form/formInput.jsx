@@ -1,19 +1,46 @@
 /* eslint-disable max-lines */
 import { Input } from "@/components/ui/input"
-import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from "@/components/ui/input-otp"
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSeparator,
+  InputOTPSlot,
+} from "@/components/ui/input-otp"
 import { Label } from "@/components/ui/label"
-import { SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 import { Select } from "@radix-ui/react-select"
 import { clsx } from "clsx"
 
-const FormInput = ({ form, name, label, validators, setValue, value, error, setIsValid, hideLabel, className, ...props }) => (
+const FormInput = ({
+  form,
+  name,
+  label,
+  validators,
+  setValue,
+  value,
+  error,
+  setIsValid,
+  hideLabel,
+  className,
+  showError = true,
+  ...props
+}) => (
   <form.Field
     name={name}
     validators={validators}
     /* eslint-disable-next-line react/no-children-prop */
     children={(field) => {
-      const hasError = (field.state.meta.isTouched && field.state.meta.errors.length > 0) || error
+      const hasError =
+        (field.state.meta.isTouched && field.state.meta.errors.length > 0) ||
+        error
       const handleChange = (e) => {
         const newValue = e.target.value
         field.handleChange(newValue)
@@ -40,9 +67,10 @@ const FormInput = ({ form, name, label, validators, setValue, value, error, setI
             className={"input"}
             {...props}
           />
-          {hasError ? (
+          {hasError && showError ? (
             <span className="text-red-500">
-              {error} {error && field.state.meta.errors.length ? ", " : ""} {field.state.meta.errors.join(", ")}
+              {error} {error && field.state.meta.errors.length ? ", " : ""}{" "}
+              {field.state.meta.errors.join(", ")}
             </span>
           ) : null}
         </div>
@@ -50,8 +78,23 @@ const FormInput = ({ form, name, label, validators, setValue, value, error, setI
     }}
   />
 )
-const FormSelect = ({ form, name, label, options, validators, setValue, error, hideLabel, setIsValid, className, alphabetical, ...props }) => {
-  const firstLetters = options.map((option) => option.country[0]).filter((value, index, self) => self.indexOf(value) === index)
+const FormSelect = ({
+  form,
+  name,
+  label,
+  options,
+  validators,
+  setValue,
+  error,
+  hideLabel,
+  setIsValid,
+  className,
+  alphabetical,
+  ...props
+}) => {
+  const firstLetters = options
+    .map((option) => option.country[0])
+    .filter((value, index, self) => self.indexOf(value) === index)
 
   return (
     <form.Field
@@ -59,7 +102,9 @@ const FormSelect = ({ form, name, label, options, validators, setValue, error, h
       validators={validators}
       /* eslint-disable-next-line react/no-children-prop */
       children={(field) => {
-        const hasError = (field.state.meta.isTouched && field.state.meta.errors.length > 0) || error
+        const hasError =
+          (field.state.meta.isTouched && field.state.meta.errors.length > 0) ||
+          error
         const handleChange = (val) => {
           field.handleChange(val)
 
@@ -86,10 +131,13 @@ const FormSelect = ({ form, name, label, options, validators, setValue, error, h
                 {...props}
                 aria-labelledby={`${label}-select-label`}
               >
-                <SelectValue placeholder={`Select ${label}`} aria-labelledby={`${label}-select-label`} />
+                <SelectValue
+                  placeholder={`Select ${label}`}
+                  aria-labelledby={`${label}-select-label`}
+                />
               </SelectTrigger>
               <SelectContent>
-                {!alphabetical ?
+                {!alphabetical ? (
                   <SelectGroup aria-label={`${label} list`}>
                     {options.map((option, index) => (
                       <SelectItem
@@ -101,29 +149,34 @@ const FormSelect = ({ form, name, label, options, validators, setValue, error, h
                       </SelectItem>
                     ))}
                   </SelectGroup>
-                  :
+                ) : (
                   <>
                     {firstLetters.map((letter) => (
                       <SelectGroup key={letter} aria-label={`${label} list`}>
-                        <SelectLabel id={`${label}-select-label`}>{letter}</SelectLabel>
-                        {options.filter((option) => option.country[0] === letter).map((option, subIndex) => (
-                          <SelectItem
-                            key={subIndex}
-                            value={option.value}
-                            aria-label={`${label}: ${option.label}`}
-                          >
-                            {option.label}
-                          </SelectItem>
-                        ))}
+                        <SelectLabel id={`${label}-select-label`}>
+                          {letter}
+                        </SelectLabel>
+                        {options
+                          .filter((option) => option.country[0] === letter)
+                          .map((option, subIndex) => (
+                            <SelectItem
+                              key={subIndex}
+                              value={option.value}
+                              aria-label={`${label}: ${option.label}`}
+                            >
+                              {option.label}
+                            </SelectItem>
+                          ))}
                       </SelectGroup>
                     ))}
                   </>
-                }
+                )}
               </SelectContent>
             </Select>
             {hasError ? (
               <span className="text-red-500">
-                {error} {error && field.state.meta.errors.length ? ", " : ""} {field.state.meta.errors.join(", ")}
+                {error} {error && field.state.meta.errors.length ? ", " : ""}{" "}
+                {field.state.meta.errors.join(", ")}
               </span>
             ) : null}
           </div>
@@ -132,13 +185,26 @@ const FormSelect = ({ form, name, label, options, validators, setValue, error, h
     />
   )
 }
-const FormOTP = ({ form, name, label, validators, setValue, error, setIsValid, hideLabel, className, ...props }) => (
+const FormOTP = ({
+  form,
+  name,
+  label,
+  validators,
+  setValue,
+  error,
+  setIsValid,
+  hideLabel,
+  className,
+  ...props
+}) => (
   <form.Field
     name={name}
     validators={validators}
     /* eslint-disable-next-line react/no-children-prop */
     children={(field) => {
-      const hasError = (field.state.meta.isTouched && field.state.meta.errors.length > 0) || error
+      const hasError =
+        (field.state.meta.isTouched && field.state.meta.errors.length > 0) ||
+        error
       const handleChange = (value) => {
         field.handleChange(value)
 
@@ -176,7 +242,8 @@ const FormOTP = ({ form, name, label, validators, setValue, error, setIsValid, h
           </InputOTP>
           {hasError ? (
             <span className="text-red-500">
-              {error} {error && field.state.meta.errors.length ? ", " : ""} {field.state.meta.errors.join(", ")}
+              {error} {error && field.state.meta.errors.length ? ", " : ""}{" "}
+              {field.state.meta.errors.join(", ")}
             </span>
           ) : null}
         </div>
@@ -184,13 +251,26 @@ const FormOTP = ({ form, name, label, validators, setValue, error, setIsValid, h
     }}
   />
 )
-const FormSwitch = ({ form, name, label, validators, setValue, error, setIsValid, hideLabel, className, ...props }) => (
+const FormSwitch = ({
+  form,
+  name,
+  label,
+  validators,
+  setValue,
+  error,
+  setIsValid,
+  hideLabel,
+  className,
+  ...props
+}) => (
   <form.Field
     name={name}
     validators={validators}
     /* eslint-disable-next-line react/no-children-prop */
     children={(field) => {
-      const hasError = (field.state.meta.isTouched && field.state.meta.errors.length > 0) || error
+      const hasError =
+        (field.state.meta.isTouched && field.state.meta.errors.length > 0) ||
+        error
       const handleChange = (value) => {
         field.handleChange(value)
 
@@ -215,7 +295,8 @@ const FormSwitch = ({ form, name, label, validators, setValue, error, setIsValid
           {!hideLabel && <Label htmlFor={name}>{label}</Label>}
           {hasError ? (
             <span className="text-red-500">
-              {error} {error && field.state.meta.errors.length ? ", " : ""} {field.state.meta.errors.join(", ")}
+              {error} {error && field.state.meta.errors.length ? ", " : ""}{" "}
+              {field.state.meta.errors.join(", ")}
             </span>
           ) : null}
         </div>
@@ -224,6 +305,4 @@ const FormSwitch = ({ form, name, label, validators, setValue, error, setIsValid
   />
 )
 
-
 export { FormInput, FormOTP, FormSelect, FormSwitch }
-

@@ -2,7 +2,8 @@
 /* eslint-disable max-lines-per-function */
 import axios from "axios"
 import { Check, File, FileIcon, Loader2, Search, X } from "lucide-react"
-import React, { useEffect, useState } from "react"
+import Image from "next/image"
+import { useEffect, useState } from "react"
 
 /**
  * SingleFileSelector component for selecting a single file from previously uploaded files
@@ -101,7 +102,9 @@ export const SingleFileSelector = ({
           <div className="flex items-center">
             {isImageFile(selectedFile) ? (
               <div className="w-12 h-12 mr-3 rounded-md overflow-hidden bg-gray-100">
-                <img
+                <Image
+                  width={1280}
+                  height={720}
                   src={selectedFile}
                   alt={getFileNameFromUrl(selectedFile)}
                   className="w-full h-full object-cover"
@@ -210,7 +213,9 @@ export const SingleFileSelector = ({
                       {/* Preview */}
                       <div className="h-24 bg-gray-100 flex items-center justify-center">
                         {isImageFile(file.name) ? (
-                          <img
+                          <Image
+                            width={1280}
+                            height={720}
                             src={`${fileBaseUrl}${file.name}`}
                             alt={file.name}
                             className="w-full h-full object-cover"

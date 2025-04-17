@@ -1,12 +1,15 @@
+import ChatBot from "@/components/ChatBot"
 import Footer from "@/components/nav/Footer"
 import NavBar from "@/components/nav/NavBar"
 import { Toaster } from "@/components/ui/toaster"
 import { I18nProvider } from "@/locales"
-import "@/styles/globals.css"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import axios from "axios"
 import Script from "next/script"
 import { useEffect, useState } from "react"
+
+import "@/styles/globals.css"
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 
 const queryClient = new QueryClient()
 const App = ({ Component, pageProps }) => {
@@ -45,7 +48,9 @@ const App = ({ Component, pageProps }) => {
             <Component {...pageProps} />
             <Footer />
             <Toaster />
+            <ChatBot />
           </div>
+          <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
       </I18nProvider>
     </>

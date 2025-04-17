@@ -15,38 +15,45 @@ const handler = async (req, res) => {
 
     const user = JSON.parse(userData)
 
-    if ((!user || !user.isAdmin) && apiKey !== process.env.API_KEY) {
+    if ((!user || user.role !== "admin") && apiKey !== process.env.API_KEY) {
       return res.status(401).json({ message: "Unauthorized" })
     }
 
     console.log(req.body)
 
     try {
-      const translator = new Translator(process.env.DEEPL_API_KEY)
       const { texts, key } = req.body
-      const langs = Object.values(Langs).map((lang) => (lang.picto === "en" ? "en-US" : lang.picto))
+      const langs = Object.values(Langs).map((lang) =>
+        lang.picto === "en" ? "en-US" : lang.picto,
+      )
+      // Préparer les clés pour la recherche dans la base de données
+      const textKeys = texts.map((text) => (key ? `${key}.${text}` : text))
       // Vérifier si les textes existent déjà dans la base de données
       const existingTranslations = await Translations.query(knexInstance)
-        .whereIn(
-          "key",
-          texts.map(text => key ? `${key}.${text}` : text)
-        )
+        .whereIn("key", textKeys)
         .select("key", "value")
       // Créer un map des traductions existantes pour faciliter l'accès
-      // eslint-disable-next-line no-shadow
-      const existingTranslationsMap = existingTranslations.reduce((acc, { key, value }) => {
-        const originalText = key.startsWith(`${key}.`) ? key.substring(key.length + 1) : key
-        acc[originalText] = value
+      const existingTranslationsMap = existingTranslations.reduce(
+        (acc, { key: translationKey, value }) => {
+          // Correction ici: on utilise translationKey au lieu de la variable key du scope parent
+          acc[translationKey] = value
 
-
-        return acc
-      }, {})
+          return acc
+        },
+        {},
+      )
       // Filtrer les textes qui n'ont pas encore de traductions
-      const textsToTranslate = texts.filter(text => !existingTranslationsMap[text])
+      const textsToTranslate = texts.filter((text) => {
+        const fullKey = key ? `${key}.${text}` : text
+
+        return !existingTranslationsMap[fullKey]
+      })
       const textsTranslationsObject = {}
 
       // Si des textes nécessitent une traduction
       if (textsToTranslate.length > 0) {
+        // Initialiser le traducteur DeepL seulement si nécessaire
+        const translator = new Translator(process.env.DEEPL_API_KEY)
         // Regrouper tous les textes dans un seul appel API par langue
         const translationsByLang = await Promise.all(
           langs.map(async (lang) => {
@@ -54,7 +61,7 @@ const handler = async (req, res) => {
             const results = await translator.translateText(
               textsToTranslate,
               null,
-              lang
+              lang,
             )
 
             // Organiser les résultats par texte original
@@ -62,60 +69,63 @@ const handler = async (req, res) => {
               lang,
               translations: results.map((result, index) => ({
                 originalText: textsToTranslate[index],
-                text: result.text
-              }))
+                text: result.text,
+              })),
             }
-          })
+          }),
         )
 
         // Réorganiser les données par texte original puis par langue
         textsToTranslate.forEach((originalText, textIndex) => {
-          textsTranslationsObject[originalText] = {}
+          const fullKey = key ? `${key}.${originalText}` : originalText
+          textsTranslationsObject[fullKey] = {}
 
           translationsByLang.forEach(({ lang, translations }) => {
             const langKey = lang === "en-US" ? "en" : lang
-            textsTranslationsObject[originalText][langKey] = translations[textIndex].text
+            textsTranslationsObject[fullKey][langKey] =
+              translations[textIndex].text
           })
         })
       }
 
       // Ajouter les traductions existantes au résultat
-      texts.forEach(text => {
-        if (existingTranslationsMap[text]) {
-          textsTranslationsObject[text] = existingTranslationsMap[text]
+      texts.forEach((text) => {
+        const fullKey = key ? `${key}.${text}` : text
+
+        if (existingTranslationsMap[fullKey]) {
+          textsTranslationsObject[fullKey] = existingTranslationsMap[fullKey]
         }
       })
 
       // Enregistrer les nouvelles traductions dans la base de données
       await Promise.all(
         Object.keys(textsTranslationsObject)
-          .filter(text => !existingTranslationsMap[text])
-          .map(async (text) => {
-            const objectKey = key ? `${key}.${text}` : text
-            const object = { key: objectKey, value: textsTranslationsObject[text] }
-            // Vérifier si l'entrée existe déjà
+          .filter((textKey) => !existingTranslationsMap[textKey])
+          .map(async (textKey) => {
+            const object = {
+              key: textKey,
+              value: textsTranslationsObject[textKey],
+            }
+            // Vérifier si l'entrée existe déjà (double vérification pour éviter les conflits)
             const existingEntry = await Translations.query(knexInstance)
-              .where("key", objectKey)
+              .where("key", textKey)
               .first()
 
             if (existingEntry) {
               // Mettre à jour l'entrée existante
-              // Mettre à jour l'entrée existante
               await Translations.query(knexInstance)
-                .where("key", objectKey)
-                .update({ key: objectKey, value: object.value })
+                .where("key", textKey)
+                .update({ value: object.value })
             } else {
               // Créer une nouvelle entrée
-              await Translations.query(knexInstance)
-                .insert(object)
+              await Translations.query(knexInstance).insert(object)
             }
-          })
+          }),
       )
 
       return res.status(200).json({ translations: textsTranslationsObject })
     } catch (error) {
       console.error(error)
-
 
       return res.status(500).json({ message: error.message, error })
     }
@@ -124,7 +134,10 @@ const handler = async (req, res) => {
   if (method === "GET") {
     try {
       const { lang } = req.query
-      const translations = await Translations.query(knexInstance).select("key", "value")
+      const translations = await Translations.query(knexInstance).select(
+        "key",
+        "value",
+      )
 
       if (!lang) {
         return res.status(200).json(translations)
@@ -149,13 +162,15 @@ const handler = async (req, res) => {
 
     const user = JSON.parse(userData)
 
-    if (!user || !user.isAdmin) {
+    if (!user || user.role !== "admin") {
       return res.status(401).json({ message: "Unauthorized" })
     }
 
     try {
       const { key } = req.query
-      const deleted = await Translations.query(knexInstance).delete().where("key", key)
+      const deleted = await Translations.query(knexInstance)
+        .delete()
+        .where("key", key)
 
       return res.status(200).json({ deleted })
     } catch (error) {

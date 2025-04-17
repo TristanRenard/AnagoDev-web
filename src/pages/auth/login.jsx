@@ -47,7 +47,9 @@ const Login = () => {
           description: res.data.message,
           status: "success",
         })
-        router.push("/")
+        router.push("/").then(() => {
+          router.reload()
+        })
       }
     } catch (err) {
       umami.track("registerError", {

@@ -1,17 +1,17 @@
 /* eslint-disable max-lines-per-function */
 
-import { SingleFileSelector } from "@/components/form/selectFile"
+import { MultiFileSelector } from "@/components/form/MultipleSelectFile"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { Switch } from "@/components/ui/switch"
 import { useToast } from "@/hooks/use-toast"
 import { useI18n } from "@/locales"
 import axios from "axios"
-import { useState } from "react"
 import dynamic from "next/dynamic"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useState } from "react"
 
 const Editor = dynamic(() => import("@/components/Editor"), { ssr: false })
 const AddProductSheet = ({ queryClient, categories }) => {
@@ -19,25 +19,22 @@ const AddProductSheet = ({ queryClient, categories }) => {
   const { toast } = useToast()
   const [newProductName, setNewProductName] = useState("")
   const [newProductDescription, setNewProductDescription] = useState("")
-  const [newProductImage, setNewProductImage] = useState("")
+  const [newProductImages, setNewProductImages] = useState([])
   const [newProductIsSubscription, setNewProductIsSubscription] = useState(true)
   const [newProductMonthlyPrice, setNewProductMonthlyPrice] = useState(0)
   const [newProductYearlyPrice, setNewProductYearlyPrice] = useState(0)
   const [newProductPrice, setNewProductPrice] = useState(0)
   const [newCategoryId, setCategoryId] = useState(null)
-  const [newProductDuties, setNewProductDuties] = useState(0)
   const [newProducrStock, setNewProductStock] = useState("")
   const [newProductIsTopProduct, setNewProductIsTopProduct] = useState(false)
   const handleSubmit = async () => {
     const payload = {
       name: newProductName,
       description: newProductDescription,
-      images: [newProductImage],
+      images: newProductImages,
       isSubscription: newProductIsSubscription,
       categoryId: newCategoryId,
-      duties: Number(newProductDuties),
-      // If infinity stock is empty, set it to -1 for infinity
-      stock: newProducrStock === "" ? -1 : newProducrStock,
+      stock: newProducrStock === "" ? -1 : Number(newProducrStock),
     }
 
     if (newProductIsSubscription) {
@@ -82,6 +79,17 @@ const AddProductSheet = ({ queryClient, categories }) => {
           description: t("The product has been added successfully"),
           variant: "default",
         })
+
+        setNewProductName("")
+        setNewProductDescription("")
+        setNewProductImages([])
+        setNewProductIsSubscription(true)
+        setNewProductMonthlyPrice(0)
+        setNewProductYearlyPrice(0)
+        setNewProductPrice(0)
+        setCategoryId(null)
+        setNewProductStock("")
+        setNewProductIsTopProduct(false)
       } else {
         toast({
           title: t("Error"),
@@ -208,7 +216,7 @@ const AddProductSheet = ({ queryClient, categories }) => {
             <Label htmlFor="description" className="text-right col-span-1 pt-2">
               {t("Product description")}
             </Label>
-            <div className="col-span-3" data-color-mode="light">
+            <div className="col-span-3 max-h-80 h-full" data-color-mode="light">
               <Editor
                 id="description"
                 markdown={newProductDescription}
@@ -223,18 +231,13 @@ const AddProductSheet = ({ queryClient, categories }) => {
             <Label htmlFor="image" className="text-right col-span-1">
               {t("Product image URL")}
             </Label>
-            <SingleFileSelector selectedFile={newProductImage} setSelectedFile={setNewProductImage} />
-            <Input
-              className="col-span-3"
-              id="image"
-              type="text"
-              value={newProductImage}
-              onChange={(e) => setNewProductImage(e.target.value)}
-            />
+            <div className="col-span-3">
+              <MultiFileSelector selectedFiles={newProductImages} setSelectedFiles={setNewProductImages} organize />
+            </div>
           </div>
           <div className="grid grid-cols-6 items-center gap-4 h-fit">
             <Label htmlFor="stock" className="text-right col-span-1">
-              {t("Product stock")}
+              {t("Product stock")} {t("(leave empty for infinite stock)")}
             </Label>
             <Input
               className="col-span-2"
@@ -242,16 +245,6 @@ const AddProductSheet = ({ queryClient, categories }) => {
               type="number"
               value={newProducrStock}
               onChange={(e) => setNewProductStock(e.target.value)}
-            />
-            <Label htmlFor="duties" className="text-right col-span-1">
-              {t("Product duties")}
-            </Label>
-            <Input
-              className="col-span-2"
-              id="duties"
-              type="number"
-              value={newProductDuties}
-              onChange={(e) => setNewProductDuties(e.target.value)}
             />
           </div>
         </div>

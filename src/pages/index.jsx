@@ -8,7 +8,9 @@ const Home = () => (
     <HeroHeader />
     <CustomCarousel />
     <Description />
-    <CustomVerticalCarousel />
+    <div className="mx-24 my-16">
+      <CustomVerticalCarousel />
+    </div>
   </main>
 )
 
