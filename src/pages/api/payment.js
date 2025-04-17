@@ -8,9 +8,12 @@ const handler = async (req, res) => {
     return res.status(405).json({ message: "Method not allowed" })
   }
 
+  const { "x-user-data": userData } = req.headers
+  const user = JSON.parse(userData)
   const { price } = req.body
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ["card"],
+    customer: user.customerId,
     mode: "payment",
     line_items: [
       {
