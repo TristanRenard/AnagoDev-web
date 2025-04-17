@@ -11,7 +11,7 @@ exports.up = (knex) =>
     table.string("customerId")
     table.string("password")
     table.string("phone")
-    table.string("role").defaultTo(false)
+    table.string("role").defaultTo("user")
     table.boolean("isVerified").notNullable().defaultTo(false)
     table.string("verificationToken")
     table.boolean("consentMail")
