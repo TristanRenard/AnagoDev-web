@@ -125,7 +125,7 @@ const Users = () => {
                         <TableCell>{user.email}</TableCell>
                         <TableCell>{user.phone}</TableCell>
                         <TableCell>
-                          {user.isAdmin ? (
+                          {user.role === "admin" ? (
                             <Check className="text-green-500" />
                           ) : (
                             <X className="text-red-500" />
@@ -176,7 +176,7 @@ export default Users
 export const getServerSideProps = async (context) => {
   const { user } = await authProps(context)
 
-  if (!user || !user.isAdmin) {
+  if (!user || !user.role === "admin") {
     return {
       notFound: true,
     }

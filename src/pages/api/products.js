@@ -8,8 +8,8 @@ import axios from "axios"
 // eslint-disable-next-line complexity, consistent-return
 const handler = async (req, res) => {
   const { "x-user-data": userData } = req.headers
-  const user = userData && JSON.parse(userData) || {}
-  const isAdmin = user?.isAdmin || false
+  const user = (userData && JSON.parse(userData)) || {}
+  const isAdmin = user?.role === "admin"
 
   if (req.method === "POST") {
     if (!isAdmin) {
@@ -26,7 +26,7 @@ const handler = async (req, res) => {
         categoryId = 2,
         stock = -1,
         duties = -1,
-        isTopProduct
+        isTopProduct,
       } = req.body
 
       if (
@@ -101,23 +101,25 @@ const handler = async (req, res) => {
           nickname: price.nickname,
           "unit_amount": price.unit_amount,
           currency: price.currency,
-          interval: isSubscription && price.recurring ? price.recurring.interval : "",
+          interval:
+            isSubscription && price.recurring ? price.recurring.interval : "",
           productId: dbProduct.id,
         })
       })
       const createdPrices = await Promise.all(pricePromises)
 
-      await axios.post(`${process.env.HOST_NAME}/api/temp/translations`, {
-        texts: [
-          name,
-          description,
-        ],
-        key: `products`,
-      }, {
-        headers: {
-          "x-user-data": userData,
+      await axios.post(
+        `${process.env.HOST_NAME}/api/temp/translations`,
+        {
+          texts: [name, description],
+          key: `products`,
         },
-      })
+        {
+          headers: {
+            "x-user-data": userData,
+          },
+        },
+      )
 
       res.status(200).json({
         success: true,
@@ -169,9 +171,11 @@ const handler = async (req, res) => {
       await stripe.products.update(id, {
         active: !product.isActive,
       })
-      await Product.query(knexInstance).patch({
-        isActive: !product.isActive,
-      }).where({ stripeId: id })
+      await Product.query(knexInstance)
+        .patch({
+          isActive: !product.isActive,
+        })
+        .where({ stripeId: id })
 
       return res.status(200).json({ message: "Product deleted successfully" })
     } catch (error) {
@@ -214,71 +218,98 @@ const handler = async (req, res) => {
       // Mettre à jour le produit dans Stripe
       const updateData = {}
 
-      if (name) { updateData.name = name }
+      if (name) {
+        updateData.name = name
+      }
 
-      if (description) { updateData.description = description }
+      if (description) {
+        updateData.description = description
+      }
 
       if (isSubscription !== undefined) {
         updateData.metadata = {
           ...dbProduct.metadata,
-          isSubscription: isSubscription ? "true" : "false"
+          isSubscription: isSubscription ? "true" : "false",
         }
       }
 
       // Mise à jour du produit dans Stripe
       const updatedStripeProduct = await stripe.products.update(
         dbProduct.stripeId,
-        updateData
+        updateData,
       )
       // Préparer les données pour la mise à jour dans la base de données PostgreSQL
       const dbUpdateData = {}
 
-      if (name) { dbUpdateData.title = name }
+      if (name) {
+        dbUpdateData.title = name
+      }
 
-      if (description) { dbUpdateData.description = description }
+      if (description) {
+        dbUpdateData.description = description
+      }
 
-      if (images) { dbUpdateData.images = images }
+      if (images) {
+        dbUpdateData.images = images
+      }
 
-      if (isSubscription !== undefined) { dbUpdateData.isSubscription = Boolean(isSubscription) }
+      if (isSubscription !== undefined) {
+        dbUpdateData.isSubscription = Boolean(isSubscription)
+      }
 
-      if (categoryId) { dbUpdateData.categoryId = categoryId }
+      if (categoryId) {
+        dbUpdateData.categoryId = categoryId
+      }
 
-      if (stock !== undefined) { dbUpdateData.stock = stock }
+      if (stock !== undefined) {
+        dbUpdateData.stock = stock
+      }
 
-      if (duties !== undefined) { dbUpdateData.duties = duties }
+      if (duties !== undefined) {
+        dbUpdateData.duties = duties
+      }
 
-      if (isActive !== undefined) { dbUpdateData.isActive = isActive }
+      if (isActive !== undefined) {
+        dbUpdateData.isActive = isActive
+      }
 
-      if (isTopProduct !== undefined) { dbUpdateData.isTopProduct = isTopProduct }
+      if (isTopProduct !== undefined) {
+        dbUpdateData.isTopProduct = isTopProduct
+      }
 
       // Mise à jour du produit dans la base de données PostgreSQL
-      await Product.query(knexInstance)
-        .findById(id)
-        .patch(dbUpdateData)
+      await Product.query(knexInstance).findById(id).patch(dbUpdateData)
 
       // Mise à jour des prix si fournis
       let updatedPrices = []
 
       if (prices && Array.isArray(prices)) {
         // Récupérer les prix existants
-        const existingPrices = await Price.query(knexInstance)
-          .where("productId", id)
+        const existingPrices = await Price.query(knexInstance).where(
+          "productId",
+          id,
+        )
         // Traiter les mises à jour de prix
         // eslint-disable-next-line consistent-return
         const pricePromises = prices.map(async (price) => {
           if (price.id) {
             // Mise à jour d'un prix existant
-            const existingPrice = existingPrices.find(ep => ep.id === price.id)
+            const existingPrice = existingPrices.find(
+              (ep) => ep.id === price.id,
+            )
 
             if (existingPrice) {
               // Pour Stripe, nous ne pouvons pas modifier un prix existant, nous devons en créer un nouveau et archiver l'ancien
               if (
                 price.unit_amount !== existingPrice.unit_amount ||
                 price.currency !== existingPrice.currency ||
-                JSON.stringify(price.recurring) !== JSON.stringify(existingPrice.recurring)
+                JSON.stringify(price.recurring) !==
+                JSON.stringify(existingPrice.recurring)
               ) {
                 // Archiver l'ancien prix dans Stripe
-                await stripe.prices.update(existingPrice.stripeId, { active: false })
+                await stripe.prices.update(existingPrice.stripeId, {
+                  active: false,
+                })
 
                 // Préparer les données pour le nouveau prix Stripe
                 const newStripePriceData = {
@@ -297,7 +328,8 @@ const handler = async (req, res) => {
                 }
 
                 // Créer un nouveau prix dans Stripe
-                const newStripePrice = await stripe.prices.create(newStripePriceData)
+                const newStripePrice =
+                  await stripe.prices.create(newStripePriceData)
 
                 // Mettre à jour l'enregistrement de prix dans PostgreSQL
                 return Price.query(knexInstance)
@@ -308,13 +340,18 @@ const handler = async (req, res) => {
                     nickname: price.nickname || existingPrice.nickname,
                     "unit_amount": price.unit_amount,
                     currency: price.currency,
-                    interval: isSubscription && price.recurring ? price.recurring.interval : "",
+                    interval:
+                      isSubscription && price.recurring
+                        ? price.recurring.interval
+                        : "",
                   })
               }
 
               // Si seul le nickname change, nous pouvons le mettre à jour directement
               if (price.nickname && price.nickname !== existingPrice.nickname) {
-                await stripe.prices.update(existingPrice.stripeId, { nickname: price.nickname })
+                await stripe.prices.update(existingPrice.stripeId, {
+                  nickname: price.nickname,
+                })
 
                 return Price.query(knexInstance)
                   .findById(price.id)
@@ -335,14 +372,21 @@ const handler = async (req, res) => {
             }
 
             // Ajouter recurring seulement si c'est un abonnement
-            if (isSubscription !== undefined ? isSubscription : dbProduct.isSubscription) {
+            if (
+              isSubscription !== undefined
+                ? isSubscription
+                : dbProduct.isSubscription
+            ) {
               if (price.recurring) {
                 newStripePriceData.recurring = price.recurring
               }
             }
 
             const stripePrice = await stripe.prices.create(newStripePriceData)
-            const isProductSubscription = isSubscription !== undefined ? isSubscription : dbProduct.isSubscription
+            const isProductSubscription =
+              isSubscription !== undefined
+                ? isSubscription
+                : dbProduct.isSubscription
 
             return Price.query(knexInstance).insert({
               stripeId: stripePrice.id,
@@ -350,7 +394,10 @@ const handler = async (req, res) => {
               nickname: price.nickname,
               "unit_amount": price.unit_amount,
               currency: price.currency,
-              interval: isProductSubscription && price.recurring ? price.recurring.interval : "",
+              interval:
+                isProductSubscription && price.recurring
+                  ? price.recurring.interval
+                  : "",
               productId: id,
             })
           }
@@ -361,17 +408,21 @@ const handler = async (req, res) => {
 
       // Mettre à jour les traductions si le nom ou la description a changé
       if (name || description) {
-        await axios.post(`${process.env.HOST_NAME}/api/temp/translations`, {
-          texts: [
-            name || dbProduct.title,
-            description || dbProduct.description,
-          ],
-          key: `products`,
-        }, {
-          headers: {
-            "x-user-data": userData,
+        await axios.post(
+          `${process.env.HOST_NAME}/api/temp/translations`,
+          {
+            texts: [
+              name || dbProduct.title,
+              description || dbProduct.description,
+            ],
+            key: `products`,
           },
-        })
+          {
+            headers: {
+              "x-user-data": userData,
+            },
+          },
+        )
       }
 
       // Récupérer le produit mis à jour avec ses relations

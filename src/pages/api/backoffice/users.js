@@ -5,7 +5,7 @@ import knexInstance from "@/lib/db"
 const handler = async (req, res) => {
   const { "x-user-data": userData } = req.headers
   const user = (userData && JSON.parse(userData)) || {}
-  const isAdmin = user?.isAdmin || false
+  const isAdmin = user?.role === "admin"
 
   if (req.method === "GET") {
     if (isAdmin) {

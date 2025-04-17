@@ -21,12 +21,12 @@ class User extends Model {
         customerId: { type: "string" },
         password: { type: "string" },
         phone: { type: "string" },
-        isAdmin: { type: "boolean" },
+        role: { type: "string" },
         isVerified: { type: "boolean" },
         verificationToken: { type: "string" },
         consentMail: { type: "boolean" },
-        consentConditions: { type: "boolean" }
-      }
+        consentConditions: { type: "boolean" },
+      },
     }
   }
 
@@ -37,33 +37,33 @@ class User extends Model {
         modelClass: Address,
         join: {
           from: "users.id",
-          to: "addresses.userId"
-        }
+          to: "addresses.userId",
+        },
       },
       paymentMethods: {
         relation: Model.HasManyRelation,
         modelClass: PaymentMethod,
         join: {
           from: "users.id",
-          to: "paymentMethods.userId"
-        }
+          to: "paymentMethods.userId",
+        },
       },
       orders: {
         relation: Model.HasManyRelation,
         modelClass: Order,
         join: {
           from: "users.id",
-          to: "orders.userId"
-        }
+          to: "orders.userId",
+        },
       },
       subscriptions: {
         relation: Model.HasManyRelation,
         modelClass: Subscription,
         join: {
           from: "users.id",
-          to: "subscriptions.userId"
-        }
-      }
+          to: "subscriptions.userId",
+        },
+      },
     }
   }
 }

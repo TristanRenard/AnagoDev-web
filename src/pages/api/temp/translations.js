@@ -15,7 +15,7 @@ const handler = async (req, res) => {
 
     const user = JSON.parse(userData)
 
-    if ((!user || !user.isAdmin) && apiKey !== process.env.API_KEY) {
+    if ((!user || !user.role === "admin") && apiKey !== process.env.API_KEY) {
       return res.status(401).json({ message: "Unauthorized" })
     }
 
@@ -23,27 +23,30 @@ const handler = async (req, res) => {
 
     try {
       const { texts, key } = req.body
-      const langs = Object.values(Langs).map((lang) => (lang.picto === "en" ? "en-US" : lang.picto))
+      const langs = Object.values(Langs).map((lang) =>
+        lang.picto === "en" ? "en-US" : lang.picto,
+      )
       // Préparer les clés pour la recherche dans la base de données
-      const textKeys = texts.map(text => key ? `${key}.${text}` : text)
+      const textKeys = texts.map((text) => (key ? `${key}.${text}` : text))
       // Vérifier si les textes existent déjà dans la base de données
       const existingTranslations = await Translations.query(knexInstance)
         .whereIn("key", textKeys)
         .select("key", "value")
       // Créer un map des traductions existantes pour faciliter l'accès
-      const existingTranslationsMap = existingTranslations.reduce((acc, { key: translationKey, value }) => {
-        // Correction ici: on utilise translationKey au lieu de la variable key du scope parent
-        acc[translationKey] = value
+      const existingTranslationsMap = existingTranslations.reduce(
+        (acc, { key: translationKey, value }) => {
+          // Correction ici: on utilise translationKey au lieu de la variable key du scope parent
+          acc[translationKey] = value
 
-        
-return acc
-      }, {})
+          return acc
+        },
+        {},
+      )
       // Filtrer les textes qui n'ont pas encore de traductions
-      const textsToTranslate = texts.filter(text => {
+      const textsToTranslate = texts.filter((text) => {
         const fullKey = key ? `${key}.${text}` : text
 
-        
-return !existingTranslationsMap[fullKey]
+        return !existingTranslationsMap[fullKey]
       })
       const textsTranslationsObject = {}
 
@@ -58,7 +61,7 @@ return !existingTranslationsMap[fullKey]
             const results = await translator.translateText(
               textsToTranslate,
               null,
-              lang
+              lang,
             )
 
             // Organiser les résultats par texte original
@@ -66,10 +69,10 @@ return !existingTranslationsMap[fullKey]
               lang,
               translations: results.map((result, index) => ({
                 originalText: textsToTranslate[index],
-                text: result.text
-              }))
+                text: result.text,
+              })),
             }
-          })
+          }),
         )
 
         // Réorganiser les données par texte original puis par langue
@@ -79,13 +82,14 @@ return !existingTranslationsMap[fullKey]
 
           translationsByLang.forEach(({ lang, translations }) => {
             const langKey = lang === "en-US" ? "en" : lang
-            textsTranslationsObject[fullKey][langKey] = translations[textIndex].text
+            textsTranslationsObject[fullKey][langKey] =
+              translations[textIndex].text
           })
         })
       }
 
       // Ajouter les traductions existantes au résultat
-      texts.forEach(text => {
+      texts.forEach((text) => {
         const fullKey = key ? `${key}.${text}` : text
 
         if (existingTranslationsMap[fullKey]) {
@@ -96,9 +100,12 @@ return !existingTranslationsMap[fullKey]
       // Enregistrer les nouvelles traductions dans la base de données
       await Promise.all(
         Object.keys(textsTranslationsObject)
-          .filter(textKey => !existingTranslationsMap[textKey])
+          .filter((textKey) => !existingTranslationsMap[textKey])
           .map(async (textKey) => {
-            const object = { key: textKey, value: textsTranslationsObject[textKey] }
+            const object = {
+              key: textKey,
+              value: textsTranslationsObject[textKey],
+            }
             // Vérifier si l'entrée existe déjà (double vérification pour éviter les conflits)
             const existingEntry = await Translations.query(knexInstance)
               .where("key", textKey)
@@ -111,25 +118,26 @@ return !existingTranslationsMap[fullKey]
                 .update({ value: object.value })
             } else {
               // Créer une nouvelle entrée
-              await Translations.query(knexInstance)
-                .insert(object)
+              await Translations.query(knexInstance).insert(object)
             }
-          })
+          }),
       )
 
       return res.status(200).json({ translations: textsTranslationsObject })
     } catch (error) {
       console.error(error)
 
-      
-return res.status(500).json({ message: error.message, error })
+      return res.status(500).json({ message: error.message, error })
     }
   }
 
   if (method === "GET") {
     try {
       const { lang } = req.query
-      const translations = await Translations.query(knexInstance).select("key", "value")
+      const translations = await Translations.query(knexInstance).select(
+        "key",
+        "value",
+      )
 
       if (!lang) {
         return res.status(200).json(translations)
@@ -138,8 +146,7 @@ return res.status(500).json({ message: error.message, error })
       const translationsObject = translations.reduce((acc, { key, value }) => {
         acc[key] = value[lang]
 
-        
-return acc
+        return acc
       }, {})
 
       return res.status(200).json(translationsObject)
@@ -155,13 +162,15 @@ return acc
 
     const user = JSON.parse(userData)
 
-    if (!user || !user.isAdmin) {
+    if (!user || !user.role === "admin") {
       return res.status(401).json({ message: "Unauthorized" })
     }
 
     try {
       const { key } = req.query
-      const deleted = await Translations.query(knexInstance).delete().where("key", key)
+      const deleted = await Translations.query(knexInstance)
+        .delete()
+        .where("key", key)
 
       return res.status(200).json({ deleted })
     } catch (error) {
