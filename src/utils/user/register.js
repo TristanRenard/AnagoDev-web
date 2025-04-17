@@ -8,15 +8,30 @@ import sendEmail from "@/utils/mail/sendMail"
 import bcrypt from "bcrypt"
 import crypto from "crypto"
 
-const register = async (req, res, { email, firstName, lastName, phone, password, consentMail, consentConditions }) => {
+const register = async (
+  req,
+  res,
+  {
+    email,
+    firstName,
+    lastName,
+    phone,
+    password,
+    consentMail,
+    consentConditions,
+  },
+) => {
   try {
     const { id: customerId } = await stripe.customers.create({
       email,
       name: `${firstName} ${lastName}`,
-      phone
+      phone,
     })
     const hashedPassword = await bcrypt.hash(password, 10)
-    const verificationToken = crypto.createHash("sha256").update(email).digest("hex")
+    const verificationToken = crypto
+      .createHash("sha256")
+      .update(email)
+      .digest("hex")
     const newUser = await User.query(knexInstance).insert({
       firstName,
       lastName,
@@ -26,38 +41,41 @@ const register = async (req, res, { email, firstName, lastName, phone, password,
       password: hashedPassword,
       verificationToken,
       consentMail,
-      consentConditions
+      consentConditions,
     })
 
-    await PhoneVerification.query(knexInstance).delete().where({ phoneNumber: phone })
+    await PhoneVerification.query(knexInstance)
+      .delete()
+      .where({ phoneNumber: phone })
 
     const template = accountVerificationMailTemplate
     const params = [
       {
         name: "name",
-        value: `${firstName} ${lastName}`
+        value: `${firstName} ${lastName}`,
       },
       {
         name: "verificationLink",
-        value: `${process.env.HOST_NAME}/auth/verify/${verificationToken}`
-      }
+        value: `${process.env.HOST_NAME}/auth/verify/${verificationToken}`,
+      },
     ]
     const body = mailFormater(template, params)
 
     await sendEmail(email, "Account Verification", body)
 
     return res.status(201).json({
-      message: "User created", user: {
+      message: "User created",
+      user: {
         id: newUser.id,
         firstName: newUser.firstName,
         lastName: newUser.lastName,
         email: newUser.email,
         phone: newUser.phone,
-        isAdmin: newUser.isAdmin,
+        role: newUser.role,
         isVerified: newUser.isVerified,
         createdAt: newUser.createdAt,
-        updatedAt: newUser.updatedAt
-      }
+        updatedAt: newUser.updatedAt,
+      },
     })
   } catch (error) {
     return res.status(500).json({ message: "Internal Server Error", error })

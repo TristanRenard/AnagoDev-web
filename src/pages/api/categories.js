@@ -4,7 +4,7 @@ import knexInstance from "@/lib/db"
 const handler = async (req, res) => {
   const { "x-user-data": userData } = req.headers
   const user = JSON.parse(userData) || {}
-  const isAdmin = user?.isAdmin || false
+  const isAdmin = user?.role === "admin"
 
   if (req.method === "GET") {
     const categories = await Category.query(knexInstance)
@@ -23,12 +23,13 @@ const handler = async (req, res) => {
 
     if (!name || !description || !images || !order) {
       return res.status(400).json({
-        message: "Missing required fields", missingFields: {
+        message: "Missing required fields",
+        missingFields: {
           name: !name,
           description: !description,
           images: !images,
           order: !order,
-        }
+        },
       })
     }
 
@@ -51,7 +52,7 @@ const handler = async (req, res) => {
 
     if (!categoryIds || !Array.isArray(categoryIds)) {
       return res.status(400).json({
-        message: "Missing or invalid categoryIds field"
+        message: "Missing or invalid categoryIds field",
       })
     }
 
@@ -67,12 +68,15 @@ const handler = async (req, res) => {
         }
       })
 
-      return res.status(200).json({ success: true, message: "Categories reordered successfully" })
+      return res
+        .status(200)
+        .json({ success: true, message: "Categories reordered successfully" })
     } catch (error) {
       console.error("Error reordering categories:", error)
 
-
-      return res.status(500).json({ message: "Failed to reorder categories", error: error.message })
+      return res
+        .status(500)
+        .json({ message: "Failed to reorder categories", error: error.message })
     }
   }
 
