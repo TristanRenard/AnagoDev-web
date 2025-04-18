@@ -35,7 +35,7 @@ const IconProfil = () => {
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuItem>
-          <Link href="/account">{t("Mon profil")}</Link>
+          <Link href="/profile">{t("Mon profil")}</Link>
         </DropdownMenuItem>
         <DropdownMenuItem>
           <button onClick={handleLogout}>{t("Deconnexion")}</button>

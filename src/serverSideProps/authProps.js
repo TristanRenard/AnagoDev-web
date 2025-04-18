@@ -2,16 +2,16 @@ import User from "@/db/models/User"
 import knexInstance from "@/lib/db"
 
 const authProps = async (context) => {
-  const userData = context.req.headers["x-user-data"]
+  const userData = await context.req.headers["x-user-data"]
 
   if (!userData) {
     return {
-      user: null
+      user: null,
     }
   }
 
   const user = await User.query(knexInstance).findOne({
-    id: userData
+    id: userData,
   })
 
   delete user.password
@@ -20,12 +20,12 @@ const authProps = async (context) => {
 
   if (!user) {
     return {
-      user: null
+      user: null,
     }
   }
 
   return {
-    user: await JSON.parse(JSON.stringify(user))
+    user: await JSON.parse(JSON.stringify(user)),
   }
 }
 

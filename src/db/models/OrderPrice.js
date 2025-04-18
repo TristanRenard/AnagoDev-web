@@ -1,21 +1,21 @@
 import Order from "@/db/models/Order"
-import Product from "@/db/models/Product"
+import Price from "@/db/models/Price"
 import { Model } from "objection"
 
-class OrderProduct extends Model {
+class OrderPrice extends Model {
   static get tableName() {
-    return "orderProducts"
+    return "orderPrice"
   }
 
   static get jsonSchema() {
     return {
       type: "object",
-      required: ["orderId", "productId", "quantity"],
+      required: ["orderId", "priceId", "quantity"],
 
       properties: {
         id: { type: "integer" },
         orderId: { type: "integer" },
-        productId: { type: "integer" },
+        priceId: { type: "integer" },
         quantity: { type: "integer" }
       }
     }
@@ -27,20 +27,20 @@ class OrderProduct extends Model {
         relation: Model.BelongsToOneRelation,
         modelClass: Order,
         join: {
-          from: "orderProducts.orderId",
+          from: "orderPrice.orderId",
           to: "orders.id"
         }
       },
-      product: {
+      price: {
         relation: Model.BelongsToOneRelation,
-        modelClass: Product,
+        modelClass: Price,
         join: {
-          from: "orderProducts.productId",
-          to: "products.id"
+          from: "orderPrice.priceId",
+          to: "prices.id"
         }
       }
     }
   }
 }
 
-export default OrderProduct
+export default OrderPrice
