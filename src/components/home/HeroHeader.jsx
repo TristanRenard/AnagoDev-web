@@ -1,8 +1,31 @@
+import { useState, useEffect } from "react"
 import { useI18n } from "@/locales"
 import Image from "next/image"
 
 const HeroHeader = () => {
+  const [mainCTA, setMainCTA] = useState("")
+  const [ctaText, setCtaText] = useState("")
   const t = useI18n()
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const res = await fetch("/api/settings")
+
+        if (!res.ok) {
+          throw new Error("Failed to fetch settings")
+        }
+
+        const data = await res.json()
+        setMainCTA(data.mainCTA || "/")
+        setCtaText(data.mainCTAText || "Call to Action")
+      } catch (err) {
+        console.error("Erreur lors du chargement des paramètres :", err)
+      }
+    }
+
+    fetchSettings()
+  }, [])
 
   return (
     <>
@@ -19,9 +42,12 @@ const HeroHeader = () => {
             {t("Secure")}{" "}
             <span className="text-purple-600">{t("your future")}</span>
           </h1>
-          <button className="mt-6 bg-purple-600 text-white px-6 py-3 rounded-full text-md">
-            Call to action
-          </button>
+          {ctaText && mainCTA && <a
+            href={mainCTA}
+            className="mt-6 bg-purple-600 text-white px-6 py-3 rounded-full text-md inline-block"
+          >
+            {t(ctaText)}
+          </a>}
         </div>
         <Image
           src="/phone.png"
@@ -45,9 +71,12 @@ const HeroHeader = () => {
           {t("Secure")}{" "}
           <span className="text-purple-600">{t("your future")}</span>
         </h1>
-        <button className="mt-2 bg-purple-600 text-white px-6 py-3 rounded-full text-md">
-          Call to action
-        </button>
+        {ctaText && mainCTA && <a
+          href={mainCTA}
+          className="mt-6 bg-purple-600 text-white px-6 py-3 rounded-full text-md inline-block"
+        >
+          {t(ctaText)}
+        </a>}
         <Image
           src="/phone_cyna.png"
           alt="background image"
