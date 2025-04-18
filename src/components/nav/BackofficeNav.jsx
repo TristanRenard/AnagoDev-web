@@ -8,10 +8,9 @@ const links = {
   products: "/backoffice/products",
   categories: "/backoffice/categories",
   orders: "/backoffice/orders",
-  homepage: "/backoffice/homepage",
   translations: "/backoffice/trads",
   mediatech: "/backoffice/upload",
-  settings: "/backoffice/settings"
+  settings: "/backoffice/homepage",
 }
 const BackofficeNav = () => {
   const t = useI18n()

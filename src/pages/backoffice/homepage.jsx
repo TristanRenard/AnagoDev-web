@@ -10,6 +10,11 @@ const Homepage = () => {
     const [slides, setSlides] = useState([])
     const [editingIndex, setEditingIndex] = useState(null)
     const [mainCTA, setMainCTA] = useState("")
+    const [roleAllowed, setRoleAllowed] = useState("user")
+    const [chatbotModel, setChatbotModel] = useState("gpt-3.5-turbo")
+    const [newProductImages, setNewProductImages] = useState([])
+    const [availableModels, setAvailableModels] = useState([])
+    const [saveMessage, setSaveMessage] = useState("")
     const handleSubmit = async () => {
         try {
             const res = await fetch("/api/settings", {
@@ -18,17 +23,26 @@ const Homepage = () => {
                     "Content-Type": "application/json",
                     "x-user-data": localStorage.getItem("userData")
                 },
-                body: JSON.stringify({ mainCTA, carrousel: { slides } })
+                body: JSON.stringify({
+                    mainCTA,
+                    carrousel: { slides },
+                    RoleAllowedChatbot: roleAllowed,
+                    modelChatbot: chatbotModel
+                })
             })
 
             if (!res.ok) {
                 throw new Error("Failed to save settings")
             }
+
+            setSaveMessage("✅ Sauvegarde réussie !")
+            setTimeout(() => setSaveMessage(""), 3000)
         } catch (err) {
             console.error("Error saving settings:", err)
+            setSaveMessage("❌ Erreur lors de la sauvegarde.")
+            setTimeout(() => setSaveMessage(""), 3000)
         }
     }
-    const [newProductImages, setNewProductImages] = useState([])
 
     useEffect(() => {
         const fetchSettings = async () => {
@@ -43,6 +57,15 @@ const Homepage = () => {
 
                 setMainCTA(data.mainCTA || "")
                 setSlides(data.carrousel?.slides || [])
+                setRoleAllowed(data.RoleAllowedChatbot || "user")
+                setChatbotModel(data.modelChatbot || "gpt-3.5-turbo")
+
+                const modelsRes = await fetch("/api/backoffice/models")
+
+                if (modelsRes.ok) {
+                    const modelsData = await modelsRes.json()
+                    setAvailableModels(modelsData.data)
+                }
             } catch (err) {
                 console.error("Erreur lors du chargement des paramètres :", err)
             }
@@ -55,12 +78,39 @@ const Homepage = () => {
         <BackofficeLayout>
             <div className="flex-1 flex flex-col h-full relative">
                 <div className="flex flex-col items-start gap-5 m-4 py-8 px-4">
-                    <h1 className="text-3xl font-black">{t("Homepage")}</h1>
-                    {/* <div className="text-lg font-bold flex gap-4 w-full justify-between">
-                        <UpdateHomepageSheet />
-                    </div> */}
+                    <h1 className="text-3xl font-black">{t("Settings")}</h1>
+                    {saveMessage && (
+                        <div className="text-sm text-green-600 font-medium">
+                            {saveMessage}
+                        </div>
+                    )}
                     <div className="flex flex-col gap-4">
-                        <h3 className="text-lg font-semibold">{t("Carrousel Existing slides")}</h3>
+                        <h2 className="text-2xl font-bold">{t("Chatbot")}</h2>
+                        <label className="flex flex-col gap-1">
+                            <span className="text-sm font-medium">{t("Allowed Role for Chatbot")}</span>
+                            <select value={roleAllowed} onChange={(e) => setRoleAllowed(e.target.value)} className="border px-3 py-2 rounded">
+                                <option value="user">user</option>
+                                <option value="admin">admin</option>
+                                <option value="superadmin">superadmin</option>
+                            </select>
+                        </label>
+
+                        <label className="flex flex-col gap-1">
+                            <span className="text-sm font-medium">{t("Chatbot Model")}</span>
+                            <select
+                                value={chatbotModel}
+                                onChange={(e) => setChatbotModel(e.target.value)}
+                                className="border px-3 py-2 rounded"
+                            >
+                                {availableModels.map((model) => (
+                                    <option key={model.id} value={model.id}>
+                                        {model.display_name}
+                                    </option>
+                                ))}
+                            </select>
+                        </label>
+
+                        <h2 className="text-2xl font-bold">{t("Homepage")}</h2>
                         <label className="flex flex-col gap-1">
                             <span className="text-sm font-medium">{t("Main CTA Link")}</span>
                             <input
@@ -71,6 +121,7 @@ const Homepage = () => {
                                 placeholder="https://example.com"
                             />
                         </label>
+
                         <table className="table-auto w-full border rounded">
                             <thead>
                                 <tr className="bg-gray-100">

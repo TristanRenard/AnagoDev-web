@@ -8,11 +8,11 @@ class Settings extends Model {
     static get jsonSchema() {
         return {
             type: "object",
-            required: ["mainCTA", "carrousel"],
+            required: ["mainCTA", "carrousel", "RoleAllowedChatbot", "modelChatbot"],
 
             properties: {
                 id: { type: "integer" },
-                mainCTA: { type: "string" },
+                mainCTA: { type: "string", default: "anagodev.com" },
                 carrousel: {
                     type: "object",
                     required: ["slides"],
@@ -32,6 +32,8 @@ class Settings extends Model {
                         },
                     },
                 },
+                RoleAllowedChatbot: { type: "string", default: "user" },
+                modelChatbot: { type: "string", default: "gpt-3.5-turbo" },
             },
         }
     }

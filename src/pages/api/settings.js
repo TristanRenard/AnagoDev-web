@@ -7,10 +7,17 @@ const handler = async (req, res) => {
     const isAdmin = user?.role === "admin"
 
     if (req.method === "GET") {
-        const settings = await Settings.query(knexInstance).findById(1)
+        let settings = await Settings.query(knexInstance).findById(1)
 
         if (!settings) {
-            return res.status(404).json({ message: "Settings not found" })
+            settings = await Settings.query(knexInstance).insert({
+                id: 1,
+                mainCTA: "https://default.com",
+                carrousel: { slides: [] },
+                RoleAllowedChatbot: "user",
+                modelChatbot: "gpt-3.5-turbo"
+            })
+            console.log(settings)
         }
 
         return res.status(200).json(settings)
@@ -21,7 +28,7 @@ const handler = async (req, res) => {
             return res.status(401).json({ message: "Unauthorized" })
         }
 
-        const { carrousel, mainCTA } = req.body
+        const { carrousel, mainCTA, RoleAllowedChatbot, modelChatbot } = req.body
 
         if (!carrousel || !carrousel.slides || !Array.isArray(carrousel.slides)) {
             return res.status(400).json({ message: "Missing or invalid carrousel" })
@@ -35,13 +42,20 @@ const handler = async (req, res) => {
 
             if (existing) {
                 updated = await Settings.query(knexInstance)
-                    .patchAndFetchById(1, { carrousel, mainCTA })
+                    .patchAndFetchById(1, {
+                        carrousel,
+                        mainCTA,
+                        RoleAllowedChatbot,
+                        modelChatbot
+                    })
             } else {
                 updated = await Settings.query(knexInstance)
                     .insert({
                         id: 1,
                         carrousel,
-                        mainCTA
+                        mainCTA,
+                        RoleAllowedChatbot,
+                        modelChatbot
                     })
             }
 
