@@ -2,48 +2,13 @@ import { MultiFileSelector } from "@/components/form/MultipleSelectFile"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { useI18n } from "@/locales"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
 const UpdateHomepageSheet = () => {
     const t = useI18n()
-    const [slides, setSlides] = useState([
-        {
-            titre: "Titre 1",
-            text: "texte 1",
-            img: "",
-            cta: "https://tse2.mm.bing.net/th?id=OIP.3EUlVP8Kj7LJqpPg3ARRwwHaE8&pid=Api",
-            textCta: "Voir la photo",
-        },
-        {
-            titre: "Titre 2",
-            text: "texte 2",
-            img: "",
-            cta: "https://tse2.mm.bing.net/th?id=OIP.3EUlVP8Kj7LJqpPg3ARRwwHaE8&pid=Api",
-            textCta: "Voir la photo",
-        },
-        {
-            titre: "Titre 3",
-            text: "texte 3",
-            img: "",
-            cta: "https://tse2.mm.bing.net/th?id=OIP.3EUlVP8Kj7LJqpPg3ARRwwHaE8&pid=Api",
-            textCta: "Voir la photo",
-        },
-        {
-            titre: "Titre 4",
-            text: "texte 4",
-            img: "",
-            cta: "https://tse2.mm.bing.net/th?id=OIP.3EUlVP8Kj7LJqpPg3ARRwwHaE8&pid=Api",
-            textCta: "",
-        },
-        {
-            titre: "Titre 5",
-            text: "texte 5",
-            img: "",
-            cta: "https://tse2.mm.bing.net/th?id=OIP.3EUlVP8Kj7LJqpPg3ARRwwHaE8&pid=Api",
-            textCta: "Voir la photo",
-        },
-    ])
+    const [slides, setSlides] = useState([])
     const [editingIndex, setEditingIndex] = useState(null)
+    const [mainCTA, setMainCTA] = useState("")
     const handleSubmit = async () => {
         try {
             const res = await fetch("/api/settings", {
@@ -52,7 +17,7 @@ const UpdateHomepageSheet = () => {
                     "Content-Type": "application/json",
                     "x-user-data": localStorage.getItem("userData")
                 },
-                body: JSON.stringify({ mainCTA: "https://exemple.com", carrousel: { slides } })
+                body: JSON.stringify({ mainCTA, carrousel: { slides } })
             })
 
             if (!res.ok) {
@@ -63,6 +28,27 @@ const UpdateHomepageSheet = () => {
         }
     }
     const [newProductImages, setNewProductImages] = useState([])
+
+    useEffect(() => {
+        const fetchSettings = async () => {
+            try {
+                const res = await fetch("/api/settings")
+
+                if (!res.ok) {
+                    throw new Error("Failed to fetch settings")
+                }
+
+                const data = await res.json()
+
+                setMainCTA(data.mainCTA || "")
+                setSlides(data.carrousel?.slides || [])
+            } catch (err) {
+                console.error("Erreur lors du chargement des paramètres :", err)
+            }
+        }
+
+        fetchSettings()
+    }, [])
 
     return (
         <Sheet>
@@ -81,6 +67,16 @@ const UpdateHomepageSheet = () => {
 
                 <div className="flex flex-col gap-4">
                     <h3 className="text-lg font-semibold">{t("Carrousel Existing slides")}</h3>
+                    <label className="flex flex-col gap-1">
+                        <span className="text-sm font-medium">{t("Main CTA Link")}</span>
+                        <input
+                            type="text"
+                            className="input w-full border px-3 py-2 rounded"
+                            value={mainCTA}
+                            onChange={(e) => setMainCTA(e.target.value)}
+                            placeholder="https://example.com"
+                        />
+                    </label>
                     <table className="table-auto w-full border rounded">
                         <thead>
                             <tr className="bg-gray-100">

@@ -24,7 +24,7 @@ class Settings extends Model {
                                 properties: {
                                     titre: { type: "string" },
                                     text: { type: "string" },
-                                    img: { type: "string" },
+                                    img: { type: ["string", "array"] },
                                     cta: { type: "string" },
                                     textCta: { type: "string" },
                                 },
