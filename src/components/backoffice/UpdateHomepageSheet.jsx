@@ -1,3 +1,4 @@
+import { MultiFileSelector } from "@/components/form/MultipleSelectFile"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { useI18n } from "@/locales"
@@ -9,35 +10,35 @@ const UpdateHomepageSheet = () => {
         {
             titre: "Titre 1",
             text: "texte 1",
-            img: "https://tse2.mm.bing.net/th?id=OIP.3EUlVP8Kj7LJqpPg3ARRwwHaE8&pid=Api",
+            img: "",
             cta: "https://tse2.mm.bing.net/th?id=OIP.3EUlVP8Kj7LJqpPg3ARRwwHaE8&pid=Api",
             textCta: "Voir la photo",
         },
         {
             titre: "Titre 2",
             text: "texte 2",
-            img: "https://tse2.mm.bing.net/th?id=OIP.1XSv8DcyMLXx8lYwXd6-1QHaEo&pid=Api",
+            img: "",
             cta: "https://tse2.mm.bing.net/th?id=OIP.3EUlVP8Kj7LJqpPg3ARRwwHaE8&pid=Api",
             textCta: "Voir la photo",
         },
         {
             titre: "Titre 3",
             text: "texte 3",
-            img: "https://tse3.mm.bing.net/th?id=OIP.lwwQeVivLFPnoCQ9PqDxpQHaEK&pid=Api",
+            img: "",
             cta: "https://tse2.mm.bing.net/th?id=OIP.3EUlVP8Kj7LJqpPg3ARRwwHaE8&pid=Api",
             textCta: "Voir la photo",
         },
         {
             titre: "Titre 4",
             text: "texte 4",
-            img: "https://tse1.mm.bing.net/th?id=OIP.9GmvSZuaFCbJ8_SyPbU8UQHaH4&pid=Api",
+            img: "",
             cta: "https://tse2.mm.bing.net/th?id=OIP.3EUlVP8Kj7LJqpPg3ARRwwHaE8&pid=Api",
             textCta: "",
         },
         {
             titre: "Titre 5",
             text: "texte 5",
-            img: "https://tse4.mm.bing.net/th?id=OIP.mq8WdKHatG6vLSWQYApkCwHaE-&pid=Api",
+            img: "",
             cta: "https://tse2.mm.bing.net/th?id=OIP.3EUlVP8Kj7LJqpPg3ARRwwHaE8&pid=Api",
             textCta: "Voir la photo",
         },
@@ -46,6 +47,9 @@ const UpdateHomepageSheet = () => {
     const handleSubmit = () => {
         console.log("Submit")
     }
+    const [newProductImages, setNewProductImages] = useState([])
+
+    console.log(newProductImages)
 
     return (
         <Sheet>
@@ -71,6 +75,7 @@ const UpdateHomepageSheet = () => {
                                 <th className="p-2 border">{t("Text")}</th>
                                 <th className="p-2 border">{t("CTA")}</th>
                                 <th className="p-2 border">{t("CTA Text")}</th>
+                                <th className="p-2 border">{t("Image")}</th>
                                 <th className="p-2 border">{t("Actions")}</th>
                             </tr>
                         </thead>
@@ -123,9 +128,21 @@ const UpdateHomepageSheet = () => {
                                                     }}
                                                 />
                                             </td>
+                                            <td className="p-2 border">
+                                                <MultiFileSelector selectedFiles={newProductImages} setSelectedFiles={setNewProductImages} organize />
+                                            </td>
                                             <td className="p-2 flex gap-2">
-                                                <Button size="sm" onClick={() => setEditingIndex(null)}>{t("Save")}</Button>
-                                                <Button size="sm" variant="secondary" onClick={() => setEditingIndex(null)}>{t("Cancel")}</Button>
+                                                <Button size="sm" onClick={() => {
+                                                    setEditingIndex(null)
+                                                    const newSlides = [...slides]
+                                                    newSlides[index].img = newProductImages
+                                                    setSlides(newSlides)
+                                                    setNewProductImages([])
+                                                }}>{t("Save")}</Button>
+                                                <Button size="sm" variant="secondary" onClick={() => {
+                                                    setEditingIndex(null)
+                                                    setNewProductImages([])
+                                                }}>{t("Cancel")}</Button>
                                             </td>
                                         </>
                                     ) : (
@@ -139,8 +156,12 @@ const UpdateHomepageSheet = () => {
                                                 {slide.cta}
                                             </td>
                                             <td className="p-2 border">{slide.textCta}</td>
+                                            <td className="p-2 border">{slide.img}</td>
                                             <td className="p-2 flex gap-2 justify-center h-full">
-                                                <Button size="sm" onClick={() => setEditingIndex(index)}>{t("Edit")}</Button>
+                                                <Button size="sm" onClick={() => {
+                                                    setEditingIndex(index)
+                                                    setNewProductImages(slide.img.length > 0 ? slide.img : [])
+                                                }}>{t("Edit")}</Button>
                                                 <Button size="sm" variant="destructive" onClick={() => {
                                                     const newSlides = slides.filter((_, i) => i !== index)
                                                     setSlides(newSlides)
