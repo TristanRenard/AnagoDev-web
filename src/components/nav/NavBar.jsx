@@ -55,7 +55,7 @@ const NavBar = () => {
       <nav className="hidden md:flex font-black text-xl p-4">
         <Link href="/">
           <Image
-            className="h-12 w-auto mr-16"
+            className="h-12 w-auto mr-16 hover:cursor-pointer"
             src="/cyna_icone_purple.png"
             alt="logo"
             height={358}
