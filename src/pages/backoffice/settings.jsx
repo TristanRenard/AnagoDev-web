@@ -40,7 +40,6 @@ const Settings = () => {
             setSaveMessage("✅ Sauvegarde réussie !")
             setTimeout(() => setSaveMessage(""), 3000)
         } catch (err) {
-            console.error("Error saving settings:", err)
             setSaveMessage("❌ Erreur lors de la sauvegarde.")
             setTimeout(() => setSaveMessage(""), 3000)
         }
