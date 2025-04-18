@@ -81,7 +81,7 @@ const SearchBar = ({ open, onOpenChange, connected }) => {
         <CommandSeparator />
         {connected && (
           <CommandGroup heading={t("Menu")}>
-            <Link href="/account">
+            <Link href="/profile">
               <CommandItem
                 onSelect={() => {
                   onOpenChange(false)
