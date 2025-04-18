@@ -17,7 +17,7 @@ const handler = async (req, res) => {
                 RoleAllowedChatbot: "user",
                 modelChatbot: "gpt-3.5-turbo"
             })
-            console.log(settings)
+           
         }
 
         return res.status(200).json(settings)
