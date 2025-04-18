@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
@@ -15,17 +16,15 @@ const CartPage = () => {
     queryFn: async () => {
       const res = await axios("/api/cart")
 
-
       return res.data
     },
   })
   const addProductMutation = useMutation({
-    mutationFn: async ({ productId, action = "add" }) => {
+    mutationFn: async ({ selectedPrice, action = "add" }) => {
       const res = await axios.post("/api/cart", {
-        productId,
+        selectedPrice,
         action,
       })
-
 
       return res.data
     },
@@ -34,33 +33,35 @@ const CartPage = () => {
     },
     onError: (error) => {
       toast({
-        title: "Error updating cart",
-        description: error.response?.data?.message || "Something went wrong",
+        title: "Erreur",
+        description: error.response?.data?.message || "Une erreur est survenue",
         status: "error",
       })
     },
   })
-  const handleUpdateQuantity = (productId, orderId, action) => {
-    addProductMutation.mutate({ productId, orderId, action })
+  const handleUpdateQuantity = (selectedPriceId, action) => {
+    addProductMutation.mutate({ selectedPrice: selectedPriceId, action })
   }
   const calculateTotal = () => {
-    if (!data) { return 0 }
+    if (!data) {
+      return 0
+    }
 
-    return data.productsPrice.reduce(
-      (acc, { price }, index) =>
-        acc + price * data.orderProducts[index].quantity,
-      0,
+    return (
+      data.orderPrice.reduce(
+        (acc, { unit_amount }, index) =>
+          acc + unit_amount * data.quantity[index].quantity,
+        0,
+      ) / 100
     )
   }
   const handlePayment = async () => {
     const res = await axios.post("/api/payment", {
-      products: data.orderProducts,
-      price: calculateTotal(),
+      products: data.allProducts,
+      quantity: data.quantity,
     })
-    router.push(res.data.url)
+    await router.push(res.data.url)
   }
-
-  console.log(data?.orderProducts)
 
   return (
     <main className="flex flex-1 flex-col p-4 sm:p-8">
@@ -79,29 +80,35 @@ const CartPage = () => {
         </div>
       )}
 
-      {data &&
-        (data.orderProducts.length === 0 ? (
-          <div className="flex flex-1 justify-center items-center gap-2 text-gray-500">
-            <span className="flex flex-row gap-2 text-lg">
-              <ShoppingCart /> Votre panier est vide
-            </span>
-          </div>
-        ) : (
+      {data && data.orderPrice.length === 0 ? (
+        <div className="flex flex-1 justify-center items-center gap-2 text-gray-500">
+          <span className="flex flex-row gap-2 text-lg">
+            <ShoppingCart /> Votre panier est vide
+          </span>
+        </div>
+      ) : (
+        data && (
           <>
             <div className="flex flex-1 flex-col gap-6">
-              {data.orderProducts.map((order, index) => (
+              {data.allProducts.map((product, index) => (
                 <div
-                  key={order.id}
+                  key={product.id}
                   className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border border-gray-200 shadow-sm rounded-2xl p-6 bg-white hover:shadow-md transition-shadow duration-200"
                 >
                   <div className="flex flex-row gap-4 items-center">
-                    <Image src={order.images[0]} width={200} height={150} alt="Product image" />
+                    <Image
+                      src={product.images[0]}
+                      width={200}
+                      height={150}
+                      alt="Product image"
+                    />
                     <div className="flex flex-col">
                       <p className="text-lg font-semibold text-gray-800">
-                        {order.title}
+                        {product.title}
                       </p>
                       <span className="text-sm text-gray-500">
-                        {order.quantity} x {data.productsPrice[index].price} €
+                        {data.quantity[index].quantity} ×{" "}
+                        {data.orderPrice[index].unit_amount / 100} €
                       </span>
                     </div>
                   </div>
@@ -109,11 +116,7 @@ const CartPage = () => {
                   <div className="flex items-center gap-4 mt-2 md:mt-0">
                     <button
                       onClick={() =>
-                        handleUpdateQuantity(
-                          order.productId,
-                          order.orderId,
-                          "remove",
-                        )
+                        handleUpdateQuantity(product.default_price, "remove")
                       }
                       disabled={addProductMutation.isPending}
                       className="flex items-center justify-center w-9 h-9 border border-gray-300 rounded-full hover:border-primary hover:bg-gray-100 transition disabled:opacity-50 text-lg"
@@ -121,15 +124,11 @@ const CartPage = () => {
                       −
                     </button>
                     <p className="text-lg font-medium text-gray-800 w-6 text-center">
-                      {order.quantity}
+                      {data.quantity[index].quantity}
                     </p>
                     <button
                       onClick={() =>
-                        handleUpdateQuantity(
-                          order.productId,
-                          order.orderId,
-                          "add",
-                        )
+                        handleUpdateQuantity(product.default_price, "add")
                       }
                       disabled={addProductMutation.isPending}
                       className="flex items-center justify-center w-9 h-9 border border-gray-300 rounded-full hover:border-primary hover:bg-gray-100 transition disabled:opacity-50 text-lg"
@@ -139,7 +138,10 @@ const CartPage = () => {
                   </div>
 
                   <p className="text-xl font-semibold text-gray-700 mt-2 md:mt-0">
-                    {data.productsPrice[index].price * order.quantity} €
+                    {(data.orderPrice[index].unit_amount *
+                      data.quantity[index].quantity) /
+                      100}{" "}
+                    €
                   </p>
                 </div>
               ))}
@@ -147,7 +149,7 @@ const CartPage = () => {
 
             <div className="mt-8 flex flex-col items-end gap-4">
               <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
-                Total de la commande: {calculateTotal()} €
+                Total de la commande: {calculateTotal().toFixed(2)} €
               </h1>
 
               <Button
@@ -159,7 +161,8 @@ const CartPage = () => {
               </Button>
             </div>
           </>
-        ))}
+        )
+      )}
     </main>
   )
 }

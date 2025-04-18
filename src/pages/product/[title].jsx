@@ -23,7 +23,7 @@ const ProductPage = ({ product, similarProducts }) => {
   const handleAddToCart = async () => {
     try {
       await axios.post("/api/cart", {
-        productId: product.id,
+        selectedPrice,
         action: "add",
       })
       toast({

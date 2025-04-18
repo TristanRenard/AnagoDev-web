@@ -1,10 +1,20 @@
 import { useI18n } from "@/locales"
+import axios from "axios"
 import confetti from "canvas-confetti"
 import { CircleCheckBig } from "lucide-react"
 import { useEffect } from "react"
 
 const Sucess = () => {
   const t = useI18n()
+  const handleVerifyOrder = async () => {
+    const res = await axios("/api/verifyOrder")
+
+    return res
+  }
+
+  useEffect(() => {
+    handleVerifyOrder()
+  }, [])
   const startConfettiRain = () => {
     confetti({
       particleCount: 200,
@@ -36,11 +46,14 @@ const Sucess = () => {
       onClick={handleConfettiClick}
     >
       <h1 className="flex text-3xl font-black gap-4 items-center">
-        <CircleCheckBig className="h-8 w-8 text-green-400 text-success" /> {t("success")}
+        <CircleCheckBig className="h-8 w-8 text-green-400 text-success" />{" "}
+        {t("success")}
       </h1>
       <div>
         <p className="text-center">
-          {t("Thank you for your submission! Now you can go to your account to see your orders.")}
+          {t(
+            "Thank you for your submission! Now you can go to your account to see your orders.",
+          )}
         </p>
         <p className="text-center">
           {t("We will send you an email with the activation code.")}
