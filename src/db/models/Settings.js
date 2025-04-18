@@ -13,6 +13,8 @@ class Settings extends Model {
             properties: {
                 id: { type: "integer" },
                 mainCTA: { type: "string", default: "anagodev.com" },
+                mainCTAText: { type: "string", default: "Call to action" },
+
                 carrousel: {
                     type: "object",
                     required: ["slides"],

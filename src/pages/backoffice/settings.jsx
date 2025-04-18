@@ -10,6 +10,7 @@ const Settings = () => {
     const [slides, setSlides] = useState([])
     const [editingIndex, setEditingIndex] = useState(null)
     const [mainCTA, setMainCTA] = useState("")
+    const [mainCTAText, setMainCtaText] = useState("")
     const [roleAllowed, setRoleAllowed] = useState("user")
     const [chatbotModel, setChatbotModel] = useState("gpt-3.5-turbo")
     const [newProductImages, setNewProductImages] = useState([])
@@ -27,7 +28,8 @@ const Settings = () => {
                     mainCTA,
                     carrousel: { slides },
                     RoleAllowedChatbot: roleAllowed,
-                    modelChatbot: chatbotModel
+                    modelChatbot: chatbotModel,
+                    mainCTAText
                 })
             })
 
@@ -121,6 +123,13 @@ const Settings = () => {
                                 placeholder="https://example.com"
                             />
                         </label>
+                        <input
+                            type="text"
+                            value={mainCTAText}
+                            onChange={(e) => setMainCtaText(e.target.value)}
+                            className="mt-2 p-2 border border-gray-300 rounded"
+                            placeholder="Enter the text for the CTA"
+                        />
 
                         <table className="table-auto w-full border rounded">
                             <thead>

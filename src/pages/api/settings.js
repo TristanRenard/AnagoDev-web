@@ -28,7 +28,7 @@ const handler = async (req, res) => {
             return res.status(401).json({ message: "Unauthorized" })
         }
 
-        const { carrousel, mainCTA, RoleAllowedChatbot, modelChatbot } = req.body
+        const { carrousel, mainCTA, RoleAllowedChatbot, modelChatbot, mainCTAText } = req.body
 
         if (!carrousel || !carrousel.slides || !Array.isArray(carrousel.slides)) {
             return res.status(400).json({ message: "Missing or invalid carrousel" })
@@ -46,7 +46,8 @@ const handler = async (req, res) => {
                         carrousel,
                         mainCTA,
                         RoleAllowedChatbot,
-                        modelChatbot
+                        modelChatbot,
+                        mainCTAText
                     })
             } else {
                 updated = await Settings.query(knexInstance)
@@ -55,7 +56,8 @@ const handler = async (req, res) => {
                         carrousel,
                         mainCTA,
                         RoleAllowedChatbot,
-                        modelChatbot
+                        modelChatbot,
+                        mainCTAText
                     })
             }
 

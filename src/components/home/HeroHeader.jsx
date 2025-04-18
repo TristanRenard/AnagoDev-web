@@ -4,6 +4,7 @@ import Image from "next/image"
 
 const HeroHeader = () => {
   const [mainCTA, setMainCTA] = useState("")
+  const [ctaText, setCtaText] = useState("")
   const t = useI18n()
 
   useEffect(() => {
@@ -17,6 +18,7 @@ const HeroHeader = () => {
 
         const data = await res.json()
         setMainCTA(data.mainCTA || "/")
+        setCtaText(data.mainCTAText || "Call to Action")
       } catch (err) {
         console.error("Erreur lors du chargement des paramètres :", err)
       }
@@ -40,12 +42,12 @@ const HeroHeader = () => {
             {t("Secure")}{" "}
             <span className="text-purple-600">{t("your future")}</span>
           </h1>
-          <a
+          {ctaText && mainCTA && <a
             href={mainCTA}
             className="mt-6 bg-purple-600 text-white px-6 py-3 rounded-full text-md inline-block"
           >
-            {t("Call to action")}
-          </a>
+            {t(ctaText)}
+          </a>}
         </div>
         <Image
           src="/phone.png"
@@ -69,12 +71,12 @@ const HeroHeader = () => {
           {t("Secure")}{" "}
           <span className="text-purple-600">{t("your future")}</span>
         </h1>
-        <a
+        {ctaText && mainCTA && <a
           href={mainCTA}
-          className="mt-2 bg-purple-600 text-white px-6 py-3 rounded-full text-md inline-block"
+          className="mt-6 bg-purple-600 text-white px-6 py-3 rounded-full text-md inline-block"
         >
-          {t("Call to action")}
-        </a>
+          {t(ctaText)}
+        </a>}
         <Image
           src="/phone_cyna.png"
           alt="background image"
