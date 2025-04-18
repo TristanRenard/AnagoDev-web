@@ -10,7 +10,7 @@ const links = {
   orders: "/backoffice/orders",
   translations: "/backoffice/trads",
   mediatech: "/backoffice/upload",
-  settings: "/backoffice/settings"
+  settings: "/backoffice/settings",
 }
 const BackofficeNav = () => {
   const t = useI18n()
