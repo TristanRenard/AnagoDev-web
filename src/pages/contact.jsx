@@ -12,9 +12,24 @@ const ContactPage = () => {
         const { name, value } = e.target
         setForm((prev) => ({ ...prev, [name]: value }))
     }
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault()
-        console.log("Form submitted:", form)
+
+        try {
+            const res = await fetch("/api/contact", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(form),
+            })
+
+            if (!res.ok) { throw new Error("Erreur lors de l'envoi") }
+
+            setForm({ name: "", email: "", message: "" })
+        } catch (err) {
+            console.error(err)
+        }
     }
 
     return (
