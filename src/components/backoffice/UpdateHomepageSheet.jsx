@@ -44,12 +44,25 @@ const UpdateHomepageSheet = () => {
         },
     ])
     const [editingIndex, setEditingIndex] = useState(null)
-    const handleSubmit = () => {
-        console.log("Submit")
+    const handleSubmit = async () => {
+        try {
+            const res = await fetch("/api/settings", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "x-user-data": localStorage.getItem("userData")
+                },
+                body: JSON.stringify({ mainCTA: "https://exemple.com", carrousel: { slides } })
+            })
+
+            if (!res.ok) {
+                throw new Error("Failed to save settings")
+            }
+        } catch (err) {
+            console.error("Error saving settings:", err)
+        }
     }
     const [newProductImages, setNewProductImages] = useState([])
-
-    console.log(newProductImages)
 
     return (
         <Sheet>
