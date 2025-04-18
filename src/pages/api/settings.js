@@ -12,7 +12,7 @@ const handler = async (req, res) => {
         if (!settings) {
             settings = await Settings.query(knexInstance).insert({
                 id: 1,
-                mainCTA: "https://default.com",
+                mainCTA: "",
                 carrousel: { slides: [] },
                 RoleAllowedChatbot: "user",
                 modelChatbot: "gpt-3.5-turbo"

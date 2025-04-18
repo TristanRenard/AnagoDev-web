@@ -1,53 +1,10 @@
 /* eslint-disable array-callback-return */
 import { useI18n } from "@/locales"
 import Image from "next/image"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
-const slideTest = [
-  {
-    titre: "Titre 1",
-    text: "texte 1",
-    img: "https://tse2.mm.bing.net/th?id=OIP.3EUlVP8Kj7LJqpPg3ARRwwHaE8&pid=Api",
-    cta: "https://tse2.mm.bing.net/th?id=OIP.3EUlVP8Kj7LJqpPg3ARRwwHaE8&pid=Api",
-    textCta: "Voir la photo",
-  },
-  {
-    titre: "Titre 2",
-    text: "texte 2",
-    img: "https://tse2.mm.bing.net/th?id=OIP.1XSv8DcyMLXx8lYwXd6-1QHaEo&pid=Api",
-    cta: "https://tse2.mm.bing.net/th?id=OIP.3EUlVP8Kj7LJqpPg3ARRwwHaE8&pid=Api",
-    textCta: "Voir la photo",
-  },
-  {
-    titre: "Titre 3",
-    text: "texte 3",
-    img: "https://tse3.mm.bing.net/th?id=OIP.lwwQeVivLFPnoCQ9PqDxpQHaEK&pid=Api",
-    cta: "https://tse2.mm.bing.net/th?id=OIP.3EUlVP8Kj7LJqpPg3ARRwwHaE8&pid=Api",
-    textCta: "Voir la photo",
-  },
-  {
-    titre: "Titre 4",
-    text: "texte 4",
-    img: "https://tse1.mm.bing.net/th?id=OIP.9GmvSZuaFCbJ8_SyPbU8UQHaH4&pid=Api",
-    cta: "https://tse2.mm.bing.net/th?id=OIP.3EUlVP8Kj7LJqpPg3ARRwwHaE8&pid=Api",
-    textCta: "",
-  },
-  {
-    titre: "Titre 5",
-    text: "texte 5",
-    img: "https://tse4.mm.bing.net/th?id=OIP.mq8WdKHatG6vLSWQYApkCwHaE-&pid=Api",
-    cta: "https://tse2.mm.bing.net/th?id=OIP.3EUlVP8Kj7LJqpPg3ARRwwHaE8&pid=Api",
-    textCta: "Voir la photo",
-  },
-  {
-    titre: "Titre 6",
-    text: "texte 6",
-    img: "https://tse1.explicit.bing.net/th?id=OIP.Mm0lI07tzxLe_5oHo0rFUwHaFj&pid=Api",
-    cta: "https://tse2.mm.bing.net/th?id=OIP.3EUlVP8Kj7LJqpPg3ARRwwHaE8&pid=Api",
-    textCta: "Voir la photo",
-  },
-]
-const CustomCarousel = ({ slides = slideTest }) => {
+const CustomCarousel = () => {
+  const [slides, setSlides] = useState([])
   const [currentIndex, setCurrentIndex] = useState(0)
   const nextSlide = () => {
     setCurrentIndex((prevIndex) =>
@@ -60,6 +17,24 @@ const CustomCarousel = ({ slides = slideTest }) => {
     )
   }
   const t = useI18n()
+  useEffect(() => {
+    const fetchSlides = async () => {
+      try {
+        const res = await fetch("/api/settings")
+
+        if (!res.ok) {
+          throw new Error("Failed to fetch slides")
+        }
+
+        const data = await res.json()
+        setSlides(data.carrousel?.slides || [])
+      } catch (err) {
+        console.error("Erreur chargement carrousel :", err)
+      }
+    }
+
+    fetchSlides()
+  }, [])
 
   return (
     <div className="relative mx-24 my-16">
@@ -90,7 +65,7 @@ const CustomCarousel = ({ slides = slideTest }) => {
                   )}
                 </div>
                 <Image
-                  src={slide.img}
+                  src={slide.img[0] || "/logo_cyna_black.png"}
                   alt="background image"
                   width={200}
                   height={100}
