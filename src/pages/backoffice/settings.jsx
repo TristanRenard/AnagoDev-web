@@ -5,7 +5,7 @@ import { useI18n } from "@/locales"
 import authProps from "@/serverSideProps/authProps"
 import { useEffect, useState } from "react"
 
-const Homepage = () => {
+const Settings = () => {
     const t = useI18n()
     const [slides, setSlides] = useState([])
     const [editingIndex, setEditingIndex] = useState(null)
@@ -248,7 +248,7 @@ const Homepage = () => {
     )
 }
 
-export default Homepage
+export default Settings
 
 export const getServerSideProps = async (context) => {
     const { user } = await authProps(context)
