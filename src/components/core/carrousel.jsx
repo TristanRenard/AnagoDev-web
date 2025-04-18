@@ -29,6 +29,7 @@ const CustomCarousel = () => {
         const data = await res.json()
         setSlides(data.carrousel?.slides || [])
       } catch (err) {
+        console.error("Error loading slides:", err)
       }
     }
 

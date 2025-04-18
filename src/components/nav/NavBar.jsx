@@ -67,7 +67,7 @@ const NavBar = () => {
             <Link href="/products">{t("Products")}</Link>
           </li>
           <li className="flex flex-col justify-center items-center mr-16">
-            <Link href="#">{t("Contact")}</Link>
+            <Link href="/contact">{t("Contact")}</Link>
           </li>
           {!connected ? (
             <>
@@ -169,7 +169,7 @@ const NavBar = () => {
             <Link href="/products">{t("Products")}</Link>
           </li>
           <li className="flex flex-col justify-center items-center">
-            <Link href="#">{t("Contact")}</Link>
+            <Link href="/contact">{t("Contact")}</Link>
           </li>
           {!connected ? (
             <>
