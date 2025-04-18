@@ -4,19 +4,22 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { UserRound } from "lucide-react"
 import { useI18n } from "@/locales"
-import Link from "next/link"
 import axios from "axios"
+import { UserRound } from "lucide-react"
+import Link from "next/link"
+import { useRouter } from "next/router"
 
 const IconProfil = () => {
   const t = useI18n()
+  const router = useRouter()
   const handleLogout = async () => {
     try {
       const res = await axios.delete("/api/user/login")
 
       if (res.statusText === "OK") {
-        window.location.href = "/"
+        router.push("/")
+        router.reload()
       } else {
         console.error("Erreur lors de la déconnexion")
       }
@@ -32,7 +35,7 @@ const IconProfil = () => {
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuItem>
-          <Link href="/profile">{t("Mon profil")}</Link>
+          <Link href="/account">{t("Mon profil")}</Link>
         </DropdownMenuItem>
         <DropdownMenuItem>
           <button onClick={handleLogout}>{t("Deconnexion")}</button>

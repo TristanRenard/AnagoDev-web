@@ -119,7 +119,7 @@ const AddCategorySheet = ({ categories = [], queryClient }) => {
         </div>
         <SheetFooter className="flex">
           <SheetClose asChild >
-            <Button className="w-full" onClick={handleSubmit}>{t("Add product")}</Button>
+            <Button className="w-full" onClick={handleSubmit}>{t("Add category")}</Button>
           </SheetClose>
           <SheetClose asChild >
             <Button className="w-full" variant="secondary">{t("Close")}</Button>

@@ -1,10 +1,10 @@
 import { Button } from "@/components/ui/button"
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { useToast } from "@/hooks/use-toast"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import axios from "axios"
 import { LoaderCircle, ShoppingCart } from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
-import { useRouter } from "next/router"
 import Image from "next/image"
+import { useRouter } from "next/router"
 
 const CartPage = () => {
   const { toast } = useToast()
@@ -15,8 +15,8 @@ const CartPage = () => {
     queryFn: async () => {
       const res = await axios("/api/cart")
 
-      
-return res.data
+
+      return res.data
     },
   })
   const addProductMutation = useMutation({
@@ -26,8 +26,8 @@ return res.data
         action,
       })
 
-      
-return res.data
+
+      return res.data
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["cart"] })
@@ -44,9 +44,9 @@ return res.data
     addProductMutation.mutate({ productId, orderId, action })
   }
   const calculateTotal = () => {
-    if (!data) {return 0}
-    
-return data.productsPrice.reduce(
+    if (!data) { return 0 }
+
+    return data.productsPrice.reduce(
       (acc, { price }, index) =>
         acc + price * data.orderProducts[index].quantity,
       0,

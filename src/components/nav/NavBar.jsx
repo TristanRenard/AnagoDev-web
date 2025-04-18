@@ -5,15 +5,18 @@ import useNavBar from "@/hooks/useNavBar"
 import { useI18n } from "@/locales"
 import axios from "axios"
 import clsx from "clsx"
-import { Menu, ShoppingBasket, X } from "lucide-react"
+import { Menu, Search, ShoppingBasket, X } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { useEffect, useState } from "react"
+
+import SearchBar from "./SearchBar"
 
 const NavBar = () => {
   const t = useI18n()
   const [userId, setUserId] = useState(null)
   const { isNavBarOpen, toggleNavBar } = useNavBar()
+  const [isSearchBarOpen, setIsSearchBarOpen] = useState(false)
   const [connected, setConnected] = useState(false)
   const isLogged = async () => {
     const res = await axios("/api/connection")
@@ -25,9 +28,20 @@ const NavBar = () => {
     const res = await axios("/api/me")
     setUserId(res.data.user.id)
   }
+  const handleKeyDown = (event) => {
+    if (event.key === "k" && (event.ctrlKey || event.metaKey)) {
+      event.preventDefault()
+      setIsSearchBarOpen(true)
+    }
+
+    if (event.key === "Escape" && isSearchBarOpen) {
+      setIsSearchBarOpen(false)
+    }
+  }
 
   useEffect(() => {
     isLogged()
+    window.addEventListener("keydown", handleKeyDown)
   }, [])
 
   useEffect(() => {
@@ -63,6 +77,19 @@ const NavBar = () => {
               <li className="flex flex-col justify-center items-center mr-16">
                 <Link href="/auth/register">{t("Register")}</Link>
               </li>
+              <li className="flex flex-col justify-center items-center">
+                <button className="hover:cursor-pointer">
+                  <Search
+                    onClick={() => setIsSearchBarOpen(!isSearchBarOpen)}
+                    className="h-6 w-6"
+                  />
+                </button>
+                <SearchBar
+                  open={isSearchBarOpen}
+                  onOpenChange={setIsSearchBarOpen}
+                  connected={connected}
+                />
+              </li>
             </>
           ) : (
             <>
@@ -73,6 +100,19 @@ const NavBar = () => {
               </li>
               <li className="flex flex-col justify-center items-center mr-16">
                 <IconProfil />
+              </li>
+              <li className="flex flex-col justify-center items-center mr-16">
+                <button className="hover:cursor-pointer">
+                  <Search
+                    onClick={() => setIsSearchBarOpen(!isSearchBarOpen)}
+                    className="h-8 w-8"
+                  />
+                </button>
+                <SearchBar
+                  open={isSearchBarOpen}
+                  onOpenChange={setIsSearchBarOpen}
+                  connected={connected}
+                />
               </li>
             </>
           )}
@@ -108,72 +148,31 @@ const NavBar = () => {
 
         <ul
           className={clsx(
-            "flex flex-col justify-around fixed top-0 left-0 gap-4 px-8 w-screen h-screen z-50 md:hidden",
+            "flex flex-col justify-around fixed top-0 left-0 gap-4 px-8 py-44 w-screen h-screen z-50 bg-white md:hidden",
             isNavBarOpen ? "flex" : "hidden",
           )}
         >
-          <li>
-            <button
-              onClick={() => {
-                if (isNavBarOpen) {
-                  toggleNavBar()
-                }
-              }}
-              className="flex flex-col justify-center items-center p-4 fixed right-2 top-3"
-            >
-              <X />
+          <li className="w-full flex justify-center">
+            <button className="hover:cursor-pointer">
+              <Search
+                onClick={() => setIsSearchBarOpen(!isSearchBarOpen)}
+                className="h-8 w-8"
+              />
             </button>
+            <SearchBar
+              open={isSearchBarOpen}
+              onOpenChange={setIsSearchBarOpen}
+              connected={connected}
+            />
           </li>
           <li className="flex flex-col justify-center items-center p-4">
-            <Link
-              onClick={() => {
-                if (isNavBarOpen) {
-                  toggleNavBar()
-                }
-              }}
-              href="#"
-            >
-              {t("Our services")}
-            </Link>
+            <Link href="/products">{t("Products")}</Link>
           </li>
           <li className="flex flex-col justify-center items-center">
-            <Link
-              onClick={() => {
-                if (isNavBarOpen) {
-                  toggleNavBar()
-                }
-              }}
-              href="#"
-            >
-              {t("Case studies")}
-            </Link>
-          </li>
-          <li className="flex flex-col justify-center items-center">
-            <Link
-              onClick={() => {
-                if (isNavBarOpen) {
-                  toggleNavBar()
-                }
-              }}
-              href="#"
-            >
-              {t("Blog")}
-            </Link>
-          </li>
-          <li className="flex flex-col justify-center items-center">
-            <Link
-              onClick={() => {
-                if (isNavBarOpen) {
-                  toggleNavBar()
-                }
-              }}
-              href="#"
-            >
-              {t("About us")}
-            </Link>
+            <Link href="#">{t("Contact")}</Link>
           </li>
           {!connected ? (
-            <ul className="flex gap-4 md:gap-8 justify-around mb-24">
+            <>
               <li className="flex flex-col justify-center items-center">
                 <Link
                   data-umami-event="Login"
@@ -206,9 +205,9 @@ const NavBar = () => {
                   {t("Inscription")}
                 </Link>
               </li>
-            </ul>
+            </>
           ) : (
-            <ul className="flex gap-8 justify-around mb-24">
+            <>
               <li className="flex flex-col justify-center items-center">
                 <Link
                   data-umami-event="Cart"
@@ -253,8 +252,20 @@ const NavBar = () => {
                   {t("Logout")}
                 </Link>
               </li>
-            </ul>
+            </>
           )}
+          <li>
+            <button
+              onClick={() => {
+                if (isNavBarOpen) {
+                  toggleNavBar()
+                }
+              }}
+              className="flex flex-col justify-center items-center p-4 fixed right-2 top-3"
+            >
+              <X />
+            </button>
+          </li>
         </ul>
       </nav>
     </>

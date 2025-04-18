@@ -1,11 +1,16 @@
 import User from "@/db/models/User"
 import knexInstance from "@/lib/db"
-import { accountDeletionMailTemplate } from "../mail/mailTemplates"
+import umami from "@umami/node"
 import mailFormater from "../mail/mailFormater"
+import { accountDeletionMailTemplate } from "../mail/mailTemplates"
 import sendEmail from "../mail/sendMail"
-import { track } from "@vercel/analytics/server"
 
 const accountDeletion = async (email) => {
+  umami.init({
+    hostUrl: process.env.UMAMI_HOST,
+    websiteId: process.env.UMAMI_WEBSITE_ID,
+  })
+
   if (email) {
     const user = await User.query(knexInstance).findOne({ email })
 
@@ -28,7 +33,7 @@ const accountDeletion = async (email) => {
           return { message: "Account deletion email sent.", code: email }
         }
 
-        track("emailSent", { email })
+        umami.track("emailSent", { email })
       } catch (error) {
         // eslint-disable-next-line no-console
         console.error(error)

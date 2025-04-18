@@ -8,14 +8,17 @@ const handler = async (req, res) => {
   const { "x-api-key": apiKey } = req.headers
   // Vérification de l'authentification
   const isAuthenticated = () => {
-    if (apiKey === process.env.API_KEY) { return true }
+    if (apiKey === process.env.API_KEY) {
+      return true
+    }
 
-    if (!userData) { return false }
+    if (!userData) {
+      return false
+    }
 
     const user = JSON.parse(userData)
 
-
-    return user && user.isAdmin
+    return user && user.role === "admin"
   }
 
   // GET: Télécharger les traductions dans un fichier JSON
@@ -27,7 +30,10 @@ const handler = async (req, res) => {
       }
 
       // Récupérer toutes les traductions
-      const translations = await Translations.query(knexInstance).select("key", "value")
+      const translations = await Translations.query(knexInstance).select(
+        "key",
+        "value",
+      )
       // Format du nom de fichier
       // eslint-disable-next-line prefer-destructuring
       const date = new Date().toISOString().split("T")[0]
@@ -56,7 +62,11 @@ const handler = async (req, res) => {
       const importedTranslations = req.body
 
       if (!Array.isArray(importedTranslations)) {
-        return res.status(400).json({ message: "Invalid format. Expected an array of translations." })
+        return res
+          .status(400)
+          .json({
+            message: "Invalid format. Expected an array of translations.",
+          })
       }
 
       // Compteurs pour le rapport d'importation
@@ -65,7 +75,7 @@ const handler = async (req, res) => {
         created: 0,
         updated: 0,
         skipped: 0,
-        errors: []
+        errors: [],
       }
 
       // Traiter chaque traduction
@@ -77,7 +87,6 @@ const handler = async (req, res) => {
             if (!key || !value) {
               // eslint-disable-next-line no-plusplus
               importReport.skipped++
-
 
               return
             }
@@ -97,8 +106,7 @@ const handler = async (req, res) => {
               importReport.updated++
             } else {
               // Créer une nouvelle traduction
-              await Translations.query(knexInstance)
-                .insert({ key, value })
+              await Translations.query(knexInstance).insert({ key, value })
 
               // eslint-disable-next-line no-plusplus
               importReport.created++
@@ -106,17 +114,17 @@ const handler = async (req, res) => {
           } catch (error) {
             importReport.errors.push({
               translation: translation.key,
-              error: error.message
+              error: error.message,
             })
             // eslint-disable-next-line no-plusplus
             importReport.skipped++
           }
-        })
+        }),
       )
 
       return res.status(200).json({
         message: "Import completed",
-        report: importReport
+        report: importReport,
       })
     } catch (error) {
       return res.status(500).json({ message: error.message })
