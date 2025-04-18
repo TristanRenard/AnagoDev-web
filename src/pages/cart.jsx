@@ -95,7 +95,7 @@ const CartPage = () => {
                   className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border border-gray-200 shadow-sm rounded-2xl p-6 bg-white hover:shadow-md transition-shadow duration-200"
                 >
                   <div className="flex flex-row gap-4 items-center">
-                    <Image src={order.images[0]} width={200} height={150} alt="" />
+                    <Image src={order.images[0]} width={200} height={150} alt="Product image" />
                     <div className="flex flex-col">
                       <p className="text-lg font-semibold text-gray-800">
                         {order.title}
