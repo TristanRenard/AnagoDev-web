@@ -88,7 +88,7 @@ const ChatBot = () => {
             case "add to cart":
               Promise.all(parsedResponse.productList.map(async (product) => {
                 const res = await axios.post("/api/cart", {
-                  productId: product.id,
+                  selectedPrice: product.id,
                   action: "add",
                   quantity: product.quantity || 1
                 })

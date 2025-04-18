@@ -33,18 +33,14 @@ class Order extends Model {
           to: "users.id",
         },
       },
-      products: {
-        relation: Model.ManyToManyRelation,
+      orderPrices: {
+        relation: Model.HasManyRelation,
         modelClass: OrderPrice,
         join: {
           from: "orders.id",
-          through: {
-            from: "orderPrice.orderId",
-            to: "orderPrice.priceId",
-          },
-          to: "products.id",
+          to: "orderPrice.orderId",
         },
-      },
+      }
     }
   }
 }

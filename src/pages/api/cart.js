@@ -1,13 +1,13 @@
 /* eslint-disable max-depth */
 /* eslint-disable camelcase */
 // pages/api/cart.ts
+import Order from "@/db/models/Order"
+import OrderPrice from "@/db/models/OrderPrice"
+import Price from "@/db/models/Price"
+import Product from "@/db/models/Product"
 import knexInstance from "@/lib/db"
 import { stripe } from "@/lib/stripe"
 import cookie from "cookie"
-import Order from "@/db/models/Order"
-import OrderPrice from "@/db/models/OrderPrice"
-import Product from "@/db/models/Product"
-import Price from "@/db/models/Price"
 
 const handler = async (req, res) => {
   const { "x-user-data": userData } = req.headers
@@ -80,15 +80,17 @@ const handler = async (req, res) => {
   }
 
   if (method === "POST") {
-    const { selectedPrice, action } = req.body
+    const { selectedPrice, action, quantity = 1 } = req.body
     const price = await Price.query(knexInstance)
       .select("productId")
       .where("id", selectedPrice)
       .first()
+    console.log("price", price)
     const quantityProduct = await Product.query(knexInstance)
       .select("stock")
       .where("id", price.productId)
       .first()
+    console.log("quantityProduct", quantityProduct)
 
     try {
       let order = await Order.query(knexInstance)
@@ -114,7 +116,7 @@ const handler = async (req, res) => {
 
         if (
           quantityProduct.stock !== -1 &&
-          currentQty + 1 > quantityProduct.stock
+          currentQty + quantity > quantityProduct.stock
         ) {
           return res.status(400).json({
             message: "Not enough stock available",
@@ -124,12 +126,12 @@ const handler = async (req, res) => {
         if (existing) {
           await OrderPrice.query(knexInstance)
             .where({ id: existing.id })
-            .increment("quantity", 1)
+            .increment("quantity", quantity)
         } else {
           await OrderPrice.query(knexInstance).insert({
             orderId: order.id,
             priceId: selectedPrice,
-            quantity: 1,
+            quantity,
           })
         }
       } else if (action === "remove") {

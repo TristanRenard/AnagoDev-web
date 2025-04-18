@@ -150,7 +150,7 @@ const handler = async (req, res) => {
     } else {
       const products = await Product.query(knexInstance)
         .select("*")
-        .where({ isActive: true })
+        .where({ isActive: true, isSubscription: false })
         .orderBy("created_at", "desc")
         .withGraphFetched("[category, prices]")
 
