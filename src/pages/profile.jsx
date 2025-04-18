@@ -58,8 +58,6 @@ const Profile = () => {
     )
   }
 
-  console.log(userAddress)
-
   return (
     <div className="flex-1 flex justify-center py-10 bg-gray-100 min-h-screen">
       <div className="w-full max-w-4xl space-y-8 px-4">
@@ -101,43 +99,43 @@ const Profile = () => {
                 />
                 <Row
                   title={t("Street")}
-                  value={userAddress.street}
+                  value={userAddress?.street ?? "-"}
                   field="street"
                 />
                 <Row
                   title={t("City")}
-                  value={userAddress.city ?? "-"}
+                  value={userAddress?.city ?? "-"}
                   field="city"
                 />
                 <Row
                   title={t("State")}
-                  value={userAddress.state ?? "-"}
+                  value={userAddress?.state ?? "-"}
                   field="state"
                 />
                 <Row
                   title={t("Zip")}
-                  value={userAddress.zip ?? "-"}
+                  value={userAddress?.zip ?? "-"}
                   field="zip"
                 />
                 <Row
                   title={t("Country")}
-                  value={userAddress.country ?? "-"}
+                  value={userAddress?.country ?? "-"}
                   field="country"
                 />
                 <Row
                   title={t("Complement")}
-                  value={userAddress.complement ?? "-"}
+                  value={userAddress?.complement ?? "-"}
                   field="complement"
                 />
                 <Row
                   title={t("Name")}
-                  value={userAddress.name ?? "-"}
+                  value={userAddress?.name ?? "-"}
                   field="name"
                 />
                 <Row
                   title={t("Is default")}
                   value={
-                    userAddress.isDefault === true ? t("True") : t("False")
+                    userAddress?.isDefault === true ? t("True") : t("False")
                   }
                   field="isDefault"
                 />
