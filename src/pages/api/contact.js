@@ -1,5 +1,5 @@
 import mailFormater from "@/utils/mail/mailFormater"
-import { contactMailTemplate } from "@/utils/mail/mailTemplates"
+import { contactMailTemplate, contactMailTemplateConfirmation } from "@/utils/mail/mailTemplates"
 import sendEmail from "@/utils/mail/sendMail"
 
 const contact = async (req, res) => {
@@ -19,14 +19,19 @@ const contact = async (req, res) => {
             { name: "email", value: email },
             { name: "message", value: message },
         ])
+        const htmlConfirmation = mailFormater(contactMailTemplateConfirmation, [
+            { name: "name", value: name },
+            { name: "message", value: message },
+        ])
 
-        await sendEmail("no-reply@anagodev.com", "New Contact Form Submission", html)
+        await sendEmail("schmittlea92@yahoo.com", "New Contact Form Submission", html)
+        await sendEmail(email, "Confoirmation of your demande", htmlConfirmation)
 
         return res.status(200).json({ success: true })
     } catch (err) {
-        console.error("Error sending contact email:", err)
+        console.error("Error sending contact emails:", err)
 
-        return res.status(500).json({ message: "Failed to send email" })
+        return res.status(500).json({ message: "Failed to send emails" })
     }
 }
 

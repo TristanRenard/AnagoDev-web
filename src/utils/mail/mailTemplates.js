@@ -42,3 +42,16 @@ Message:
 
 Thank you.
 `
+
+export const contactMailTemplateConfirmation = `
+# Your message has been send
+
+Hello {{name}},
+
+Our equipe have received your message. We will recontact you as soon as possible.
+
+Message:
+{{message}}
+
+Thank you
+`
