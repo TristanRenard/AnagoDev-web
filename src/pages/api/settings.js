@@ -10,12 +10,12 @@ const handler = async (req, res) => {
         let settings = await Settings.query(knexInstance).findById(1)
 
         settings ||= await Settings.query(knexInstance).insert({
-                id: 1,
-                mainCTA: "",
-                carrousel: { slides: [] },
-                RoleAllowedChatbot: "user",
-                modelChatbot: "gpt-3.5-turbo"
-            })
+            id: 1,
+            mainCTA: "",
+            carrousel: { slides: [] },
+            RoleAllowedChatbot: "user",
+            modelChatbot: "gpt-3.5-turbo"
+        })
 
         return res.status(200).json(settings)
     }
