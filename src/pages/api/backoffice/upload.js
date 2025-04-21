@@ -28,11 +28,15 @@ const handler = async (req, res) => {
       })
       files.on("error", (err) => {
         console.error(err)
-        res.status(500).json({ message: `Error listing files: ${err.message}`, error: err })
+        res
+          .status(500)
+          .json({ message: `Error listing files: ${err.message}`, error: err })
       })
     } catch (error) {
       console.error(error)
-      res.status(500).json({ message: `Error listing files: ${error.message}`, error })
+      res
+        .status(500)
+        .json({ message: `Error listing files: ${error.message}`, error })
     }
 
     return
@@ -73,7 +77,8 @@ const handler = async (req, res) => {
               `Failed to upload ${destinationObject}: ${error.message}`,
             )
             res.status(500).json({
-              message: `Failed to upload ${destinationObject}: ${error.message}`, error
+              message: `Failed to upload ${destinationObject}: ${error.message}`,
+              error,
             })
             throw new Error(
               `Failed to upload ${destinationObject}: ${error.message}`,
@@ -90,6 +95,25 @@ const handler = async (req, res) => {
       res
         .status(500)
         .json({ message: `File upload failed: ${error.message}`, error })
+    }
+  }
+
+  if (req.method === "DELETE") {
+    const { fileName } = req.query
+
+    if (!fileName) {
+      res.status(400).json({ message: "File name is required" })
+    }
+
+    try {
+      await minioClient.removeObject(process.env.MINIO_BUCKET, fileName)
+      res.status(200).json({ message: "File deleted successfully" })
+    } catch (error) {
+      console.error(error)
+      res.status(500).json({
+        message: `Error deleting file: ${error.message}`,
+        error,
+      })
     }
   }
 
