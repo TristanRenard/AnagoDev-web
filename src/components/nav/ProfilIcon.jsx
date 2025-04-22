@@ -10,7 +10,7 @@ import { UserRound } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/router"
 
-const IconProfil = () => {
+const IconProfil = ({ isAdmin }) => {
   const t = useI18n()
   const router = useRouter()
   const handleLogout = async () => {
@@ -37,6 +37,14 @@ const IconProfil = () => {
         <DropdownMenuItem>
           <Link href="/profile">{t("Mon profil")}</Link>
         </DropdownMenuItem>
+        <DropdownMenuItem>
+          <Link href="/orders">{t("Mes commandes")}</Link>
+        </DropdownMenuItem>
+        {isAdmin && (
+          <DropdownMenuItem>
+            <Link href="/backoffice/products">{t("Backoffice")}</Link>
+          </DropdownMenuItem>
+        )}
         <DropdownMenuItem>
           <button onClick={handleLogout}>{t("Deconnexion")}</button>
         </DropdownMenuItem>
