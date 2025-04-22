@@ -5,9 +5,11 @@ import axios from "axios"
 import { useRouter } from "next/router"
 import dayjs from "dayjs"
 import "dayjs/locale/fr"
+import { useI18n } from "@/locales"
 dayjs.locale("fr")
 
 const OrdersPage = () => {
+    const t = useI18n()
     const router = useRouter()
     const [orders, setOrders] = useState([])
     const { isLoading } = useQuery({
@@ -43,17 +45,17 @@ const OrdersPage = () => {
 
     return (
         <div className="flex-1 p-4">
-            <h1 className="text-xl font-bold mb-4">Commandes</h1>
+            <h1 className="text-xl font-bold mb-4">{t("Orders")}</h1>
             {orders.length === 0 ? (
-                <p>Aucune commande trouvée.</p>
+                <p>{t("No orders found")}</p>
             ) : (
                 <table className="min-w-full border border-gray-300 text-sm text-left">
                     <thead className="bg-gray-100">
                         <tr>
-                            <th className="p-2 border">ID</th>
-                            <th className="p-2 border">Statut</th>
-                            <th className="p-2 border">Date</th>
-                            <th className="p-2 border">Produits</th>
+                            <th className="p-2 border">{t("ID")}</th>
+                            <th className="p-2 border">{t("Status")}</th>
+                            <th className="p-2 border">{t("Date")}</th>
+                            <th className="p-2 border">{t("Products")}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -68,15 +70,15 @@ const OrdersPage = () => {
                                             const { quantity, price, currency, productName } = orderPrice
                                             const formattedPrice = price
                                                 ? `${(price / 100).toFixed(2)} ${currency?.toUpperCase()}`
-                                                : "Prix inconnu"
+                                                : t("Price not available")
 
                                             return (
                                                 <li key={orderPrice.id} className="text-sm">
-                                                    {quantity} × {productName || "Produit inconnu"} ({formattedPrice})
+                                                    {quantity} × {productName || t("Unknown product")} ({formattedPrice})
                                                 </li>
                                             )
                                         }) ?? (
-                                                <li className="text-sm text-muted-foreground">Aucun produit</li>
+                                                <li className="text-sm text-muted-foreground">{t("No products")}</li>
                                             )}
                                     </ul>
                                 </td>
