@@ -7,9 +7,9 @@ import axios from "axios"
 import clsx from "clsx"
 import { Menu, Search, ShoppingBasket, X } from "lucide-react"
 import Image from "next/image"
-import Link from "next/link"
 import { useEffect, useState } from "react"
 
+import Link from "@/components/CustomLink"
 import SearchBar from "./SearchBar"
 
 const NavBar = () => {

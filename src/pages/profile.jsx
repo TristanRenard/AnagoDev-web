@@ -1,9 +1,6 @@
 /* eslint-disable max-lines-per-function */
 /* eslint-disable no-nested-ternary */
-import { useI18n } from "@/locales"
-import axios from "axios"
-import { useMutation, useQueries, useQueryClient } from "@tanstack/react-query"
-import { LoaderCircle, User } from "lucide-react"
+import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -12,11 +9,15 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { useToast } from "@/hooks/use-toast"
-import { useEffect, useState } from "react"
-import { useRouter } from "next/router"
 import { PhoneInput } from "@/components/ui/phone-input"
+import { useToast } from "@/hooks/use-toast"
+import { useI18n } from "@/locales"
+import { useMutation, useQueries, useQueryClient } from "@tanstack/react-query"
+import umami from "@umami/node"
+import axios from "axios"
+import { LoaderCircle, User } from "lucide-react"
+import { useRouter } from "next/router"
+import { useEffect, useState } from "react"
 
 const Profile = () => {
   const t = useI18n()
@@ -38,6 +39,10 @@ const Profile = () => {
             setUser(res.data.user)
             setUserAddress(res.data.userAddress[0])
           } catch (error) {
+            umami.track("navigate", {
+              from: router.asPath,
+              to: "/auth/login",
+            })
             router.push("/auth/login")
           }
         },
@@ -111,21 +116,19 @@ const Profile = () => {
         <div className="flex border-b mb-6">
           <button
             onClick={() => setActiveTab("profile")}
-            className={`px-4 py-2 mr-2 font-medium ${
-              activeTab === "profile"
+            className={`px-4 py-2 mr-2 font-medium ${activeTab === "profile"
                 ? "text-purple-700 border-b-2 border-purple-700"
                 : "text-gray-500 hover:text-purple-500"
-            }`}
+              }`}
           >
             {t("Profile")}
           </button>
           <button
             onClick={() => setActiveTab("orders")}
-            className={`px-4 py-2 font-medium ${
-              activeTab === "orders"
+            className={`px-4 py-2 font-medium ${activeTab === "orders"
                 ? "text-purple-700 border-b-2 border-purple-700"
                 : "text-gray-500 hover:text-purple-500"
-            }`}
+              }`}
           >
             {t("My orders")}
           </button>

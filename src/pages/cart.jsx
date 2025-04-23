@@ -2,6 +2,7 @@
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import umami from "@umami/node"
 import axios from "axios"
 import { LoaderCircle, ShoppingCart } from "lucide-react"
 import Image from "next/image"
@@ -57,6 +58,14 @@ const CartPage = () => {
   }
   const handlePayment = async () => {
     const res = await axios.post("/api/payment", {
+      products: data.allProducts,
+      quantity: data.quantity,
+    })
+    await umami.track("navigate", {
+      from: router.asPath,
+      to: "/checkout",
+    })
+    await umami.track("checkout", {
       products: data.allProducts,
       quantity: data.quantity,
     })

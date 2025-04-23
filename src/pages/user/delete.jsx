@@ -20,18 +20,25 @@ const DeletePage = () => {
 
         if (res.status === 200) {
           const interval = setInterval(() => {
-          setRemainingTime((prev) => {
-            if (prev === 0) {
-              clearInterval(interval)
-              router.push("/auth/login")
+            setRemainingTime((prev) => {
+              if (prev === 0) {
+                clearInterval(interval)
+                umami.track("deleteUser", {
+                  customerId,
+                })
+                umami.track("navigate", {
+                  from: router.asPath,
+                  to: "/auth/login",
+                })
+                router.push("/auth/login")
 
-              return
-            }
+                return
+              }
 
-            // eslint-disable-next-line consistent-return
-            return prev - 1
-          })
-        }, 1000)
+              // eslint-disable-next-line consistent-return
+              return prev - 1
+            })
+          }, 1000)
 
           // eslint-disable-next-line consistent-return
           return () => clearInterval(interval)

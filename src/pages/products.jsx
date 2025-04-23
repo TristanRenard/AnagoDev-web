@@ -1,3 +1,4 @@
+import Link from "@/components/CustomLink"
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
@@ -7,7 +8,6 @@ import knexInstance from "@/lib/db"
 import { useI18n } from "@/locales"
 import { ArrowLeft, ArrowRight } from "lucide-react"
 import Image from "next/image"
-import Link from "next/link"
 import { useState } from "react"
 import ReactMarkdown from "react-markdown"
 

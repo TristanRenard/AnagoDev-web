@@ -18,6 +18,10 @@ const Verify = ({ token }) => {
           description: "Account verified",
           status: "success",
         })
+        umami.track("navigate", {
+          from: router.asPath,
+          to: "/",
+        })
         router.push("/")
       })
       .catch((err) => {
