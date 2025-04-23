@@ -17,13 +17,11 @@ const handler = async (req, res) => {
     .limit(1)
   const [order] = sessionId
 
-  if (!sessionId.length) {
+  if (!order) {
     return res.status(200).json({ message: "No session found" })
   }
 
-  const session = await stripe.checkout.sessions.retrieve(
-    sessionId[0].stripeSessionId,
-  )
+  const session = await stripe.checkout.sessions.retrieve(order.stripeSessionId)
 
   if (session.payment_status === "paid") {
     await Order.query(knexInstance)
@@ -42,11 +40,18 @@ const handler = async (req, res) => {
 
     console.log("orderPrices", orderPrices)
 
-    //Update stock
     await Promise.all(
       orderPrices.map(async (item) => {
-        await Product.query(knexInstance).findById(item.productId).decrement("stock", item.quantity)
-      })
+        const product = await Product.query(knexInstance).findById(
+          item.productId,
+        )
+
+        if (product.stock !== -1) {
+          await Product.query(knexInstance)
+            .findById(item.productId)
+            .decrement("stock", item.quantity)
+        }
+      }),
     )
   }
 
