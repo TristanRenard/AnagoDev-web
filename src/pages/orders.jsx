@@ -1,11 +1,12 @@
+import { useI18n } from "@/locales"
 import authProps from "@/serverSideProps/authProps"
-import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
+import umami from "@umami/node"
 import axios from "axios"
-import { useRouter } from "next/router"
 import dayjs from "dayjs"
 import "dayjs/locale/fr"
-import { useI18n } from "@/locales"
+import { useRouter } from "next/router"
+import { useState } from "react"
 dayjs.locale("fr")
 
 const OrdersPage = () => {
@@ -34,6 +35,10 @@ const OrdersPage = () => {
 
                 return formatted
             } catch (err) {
+                umami.track("navigate", {
+                    from: router.asPath,
+                    to: "/auth/login",
+                })
                 router.push("/auth/login")
 
                 return []

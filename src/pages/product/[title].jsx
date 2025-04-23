@@ -1,15 +1,15 @@
 import CustomVerticalCarousel from "@/components/core/CustomVerticalCarousel"
 import { Button } from "@/components/ui/button"
 import Product from "@/db/models/Product"
+import { useToast } from "@/hooks/use-toast"
 import knexInstance from "@/lib/db"
 import { useI18n, useScopedI18n } from "@/locales"
+import axios from "axios"
 import clsx from "clsx"
 import Image from "next/image"
+import { useRouter } from "next/router"
 import { useState } from "react"
 import ReactMarkdown from "react-markdown"
-import axios from "axios"
-import { useToast } from "@/hooks/use-toast"
-import { useRouter } from "next/router"
 
 const ProductPage = ({ product, similarProducts }) => {
   const [selectedPrice, setSelectedPrice] = useState(product?.prices?.[0]?.id)
@@ -30,6 +30,15 @@ const ProductPage = ({ product, similarProducts }) => {
         title: t("Product added to cart"),
         description: t("Product successfully added to your cart"),
         status: "success",
+      })
+      umami.track("addToCart", {
+        productId: product.id,
+        productTitle: product.title,
+        priceId: selectedPrice,
+      })
+      umami.track("navigate", {
+        from: router.asPath,
+        to: "/cart",
       })
       router.push("/cart")
     } catch (error) {

@@ -1,13 +1,15 @@
+import Link from "@/components/CustomLink"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { toast } from "@/hooks/use-toast"
 import { useI18n } from "@/locales"
+import umami from "@umami/node"
 import axios from "axios"
 import { UserRound } from "lucide-react"
-import Link from "next/link"
 import { useRouter } from "next/router"
 
 const IconProfil = ({ isAdmin }) => {
@@ -18,6 +20,16 @@ const IconProfil = ({ isAdmin }) => {
       const res = await axios.delete("/api/user/login")
 
       if (res.statusText === "OK") {
+        umami.track("logout")
+        toast({
+          title: "Success",
+          description: t("Vous êtes déconnecté"),
+          status: "success",
+        })
+        umami.track("navigate", {
+          from: router.asPath,
+          to: "/",
+        })
         router.push("/")
         router.reload()
       } else {

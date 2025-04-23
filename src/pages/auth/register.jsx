@@ -36,6 +36,10 @@ const Register = () => {
           description: "Account created check your email to verify",
           status: "success",
         })
+        umami.track("navigate", {
+          from: router.asPath,
+          to: "/",
+        })
         router.push("/")
       }
     } catch (err) {
