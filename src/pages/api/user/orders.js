@@ -14,10 +14,22 @@ const handler = async (req, res) => {
     const user = JSON.parse(userData)
     const orders = await Order.query(knexInstance)
       .select("*")
-      .where({ userId: user.id })
-      .withGraphFetched("[orderPrices, orderPrices.price, orderPrices.price.product]")
+      .where({ userId: user.id, status: "paid" })
+      .withGraphFetched(
+        "[orderPrices, orderPrices.price, orderPrices.price.product]",
+      )
+      .orderBy("id", "asc")
+    const ordersWithQuantities = orders.map((order) => {
+      const totalQuantity =
+        order.orderPrices?.reduce((sum, op) => sum + (op.quantity || 0), 0) || 0
 
-    return res.status(200).json({ orders })
+      return {
+        ...order,
+        totalQuantity,
+      }
+    })
+
+    return res.status(200).json({ orders: ordersWithQuantities })
   }
 
   return res.status(405).json({ message: "Method Not Allowed" })
