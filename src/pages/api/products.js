@@ -163,6 +163,7 @@ const handler = async (req, res) => {
           .where({ isActive: true, isSubscription: false })
           .where("categoryId", categoryId)
           .orderBy("created_at", "desc")
+          .orderBy("isTopProduct", "desc")
           .withGraphFetched("[category, prices]")
 
         return res.status(200).json(products)
@@ -172,6 +173,7 @@ const handler = async (req, res) => {
         .select("*")
         .where({ isActive: true, isSubscription: false })
         .orderBy("created_at", "desc")
+        .orderBy("isTopProduct", "desc")
         .withGraphFetched("[category, prices]")
 
       return res.status(200).json(products)
