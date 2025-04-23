@@ -39,6 +39,19 @@ const Orders = () => {
             }
         },
     })
+    const handleStatusChange = async (orderId, newStatus) => {
+        try {
+            await axios.patch(`/api/user/order/${orderId}`, { status: newStatus })
+            setOrders((prev) =>
+                prev.map((order) =>
+                    order.id === orderId ? { ...order, status: newStatus } : order
+                )
+            )
+        } catch (error) {
+            console.error("Failed to update order status", error)
+            alert(t("An error occurred while updating the status."))
+        }
+    }
 
     if (isLoading) {
         return (
@@ -70,7 +83,18 @@ const Orders = () => {
                                 <tr key={order.id} className="border-t">
                                     <td className="p-2 border">{order.id}</td>
                                     <td className="p-2 border">{order.usermail}</td>
-                                    <td className="p-2 border">{order.status}</td>
+                                    <td className="p-2 border">
+                                        <select
+                                            value={order.status}
+                                            onChange={(e) => handleStatusChange(order.id, e.target.value)}
+                                            className="border border-gray-300 rounded p-1 text-sm"
+                                        >
+                                            <option value="in-progress">{t("In progress")}</option>
+                                            <option value="paid">{t("Paid")}</option>
+                                            <option value="cancelled">{t("Cancelled")}</option>
+                                            <option value="refunded">{t("Refunded")}</option>
+                                        </select>
+                                    </td>
                                     <td className="p-2 border">{order.createdAt}</td>
                                     <td className="p-2 border">
                                         <ul className="list-disc pl-4">
