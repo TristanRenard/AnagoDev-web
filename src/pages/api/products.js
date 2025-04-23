@@ -138,6 +138,7 @@ const handler = async (req, res) => {
 
   if (req.method === "GET") {
     const { backoffice } = req.query
+    const { id, categoryId } = req.query
 
     if (isAdmin && backoffice) {
       const products = await Product.query(knexInstance)
@@ -148,6 +149,25 @@ const handler = async (req, res) => {
       return res.status(200).json(products)
       // eslint-disable-next-line no-else-return
     } else {
+      if (id) {
+        const product = await Product.query(knexInstance)
+          .findById(id)
+          .withGraphFetched("[category, prices]")
+
+        return res.status(200).json(product)
+      }
+
+      if (categoryId) {
+        const products = await Product.query(knexInstance)
+          .select("*")
+          .where({ isActive: true, isSubscription: false })
+          .where("categoryId", categoryId)
+          .orderBy("created_at", "desc")
+          .withGraphFetched("[category, prices]")
+
+        return res.status(200).json(products)
+      }
+
       const products = await Product.query(knexInstance)
         .select("*")
         .where({ isActive: true, isSubscription: false })
