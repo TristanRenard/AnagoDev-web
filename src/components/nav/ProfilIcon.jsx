@@ -53,7 +53,7 @@ const IconProfil = ({ isAdmin }) => {
         </DropdownMenuItem>
         {isAdmin && (
           <DropdownMenuItem>
-            <Link href="/backoffice/products">{t("Backoffice")}</Link>
+            <Link href="/backoffice/">{t("Backoffice")}</Link>
           </DropdownMenuItem>
         )}
         <DropdownMenuItem>
