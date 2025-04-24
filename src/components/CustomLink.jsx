@@ -1,4 +1,3 @@
-import umami from "@umami/node"
 import { default as NextLink } from "next/link"
 
 const Link = ({ onClick, children, ...props }) => {

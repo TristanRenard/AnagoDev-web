@@ -1,7 +1,6 @@
 import { useI18n } from "@/locales"
 import authProps from "@/serverSideProps/authProps"
 import { useQuery } from "@tanstack/react-query"
-import umami from "@umami/node"
 import axios from "axios"
 import dayjs from "dayjs"
 import "dayjs/locale/fr"
