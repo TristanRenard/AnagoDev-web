@@ -7,7 +7,6 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { toast } from "@/hooks/use-toast"
 import { useI18n } from "@/locales"
-import umami from "@umami/node"
 import axios from "axios"
 import { UserRound } from "lucide-react"
 import { useRouter } from "next/router"

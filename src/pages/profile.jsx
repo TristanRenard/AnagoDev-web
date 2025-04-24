@@ -13,7 +13,6 @@ import { PhoneInput } from "@/components/ui/phone-input"
 import { useToast } from "@/hooks/use-toast"
 import { useI18n } from "@/locales"
 import { useMutation, useQueries, useQueryClient } from "@tanstack/react-query"
-import umami from "@umami/node"
 import axios from "axios"
 import { LoaderCircle, User } from "lucide-react"
 import { useRouter } from "next/router"
@@ -117,8 +116,8 @@ const Profile = () => {
           <button
             onClick={() => setActiveTab("profile")}
             className={`px-4 py-2 mr-2 font-medium ${activeTab === "profile"
-                ? "text-purple-700 border-b-2 border-purple-700"
-                : "text-gray-500 hover:text-purple-500"
+              ? "text-purple-700 border-b-2 border-purple-700"
+              : "text-gray-500 hover:text-purple-500"
               }`}
           >
             {t("Profile")}
@@ -126,8 +125,8 @@ const Profile = () => {
           <button
             onClick={() => setActiveTab("orders")}
             className={`px-4 py-2 font-medium ${activeTab === "orders"
-                ? "text-purple-700 border-b-2 border-purple-700"
-                : "text-gray-500 hover:text-purple-500"
+              ? "text-purple-700 border-b-2 border-purple-700"
+              : "text-gray-500 hover:text-purple-500"
               }`}
           >
             {t("My orders")}

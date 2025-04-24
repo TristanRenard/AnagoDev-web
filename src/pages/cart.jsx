@@ -2,7 +2,6 @@
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import umami from "@umami/node"
 import axios from "axios"
 import { LoaderCircle, ShoppingCart } from "lucide-react"
 import Image from "next/image"
