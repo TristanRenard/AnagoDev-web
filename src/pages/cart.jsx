@@ -60,6 +60,14 @@ const CartPage = () => {
       products: data.allProducts,
       quantity: data.quantity,
     })
+    await umami.track("navigate", {
+      from: router.asPath,
+      to: "/checkout",
+    })
+    await umami.track("checkout", {
+      products: data.allProducts,
+      quantity: data.quantity,
+    })
     await router.push(res.data.url)
   }
 

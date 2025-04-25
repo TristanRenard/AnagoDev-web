@@ -1,6 +1,6 @@
+import Link from "@/components/CustomLink"
 import { useI18n } from "@/locales"
 import clsx from "clsx"
-import Link from "next/link"
 
 const links = {
   dashboard: "/backoffice",

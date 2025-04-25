@@ -1,4 +1,5 @@
 /* eslint-disable no-nested-ternary */
+import { Button } from "@/components/ui/button"
 import { useI18n } from "@/locales"
 import axios from "axios"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
@@ -11,11 +12,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { useToast } from "@/hooks/use-toast"
-import { useEffect, useState } from "react"
-import { useRouter } from "next/router"
 import { PhoneInput } from "@/components/ui/phone-input"
+import { useToast } from "@/hooks/use-toast"
+import { useRouter } from "next/router"
+import { useEffect, useState } from "react"
 
 const Profile = () => {
   const t = useI18n()
@@ -32,6 +32,10 @@ const Profile = () => {
         setUser(res.data.user)
         setUserAddress(res.data.userAddress[0])
       } catch (error) {
+        umami.track("navigate", {
+          from: router.asPath,
+          to: "/auth/login",
+        })
         router.push("/auth/login")
       }
     },

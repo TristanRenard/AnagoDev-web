@@ -7,14 +7,15 @@ import axios from "axios"
 import clsx from "clsx"
 import { Menu, Search, ShoppingBasket, X } from "lucide-react"
 import Image from "next/image"
-import Link from "next/link"
 import { useEffect, useState } from "react"
 
+import Link from "@/components/CustomLink"
 import SearchBar from "./SearchBar"
 
 const NavBar = () => {
   const t = useI18n()
   const [userId, setUserId] = useState(null)
+  const [isAdmin, setIsAdmin] = useState(false)
   const { isNavBarOpen, toggleNavBar } = useNavBar()
   const [isSearchBarOpen, setIsSearchBarOpen] = useState(false)
   const [connected, setConnected] = useState(false)
@@ -27,6 +28,7 @@ const NavBar = () => {
   const getUserId = async () => {
     const res = await axios("/api/me")
     setUserId(res.data.user.id)
+    setIsAdmin(res.data.user.role === "admin" || res.data.user.role === "superAdmin")
   }
   const handleKeyDown = (event) => {
     if (event.key === "k" && (event.ctrlKey || event.metaKey)) {
@@ -69,6 +71,19 @@ const NavBar = () => {
           <li className="flex flex-col justify-center items-center mr-16">
             <Link href="/contact">{t("Contact")}</Link>
           </li>
+          <li className="flex flex-col justify-center items-center mr-16">
+            <button className="hover:cursor-pointer">
+              <Search
+                onClick={() => setIsSearchBarOpen(!isSearchBarOpen)}
+                className="h-6 w-6"
+              />
+            </button>
+            <SearchBar
+              open={isSearchBarOpen}
+              onOpenChange={setIsSearchBarOpen}
+              connected={connected}
+            />
+          </li>
           {!connected ? (
             <>
               <li className="flex flex-col justify-center items-center mr-16">
@@ -76,19 +91,6 @@ const NavBar = () => {
               </li>
               <li className="flex flex-col justify-center items-center mr-16">
                 <Link href="/auth/register">{t("Register")}</Link>
-              </li>
-              <li className="flex flex-col justify-center items-center">
-                <button className="hover:cursor-pointer">
-                  <Search
-                    onClick={() => setIsSearchBarOpen(!isSearchBarOpen)}
-                    className="h-6 w-6"
-                  />
-                </button>
-                <SearchBar
-                  open={isSearchBarOpen}
-                  onOpenChange={setIsSearchBarOpen}
-                  connected={connected}
-                />
               </li>
             </>
           ) : (
@@ -99,20 +101,7 @@ const NavBar = () => {
                 </Link>
               </li>
               <li className="flex flex-col justify-center items-center mr-16">
-                <IconProfil />
-              </li>
-              <li className="flex flex-col justify-center items-center mr-16">
-                <button className="hover:cursor-pointer">
-                  <Search
-                    onClick={() => setIsSearchBarOpen(!isSearchBarOpen)}
-                    className="h-8 w-8"
-                  />
-                </button>
-                <SearchBar
-                  open={isSearchBarOpen}
-                  onOpenChange={setIsSearchBarOpen}
-                  connected={connected}
-                />
+                <IconProfil isAdmin={isAdmin} />
               </li>
             </>
           )}

@@ -47,6 +47,10 @@ const Login = () => {
           description: res.data.message,
           status: "success",
         })
+        umami.track("navigate", {
+          from: router.asPath,
+          to: "/",
+        })
         router.push("/").then(() => {
           router.reload()
         })
