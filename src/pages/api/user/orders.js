@@ -17,40 +17,28 @@ const handler = async (req, res) => {
   const user = JSON.parse(userData)
   const isAll = url.includes("/all") || req.query.all === "true"
 
-  let orders
-
   if (isAll) {
     if (user.role !== "admin") {
       return res.status(403).json({ message: "Forbidden. Admins only." })
     }
 
-    orders = await Order.query(knexInstance)
+    const orders = await Order.query(knexInstance)
       .select("*")
       .withGraphFetched(
         "[user, orderPrices, orderPrices.price, orderPrices.price.product]",
       )
-      .orderBy("id", "asc")
-  } else {
-    orders = await Order.query(knexInstance)
-      .select("*")
-      .where({ userId: user.id, status: "paid" })
-      .withGraphFetched(
-        "[orderPrices, orderPrices.price, orderPrices.price.product]",
-      )
-      .orderBy("id", "asc")
+
+    return res.status(200).json({ orders })
   }
 
-  const ordersWithQuantities = orders.map((order) => {
-    const totalQuantity =
-      order.orderPrices?.reduce((sum, op) => sum + (op.quantity || 0), 0) || 0
-      
-    return {
-      ...order,
-      totalQuantity,
-    }
-  })
+  const orders = await Order.query(knexInstance)
+    .select("*")
+    .where({ userId: user.id })
+    .withGraphFetched(
+      "[orderPrices, orderPrices.price, orderPrices.price.product]",
+    )
 
-  return res.status(200).json({ orders: ordersWithQuantities })
+  return res.status(200).json({ orders })
 }
 
 export default handler
