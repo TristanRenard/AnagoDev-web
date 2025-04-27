@@ -2,18 +2,8 @@ import BackofficeLayout from "@/components/layouts/BackofficeLayout"
 import { useToast } from "@/hooks/use-toast"
 import { useI18n } from "@/locales"
 import axios from "axios"
-import {
-  Download,
-  Eye,
-  FileIcon,
-  Image as Img,
-  Link,
-  Trash2,
-  Upload as UploadIcon,
-  X,
-} from "lucide-react"
+import { Download, Eye, FileIcon, Image as Img, Link, Trash2, Upload as UploadIcon, X } from "lucide-react"
 import Image from "next/image"
-import { useRouter } from "next/router"
 /* eslint-disable no-nested-ternary */
 /* eslint-disable max-lines */
 import { useEffect, useRef, useState } from "react"
@@ -22,7 +12,6 @@ import { useEffect, useRef, useState } from "react"
 const Upload = () => {
   const t = useI18n()
   const { toast } = useToast()
-  const router = useRouter()
   const [files, setFiles] = useState([])
   const [uploadedFiles, setUploadedFiles] = useState([])
   const [isLoading, setIsLoading] = useState(false)
@@ -126,7 +115,7 @@ const Upload = () => {
       description: t(`${fileName} deleted successfully`),
       status: "info",
     })
-    router.reload()
+    fetchUploadedFiles()
   }
   const handleDownload = (fileName) => {
     const fileUrl = `/api/backoffice/files/${fileName}`
@@ -242,21 +231,19 @@ const Upload = () => {
         <div className="flex border-b mb-6">
           <button
             onClick={() => setActiveTab("upload")}
-            className={`px-4 py-2 mr-2 font-medium ${
-              activeTab === "upload"
-                ? "text-purple-700 border-b-2 border-purple-700"
-                : "text-gray-500 hover:text-purple-500"
-            }`}
+            className={`px-4 py-2 mr-2 font-medium ${activeTab === "upload"
+              ? "text-purple-700 border-b-2 border-purple-700"
+              : "text-gray-500 hover:text-purple-500"
+              }`}
           >
             {t("Upload Files")}
           </button>
           <button
             onClick={() => setActiveTab("files")}
-            className={`px-4 py-2 font-medium ${
-              activeTab === "files"
-                ? "text-purple-700 border-b-2 border-purple-700"
-                : "text-gray-500 hover:text-purple-500"
-            }`}
+            className={`px-4 py-2 font-medium ${activeTab === "files"
+              ? "text-purple-700 border-b-2 border-purple-700"
+              : "text-gray-500 hover:text-purple-500"
+              }`}
           >
             {t("File Library")}
           </button>
@@ -345,11 +332,10 @@ const Upload = () => {
                 <button
                   onClick={handleUpload}
                   disabled={isLoading}
-                  className={`flex items-center justify-center ${
-                    isLoading
-                      ? "bg-purple-400"
-                      : "bg-gradient-to-r from-purple-600 to-indigo-700 hover:from-purple-700 hover:to-indigo-800"
-                  } font-bold rounded-full py-4 px-16 text-white mt-6 self-center transition-all shadow-md hover:shadow-lg`}
+                  className={`flex items-center justify-center ${isLoading
+                    ? "bg-purple-400"
+                    : "bg-gradient-to-r from-purple-600 to-indigo-700 hover:from-purple-700 hover:to-indigo-800"
+                    } font-bold rounded-full py-4 px-16 text-white mt-6 self-center transition-all shadow-md hover:shadow-lg`}
                 >
                   {isLoading ? (
                     <span>{t("Uploading...")}</span>
