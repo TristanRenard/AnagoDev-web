@@ -92,11 +92,11 @@ const ProductPage = ({ product, similarProducts }) => {
                     )}
                     onClick={() => setSelectedPrice(price.id)}
                   >
-                    <span className="text-xl font-bold">
+                    {price.nickname !== "unit" && <span className="text-xl font-bold">
                       {t(price.nickname)}
-                    </span>
+                    </span>}
                     <span>
-                      {price.unit_amount / 100}
+                      {price.unit_amount / 100}{" "}
                       {price.currency}
                     </span>
                   </button>
