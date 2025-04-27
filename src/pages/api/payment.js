@@ -23,7 +23,7 @@ const handler = async (req, res) => {
       prices.map(({ stripeId }) => stripe.prices.retrieve(stripeId)),
     )
     const session = await stripe.checkout.sessions.create({
-      payment_method_types: ["card", "paypal", "zip"],
+      payment_method_types: ["card", "paypal"],
       billing_address_collection: "required",
       customer: user.customerId,
       line_items: [
