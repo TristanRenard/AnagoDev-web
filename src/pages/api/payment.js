@@ -31,8 +31,8 @@ const handler = async (req, res) => {
       })),
     ],
     mode: "payment",
-    success_url: `${req.headers.origin}/success`,
-    cancel_url: `${req.headers.origin}/cart`,
+    success_url: `${req.headers.origin || process.env.HOST_NAME}/success`,
+    cancel_url: `${req.headers.origin || process.env.HOST_NAME}/cart`,
   })
 
   await Order.query(knexInstance)
