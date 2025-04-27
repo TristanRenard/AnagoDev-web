@@ -1,0 +1,196 @@
+import Link from "@/components/CustomLink"
+import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Label } from "@/components/ui/label"
+import Category from "@/db/models/Category"
+import knexInstance from "@/lib/db"
+import { useI18n } from "@/locales"
+import { ArrowLeft, ArrowRight } from "lucide-react"
+import Image from "next/image"
+import { useEffect, useState } from "react"
+import ReactMarkdown from "react-markdown"
+
+
+const SubscriptionsPage = ({ categories }) => {
+    const t = useI18n()
+    const [subscriptions, setSubscriptions] = useState([])
+    const [loading, setLoading] = useState(true)
+    const [multiImageApis, setMultiImageApis] = useState(null)
+    const [selectedCategories, setSelectedCategories] = useState([...categories.map((category) => category.id)])
+    const toggleCategory = (categoryId) => {
+        setSelectedCategories((prev) => {
+            if (prev.includes(categoryId)) {
+                return prev.filter((id) => id !== categoryId)
+            }
+
+            return [...prev, categoryId]
+        })
+    }
+
+    useEffect(() => {
+        const fetchSubscriptions = async () => {
+            try {
+                const res = await fetch("/api/subscriptionsProducts")
+                const data = await res.json()
+                setSubscriptions(data)
+            } catch (error) {
+                console.error("Failed to fetch subscriptions:", error)
+            } finally {
+                setLoading(false)
+            }
+        }
+
+        fetchSubscriptions()
+    }, [])
+
+    console.log(categories)
+    console.log(subscriptions)
+
+    if (loading) {
+        return (
+            <div className="flex flex-1 justify-center items-center">
+                <p>Loading...</p>
+            </div>
+        )
+    }
+
+    if (subscriptions.length === 0) {
+        return (
+            <div className="flex flex-1 justify-center items-center">
+                <p>{t("No subscriptions found")}</p>
+            </div>
+        )
+    }
+
+    return (
+        <div className="flex flex-1 flex-col items-center">
+            <header className="w-11/12 py-16">
+                <h1 className="text-4xl font-bold mb-4">
+                    {t("Subscriptions")}
+                </h1>
+                <p className="text-lg text-gray-600">
+                    {t("Discover our subscriptions")}
+                </p>
+            </header>
+            <section className="w-5/6 flex justify-between">
+                <section>
+                    <h3 className="text-2xl font-bold mb-4">
+                        {t("Filters")}
+                    </h3>
+                    <div className="pl-4">
+                        <h4 className="text-lg font-semibold mb-2">
+                            {t("Categories")}
+                        </h4>
+                        <ul className="pl-2">
+                            {categories.map((category) => (
+                                <li key={category.id} className="mb-8 flex items-center">
+                                    <Checkbox id={category.id} onCheckedChange={() => { toggleCategory(category.id) }} checked={selectedCategories.includes(category.id)} />
+                                    <Label htmlFor={category.id} className="ml-2">
+                                        {category.title}
+                                    </Label>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+
+                </section>
+                <section className="w-5/6 pl-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    {
+                        subscriptions
+                            .filter((product) => selectedCategories.includes(product.categoryId))
+                            .sort((a, b) => {
+                                if (a.isTopProduct && !b.isTopProduct) {
+                                    return -1
+                                }
+
+                                if (!a.isTopProduct && b.isTopProduct) {
+                                    return 1
+                                }
+
+                                return 0
+                            })
+                            .map((product) => (
+                                <div key={product.id} className="border p-4 mb-4 rounded-lg col-span-1 flex flex-col">
+                                    <div className="mb-2 relative">
+                                        {product.images && product.images.length > 0 && (
+                                            <Carousel opts={{ loop: true }} setApi={setMultiImageApis} className="w-full h-full overflow-hidden">
+                                                <CarouselContent className="h-full">
+                                                    {product.images.map((image, k) => (
+                                                        <CarouselItem key={k} className="h-full overflow-hidden">
+                                                            <div className="relative h-full w-full overflow-hidden">
+                                                                <Image
+                                                                    src={image}
+                                                                    alt=""
+                                                                    width={400}
+                                                                    height={300}
+                                                                    className="object-cover w-full h-full rounded-sm aspect-square"
+                                                                    style={{ maxWidth: "100%", maxHeight: "100%" }}
+                                                                />
+                                                            </div>
+                                                        </CarouselItem>
+                                                    ))}
+                                                </CarouselContent>
+                                            </Carousel>
+                                        )}
+                                        <div className="absolute inset-0 flex items-center justify-between px-2 pointer-events-none">
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation()
+                                                    multiImageApis?.scrollPrev()
+                                                }}
+                                                className="bg-white rounded-full p-1 backdrop-blur-sm pointer-events-auto"
+                                                aria-label="Image précédente"
+                                            >
+                                                <ArrowLeft className="w-4 h-4 text-black" />
+                                            </button>
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation()
+                                                    multiImageApis?.scrollNext()
+                                                }}
+                                                className="bg-white rounded-full p-1 backdrop-blur-sm pointer-events-auto"
+                                                aria-label="Image suivante"
+                                            >
+                                                <ArrowRight className="w-4 h-4 text-black" />
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <h3 className="text-xl font-bold mb-2">
+                                        {product.title}
+                                    </h3>
+                                    <p className="text-gray-600 mb-4 overflow-hidden text-ellipsis">
+                                        <ReactMarkdown>
+                                            {product.description}
+                                        </ReactMarkdown>
+                                    </p>
+                                    <div className="flex flex-col gap-2">
+                                        <span className="text-lg font-semibold">
+                                            {product.price}€
+                                        </span>
+                                        <Link href={`/subscription/${product.id}`} className="bg-primary text-white px-4 py-2 rounded-md">
+                                            {t("View subscription")}
+                                        </Link>
+                                    </div>
+                                </div>
+                            ))
+                    }
+                </section>
+
+            </section>
+        </div >
+    )
+}
+
+export const getServerSideProps = async () => {
+    const categories = await Category.query(knexInstance)
+        .select("id", "title")
+        .whereNot({ title: "subscriptions" })
+
+    return {
+        props: {
+            categories: JSON.parse(JSON.stringify(categories)),
+        },
+    }
+}
+
+export default SubscriptionsPage
