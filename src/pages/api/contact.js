@@ -25,7 +25,7 @@ const contact = async (req, res) => {
         ])
 
         await sendEmail("schmittlea92@yahoo.com", "New Contact Form Submission", html)
-        await sendEmail(email, "Confoirmation of your demande", htmlConfirmation)
+        await sendEmail(email, "Confirmation of your demande", htmlConfirmation)
 
         return res.status(200).json({ success: true })
     } catch (err) {
