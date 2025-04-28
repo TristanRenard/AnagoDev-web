@@ -1,9 +1,8 @@
 import Link from "@/components/CustomLink"
-import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel"
 import Product from "@/db/models/Product"
 import knexInstance from "@/lib/db"
 import { useI18n } from "@/locales"
-import { ArrowLeft, ArrowRight, Clock, Zap } from "lucide-react"
+import { Clock, Zap } from "lucide-react"
 import Image from "next/image"
 import { useEffect, useState } from "react"
 import ReactMarkdown from "react-markdown"
@@ -12,7 +11,6 @@ const SubscriptionsPage = () => {
     const t = useI18n()
     const [subscriptions, setSubscriptions] = useState([])
     const [loading, setLoading] = useState(true)
-    const [imageApis, setImageApis] = useState({})
 
     useEffect(() => {
         const fetchSubscriptions = async () => {
@@ -29,23 +27,6 @@ const SubscriptionsPage = () => {
 
         fetchSubscriptions()
     }, [])
-
-    const handleNextImage = (productId) => {
-        if (imageApis[productId]) {
-            imageApis[productId].scrollNext()
-        }
-    }
-    const handlePrevImage = (productId) => {
-        if (imageApis[productId]) {
-            imageApis[productId].scrollPrev()
-        }
-    }
-    const setCarouselApi = (api, productId) => {
-        setImageApis(prev => ({
-            ...prev,
-            [productId]: api
-        }))
-    }
 
     if (loading) {
         return (
@@ -93,50 +74,17 @@ const SubscriptionsPage = () => {
                         >
                             <div className="relative h-64">
                                 {product.images && product.images.length > 0 ? (
-                                    <Carousel
-                                        opts={{ loop: true }}
-                                        setApi={(api) => setCarouselApi(api, product.id)}
-                                        className="w-full h-full"
-                                    >
-                                        <CarouselContent className="h-full">
-                                            {product.images.map((image, k) => (
-                                                <CarouselItem key={k} className="h-full">
-                                                    <div className="relative h-full w-full">
-                                                        <Image
-                                                            src={image}
-                                                            alt={product.title}
-                                                            fill
-                                                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                                                            className="object-cover"
-                                                        />
-                                                    </div>
-                                                </CarouselItem>
-                                            ))}
-                                        </CarouselContent>
 
-                                        <div className="absolute inset-0 flex items-center justify-between px-3 pointer-events-none">
-                                            <button
-                                                onClick={(e) => {
-                                                    e.stopPropagation()
-                                                    handlePrevImage(product.id)
-                                                }}
-                                                className="bg-white/80 rounded-full p-2 shadow-md pointer-events-auto hover:bg-white transition-colors"
-                                                aria-label={t("Previous image")}
-                                            >
-                                                <ArrowLeft className="w-5 h-5 text-gray-800" />
-                                            </button>
-                                            <button
-                                                onClick={(e) => {
-                                                    e.stopPropagation()
-                                                    handleNextImage(product.id)
-                                                }}
-                                                className="bg-white/80 rounded-full p-2 shadow-md pointer-events-auto hover:bg-white transition-colors"
-                                                aria-label={t("Next image")}
-                                            >
-                                                <ArrowRight className="w-5 h-5 text-gray-800" />
-                                            </button>
-                                        </div>
-                                    </Carousel>
+                                    <div className="relative h-full w-full">
+                                        <Image
+                                            src={product.images[0]}
+                                            alt={product.title}
+                                            fill
+                                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                            className="object-cover"
+                                        />
+                                    </div>
+
                                 ) : (
                                     <div className="w-full h-full bg-gray-200 flex items-center justify-center">
                                         <p className="text-gray-500">{t("No image available")}</p>

@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react"
 import { useI18n } from "@/locales"
 import Image from "next/image"
+import { useEffect, useState } from "react"
 
 const HeroHeader = () => {
   const [mainCTA, setMainCTA] = useState("")
@@ -30,7 +30,7 @@ const HeroHeader = () => {
   return (
     <>
       {/* Affichage uniquement sur écrans larges */}
-      <div className="relative flex flex-col pt-36 hidden md:flex">
+      <div className="relative flex-col pt-36 hidden md:flex">
         <div className="absolute" style={{ top: "20%", right: "10%" }}>
           <Image
             src="/logo_cyna_black.png"
@@ -59,8 +59,8 @@ const HeroHeader = () => {
         <Image
           src="/phone_with_hand.png"
           alt="background image"
-          width={200}
-          height={100}
+          width={4000}
+          height={2000}
           className="object-cover w-4/5 self-end block md:block"
         />
       </div>
