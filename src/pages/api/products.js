@@ -138,6 +138,7 @@ const handler = async (req, res) => {
 
   if (req.method === "GET") {
     const { backoffice } = req.query
+    const { id, categoryId } = req.query
 
     if (isAdmin && backoffice) {
       const products = await Product.query(knexInstance)
@@ -148,10 +149,37 @@ const handler = async (req, res) => {
       return res.status(200).json(products)
       // eslint-disable-next-line no-else-return
     } else {
+      if (id) {
+        const product = await Product.query(knexInstance)
+          .findById(id)
+          .withGraphFetched("[category, prices]")
+
+        // Si un produit spécifique est demandé et qu'il s'agit d'un abonnement,
+        // on le renvoie uniquement si l'utilisateur est admin
+        if (product && product.isSubscription && !isAdmin) {
+          return res.status(403).json({ message: "Subscription product not accessible" })
+        }
+
+        return res.status(200).json(product)
+      }
+
+      if (categoryId) {
+        const products = await Product.query(knexInstance)
+          .select("*")
+          .where({ isActive: true, isSubscription: false })
+          .where("categoryId", categoryId)
+          .orderBy("created_at", "desc")
+          .orderBy("isTopProduct", "desc")
+          .withGraphFetched("[category, prices]")
+
+        return res.status(200).json(products)
+      }
+
       const products = await Product.query(knexInstance)
         .select("*")
-        .where({ isActive: true })
+        .where({ isActive: true, isSubscription: false })
         .orderBy("created_at", "desc")
+        .orderBy("isTopProduct", "desc")
         .withGraphFetched("[category, prices]")
 
       return res.status(200).json(products)

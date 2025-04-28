@@ -1,16 +1,12 @@
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+import Link from "@/components/CustomLink"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { toast } from "@/hooks/use-toast"
 import { useI18n } from "@/locales"
 import axios from "axios"
 import { UserRound } from "lucide-react"
-import Link from "next/link"
 import { useRouter } from "next/router"
 
-const IconProfil = () => {
+const IconProfil = ({ isAdmin }) => {
   const t = useI18n()
   const router = useRouter()
   const handleLogout = async () => {
@@ -18,6 +14,16 @@ const IconProfil = () => {
       const res = await axios.delete("/api/user/login")
 
       if (res.statusText === "OK") {
+        umami.track("logout")
+        toast({
+          title: "Success",
+          description: t("Vous êtes déconnecté"),
+          status: "success",
+        })
+        umami.track("navigate", {
+          from: router.asPath,
+          to: "/",
+        })
         router.push("/")
         router.reload()
       } else {
@@ -35,10 +41,18 @@ const IconProfil = () => {
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuItem>
-          <Link href="/account">{t("Mon profil")}</Link>
+          <Link href="/profile">{t("My profile")}</Link>
         </DropdownMenuItem>
         <DropdownMenuItem>
-          <button onClick={handleLogout}>{t("Deconnexion")}</button>
+          <Link href="/orders">{t("Orders")}</Link>
+        </DropdownMenuItem>
+        {isAdmin && (
+          <DropdownMenuItem>
+            <Link href="/backoffice/">{t("Backoffice")}</Link>
+          </DropdownMenuItem>
+        )}
+        <DropdownMenuItem>
+          <button onClick={handleLogout}>{t("Logout")}</button>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

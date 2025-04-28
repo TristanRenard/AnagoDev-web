@@ -33,7 +33,9 @@ const Upload = () => {
     } catch (error) {
       toast({
         title: t("Error"),
-        description: t("Failed to fetch files: {{message}}", { message: error.message }),
+        description: t("Failed to fetch files: {{message}}", {
+          message: error.message,
+        }),
         status: "error",
       })
     } finally {
@@ -57,7 +59,6 @@ const Upload = () => {
         status: "warning",
       })
 
-
       return
     }
 
@@ -72,7 +73,10 @@ const Upload = () => {
       toast({
         title: t("Success"),
         // eslint-disable-next-line no-undef
-        description: files.length === 1 ? t("File uploaded successfully") : t("Files uploaded successfully"),
+        description:
+          files.length === 1
+            ? t("File uploaded successfully")
+            : t("Files uploaded successfully"),
         status: "success",
       })
       setFiles([])
@@ -81,7 +85,9 @@ const Upload = () => {
     } catch (error) {
       toast({
         title: t("Error"),
-        description: t("Upload failed: {{message}}", { message: error.message }),
+        description: t("Upload failed: {{message}}", {
+          message: error.message,
+        }),
         status: "error",
       })
     } finally {
@@ -100,14 +106,16 @@ const Upload = () => {
   const handleDelete = (index) => {
     setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index))
   }
-  const handleDeleteUploaded = (fileName) => {
-    // This would require an API endpoint to delete files
-    // For now, we'll just show what it would look like
+  const handleDeleteUploaded = async (fileName) => {
+    await axios.delete("/api/backoffice/upload", {
+      params: { fileName },
+    })
     toast({
       title: t("Information"),
-      description: t("Delete functionality would remove \"{{fileName}}\"", { fileName }),
+      description: t(`${fileName} deleted successfully`),
       status: "info",
     })
+    fetchUploadedFiles()
   }
   const handleDownload = (fileName) => {
     const fileUrl = `/api/backoffice/files/${fileName}`
@@ -121,8 +129,19 @@ const Upload = () => {
   const isPreviewable = (fileName) => {
     const extension = fileName.split(".").pop().toLowerCase()
 
-
-    return ["jpg", "jpeg", "png", "gif", "svg", "webp", "pdf", "txt", "html", "css", "js"].includes(extension)
+    return [
+      "jpg",
+      "jpeg",
+      "png",
+      "gif",
+      "svg",
+      "webp",
+      "pdf",
+      "txt",
+      "html",
+      "css",
+      "js",
+    ].includes(extension)
   }
   const getFileIcon = (fileName) => {
     const extension = fileName.split(".").pop().toLowerCase()
@@ -132,7 +151,6 @@ const Upload = () => {
     } else if (["pdf"].includes(extension)) {
       return <FileIcon className="h-6 w-6" />
     }
-
 
     return <FileIcon className="h-6 w-6" />
   }
@@ -144,7 +162,6 @@ const Upload = () => {
       if (isUploaded) {
         // For uploaded files, use the URL to the file
         const fileUrl = `/api/backoffice/files/${fileName}`
-
 
         return (
           <div className="relative w-full h-32 bg-gray-200 rounded-md overflow-hidden">
@@ -171,7 +188,9 @@ const Upload = () => {
     return (
       <div className="flex items-center justify-center w-full h-32 bg-gray-100 rounded-md">
         {getFileIcon(fileName)}
-        <span className="ml-2 text-sm text-gray-500">{extension.toUpperCase()}</span>
+        <span className="ml-2 text-sm text-gray-500">
+          {extension.toUpperCase()}
+        </span>
       </div>
     )
   }
@@ -191,15 +210,22 @@ const Upload = () => {
     }, [file])
 
     return preview ? (
-      <Image src={preview} alt={file.name} className="w-full h-full object-cover" width={256} height={256} />
+      <Image
+        src={preview}
+        alt={file.name}
+        className="w-full h-full object-cover"
+        width={256}
+        height={256}
+      />
     ) : (
-      <div className="flex items-center justify-center w-full h-full">{t("Loading...")}</div>
+      <div className="flex items-center justify-center w-full h-full">
+        {t("Loading...")}
+      </div>
     )
   }
 
   return (
     <BackofficeLayout>
-
       <div className="flex-1 flex flex-col w-full max-w-6xl mx-auto p-6">
         {/* Tabs */}
         <div className="flex border-b mb-6">
@@ -232,11 +258,18 @@ const Upload = () => {
               className="flex flex-col border-dashed rounded-lg border-2 items-center justify-center border-purple-500 h-64 w-full cursor-pointer bg-purple-50 transition-colors hover:bg-purple-100"
             >
               <UploadIcon className="h-12 w-12 text-purple-500 mb-2" />
-              <h1 className="text-2xl font-bold text-gray-800">{t("Upload Files")}</h1>
+              <h1 className="text-2xl font-bold text-gray-800">
+                {t("Upload Files")}
+              </h1>
               <p className="text-gray-600 mt-2">
-                <span className="underline text-purple-600 font-medium">{t("Select files")}</span> {t("or drag and drop here")}
+                <span className="underline text-purple-600 font-medium">
+                  {t("Select files")}
+                </span>{" "}
+                {t("or drag and drop here")}
               </p>
-              <p className="text-gray-500 text-sm mt-1">{t("Any file type, up to 10MB per file")}</p>
+              <p className="text-gray-500 text-sm mt-1">
+                {t("Any file type, up to 10MB per file")}
+              </p>
               <input
                 type="file"
                 multiple
@@ -250,7 +283,9 @@ const Upload = () => {
               <>
                 <div className="mt-8">
                   <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-lg font-medium">{t("Files to Upload ({count})", { count: files.length })}</h2>
+                    <h2 className="text-lg font-medium">
+                      {t("Files to Upload ({count})", { count: files.length })}
+                    </h2>
                     <button
                       onClick={() => setFiles([])}
                       className="text-sm text-red-500 hover:text-red-700 flex items-center"
@@ -267,7 +302,10 @@ const Upload = () => {
                       >
                         {getFilePreview(file)}
                         <div className="p-3">
-                          <div className="truncate text-sm font-medium text-gray-800" title={file.name}>
+                          <div
+                            className="truncate text-sm font-medium text-gray-800"
+                            title={file.name}
+                          >
                             {file.name}
                           </div>
                           <div className="text-xs text-gray-500 mt-1">
@@ -294,7 +332,9 @@ const Upload = () => {
                 <button
                   onClick={handleUpload}
                   disabled={isLoading}
-                  className={`flex items-center justify-center ${isLoading ? "bg-purple-400" : "bg-gradient-to-r from-purple-600 to-indigo-700 hover:from-purple-700 hover:to-indigo-800"
+                  className={`flex items-center justify-center ${isLoading
+                    ? "bg-purple-400"
+                    : "bg-gradient-to-r from-purple-600 to-indigo-700 hover:from-purple-700 hover:to-indigo-800"
                     } font-bold rounded-full py-4 px-16 text-white mt-6 self-center transition-all shadow-md hover:shadow-lg`}
                 >
                   {isLoading ? (
@@ -302,10 +342,12 @@ const Upload = () => {
                   ) : (
                     <>
                       <UploadIcon className="mr-2 h-5 w-5" />
-                      <span>{t("Upload {count} {file}", {
-                        count: files.length,
-                        file: files.length === 1 ? t("File") : t("Files")
-                      })}</span>
+                      <span>
+                        {t("Upload {count} {file}", {
+                          count: files.length,
+                          file: files.length === 1 ? t("File") : t("Files"),
+                        })}
+                      </span>
                     </>
                   )}
                 </button>
@@ -315,7 +357,9 @@ const Upload = () => {
         ) : (
           <div>
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-bold text-gray-800">{t("File Library")}</h2>
+              <h2 className="text-xl font-bold text-gray-800">
+                {t("File Library")}
+              </h2>
               <button
                 onClick={fetchUploadedFiles}
                 className="flex items-center text-sm text-purple-600 hover:text-purple-800"
@@ -360,7 +404,9 @@ const Upload = () => {
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                   ></path>
                 </svg>
-                <span className="ml-3 text-gray-600">{t("Loading files...")}</span>
+                <span className="ml-3 text-gray-600">
+                  {t("Loading files...")}
+                </span>
               </div>
             ) : uploadedFiles.length === 0 ? (
               <div className="flex flex-col items-center justify-center bg-gray-50 rounded-lg py-12">
@@ -378,8 +424,12 @@ const Upload = () => {
                     d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"
                   />
                 </svg>
-                <h3 className="text-lg font-medium text-gray-600 mb-2">{t("No files uploaded yet")}</h3>
-                <p className="text-gray-500 mb-4">{t("Start by uploading your first file")}</p>
+                <h3 className="text-lg font-medium text-gray-600 mb-2">
+                  {t("No files uploaded yet")}
+                </h3>
+                <p className="text-gray-500 mb-4">
+                  {t("Start by uploading your first file")}
+                </p>
                 <button
                   onClick={() => setActiveTab("upload")}
                   className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
@@ -396,17 +446,26 @@ const Upload = () => {
                   >
                     {getFilePreview(file, true)}
                     <div className="p-3">
-                      <div className="truncate text-sm font-medium text-gray-800" title={file.name}>
+                      <div
+                        className="truncate text-sm font-medium text-gray-800"
+                        title={file.name}
+                      >
                         {file.name}
                       </div>
                       <div className="text-xs text-gray-500 mt-1">
-                        {new Date(file.lastModified).toLocaleDateString()} • {(file.size / 1024).toFixed(1)} KB
+                        {new Date(file.lastModified).toLocaleDateString()} •{" "}
+                        {(file.size / 1024).toFixed(1)} KB
                       </div>
                       <div className="flex gap-2 mt-3 justify-between">
                         <div className="flex gap-1">
                           {isPreviewable(file.name) && (
                             <button
-                              onClick={() => window.open(`/api/backoffice/files/${file.name}`, "_blank")}
+                              onClick={() =>
+                                window.open(
+                                  `/api/backoffice/files/${file.name}`,
+                                  "_blank",
+                                )
+                              }
                               className="flex items-center justify-center p-2 bg-blue-100 rounded-full hover:bg-blue-200 transition-colors"
                               title={t("Preview file")}
                             >

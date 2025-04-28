@@ -7,14 +7,14 @@ import axios from "axios"
 import clsx from "clsx"
 import { Menu, Search, ShoppingBasket, X } from "lucide-react"
 import Image from "next/image"
-import Link from "next/link"
 import { useEffect, useState } from "react"
 
+import Link from "@/components/CustomLink"
 import SearchBar from "./SearchBar"
 
 const NavBar = () => {
   const t = useI18n()
-  const [userId, setUserId] = useState(null)
+  const [isAdmin, setIsAdmin] = useState(false)
   const { isNavBarOpen, toggleNavBar } = useNavBar()
   const [isSearchBarOpen, setIsSearchBarOpen] = useState(false)
   const [connected, setConnected] = useState(false)
@@ -26,7 +26,9 @@ const NavBar = () => {
   }
   const getUserId = async () => {
     const res = await axios("/api/me")
-    setUserId(res.data.user.id)
+    setIsAdmin(
+      res.data.user.role === "admin" || res.data.user.role === "superAdmin",
+    )
   }
   const handleKeyDown = (event) => {
     if (event.key === "k" && (event.ctrlKey || event.metaKey)) {
@@ -55,7 +57,7 @@ const NavBar = () => {
       <nav className="hidden md:flex font-black text-xl p-4">
         <Link href="/">
           <Image
-            className="h-12 w-auto mr-16"
+            className="h-12 w-auto mr-16 hover:cursor-pointer"
             src="/cyna_icone_purple.png"
             alt="logo"
             height={358}
@@ -67,7 +69,23 @@ const NavBar = () => {
             <Link href="/products">{t("Products")}</Link>
           </li>
           <li className="flex flex-col justify-center items-center mr-16">
-            <Link href="#">{t("Contact")}</Link>
+            <Link href="/subscriptions">{t("Subscriptions")}</Link>
+          </li>
+          <li className="flex flex-col justify-center items-center mr-16">
+            <Link href="/contact">{t("Contact")}</Link>
+          </li>
+          <li className="flex flex-col justify-center items-center mr-16">
+            <button className="hover:cursor-pointer">
+              <Search
+                onClick={() => setIsSearchBarOpen(!isSearchBarOpen)}
+                className="h-6 w-6"
+              />
+            </button>
+            <SearchBar
+              open={isSearchBarOpen}
+              onOpenChange={setIsSearchBarOpen}
+              connected={connected}
+            />
           </li>
           {!connected ? (
             <>
@@ -76,19 +94,6 @@ const NavBar = () => {
               </li>
               <li className="flex flex-col justify-center items-center mr-16">
                 <Link href="/auth/register">{t("Register")}</Link>
-              </li>
-              <li className="flex flex-col justify-center items-center">
-                <button className="hover:cursor-pointer">
-                  <Search
-                    onClick={() => setIsSearchBarOpen(!isSearchBarOpen)}
-                    className="h-6 w-6"
-                  />
-                </button>
-                <SearchBar
-                  open={isSearchBarOpen}
-                  onOpenChange={setIsSearchBarOpen}
-                  connected={connected}
-                />
               </li>
             </>
           ) : (
@@ -99,20 +104,7 @@ const NavBar = () => {
                 </Link>
               </li>
               <li className="flex flex-col justify-center items-center mr-16">
-                <IconProfil />
-              </li>
-              <li className="flex flex-col justify-center items-center mr-16">
-                <button className="hover:cursor-pointer">
-                  <Search
-                    onClick={() => setIsSearchBarOpen(!isSearchBarOpen)}
-                    className="h-8 w-8"
-                  />
-                </button>
-                <SearchBar
-                  open={isSearchBarOpen}
-                  onOpenChange={setIsSearchBarOpen}
-                  connected={connected}
-                />
+                <IconProfil isAdmin={isAdmin} />
               </li>
             </>
           )}
@@ -168,8 +160,11 @@ const NavBar = () => {
           <li className="flex flex-col justify-center items-center p-4">
             <Link href="/products">{t("Products")}</Link>
           </li>
+          <li className="flex flex-col justify-center items-center p-4">
+            <Link href="/subscriptions">{t("Subscriptions")}</Link>
+          </li>
           <li className="flex flex-col justify-center items-center">
-            <Link href="#">{t("Contact")}</Link>
+            <Link href="/contact">{t("Contact")}</Link>
           </li>
           {!connected ? (
             <>
@@ -209,20 +204,7 @@ const NavBar = () => {
           ) : (
             <>
               <li className="flex flex-col justify-center items-center">
-                <Link
-                  data-umami-event="Cart"
-                  data-umami-event-type="click"
-                  data-umami-event-name="Cart"
-                  data-umami-event-value="Cart"
-                  onClick={() => {
-                    if (isNavBarOpen) {
-                      toggleNavBar()
-                    }
-                  }}
-                  href={`/account/${userId}`}
-                >
-                  {t("My account")}
-                </Link>
+                <IconProfil isAdmin={isAdmin} />
               </li>
               <li className="flex flex-col justify-center items-center">
                 <Link
@@ -234,22 +216,6 @@ const NavBar = () => {
                   href="/cart"
                 >
                   <ShoppingBasket />
-                </Link>
-              </li>
-              <li className="flex flex-col justify-center items-center">
-                <Link
-                  data-umami-event="Logout"
-                  data-umami-event-type="click"
-                  data-umami-event-name="Logout"
-                  data-umami-event-value="Logout"
-                  onClick={() => {
-                    if (isNavBarOpen) {
-                      toggleNavBar()
-                    }
-                  }}
-                  href="/auth/logout"
-                >
-                  {t("Logout")}
                 </Link>
               </li>
             </>

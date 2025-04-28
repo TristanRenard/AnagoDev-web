@@ -1,4 +1,5 @@
 import Conversation from "@/db/models/Conversation"
+import OrderPrice from "@/db/models/OrderPrice"
 import Product from "@/db/models/Product"
 import knexInstance from "@/lib/db"
 import Anthropic from "@anthropic-ai/sdk"
@@ -10,7 +11,7 @@ You will always reply with json with this format :
   title : <title of the conversation only for the first message>
   event* : "message" | "suggest" | "do" | "need a human"
   message* : <the message in the user language>
-  productList : <if suggest or do> [{id:<id>,quantity:<quantity>},...]
+  productList : <if suggest or do> [{id:<price.id>,quantity:<quantity>},...] (use the id of the price never the id of the product, you can use price.id or priceId)
   action : <if do> "add to cart" | "go to page | remove from cart"
   page : <if action is "go to page"> "product/<product.title>"
 }
@@ -83,6 +84,18 @@ const handler = async (req, res) => {
       .where({ isActive: true })
       .orderBy("created_at", "desc")
       .withGraphFetched("[category, prices]")
+    const cart = await OrderPrice.query(knexInstance)
+      .join("orders", "orderPrice.orderId", "orders.id")
+      .withGraphFetched("[price, order]")
+      .where({ "orders.userId": userId, "orders.status": "cart" })
+      .withGraphFetched("price.product")
+    const reducedCart = cart.map((item) => ({ productId: item.price.product.id, title: item.price.product.title, quantity: item.quantity, priceId: item.price.id }))
+    const cartFormatted = `
+    
+    Cart :
+    ${JSON.stringify(reducedCart, null, 2)}`
+
+    console.log("cartFormatted", cartFormatted)
     const msg = await client.messages.create({
       model: "claude-3-7-sonnet-20250219",
       "max_tokens": 4096,
@@ -90,6 +103,7 @@ const handler = async (req, res) => {
       system: `
       ${preprompt}
       ${JSON.stringify(products)}
+      ${cartFormatted}
       `,
       messages: [...conversation.messages],
     })

@@ -1,6 +1,6 @@
+import Link from "@/components/CustomLink"
 import { useI18n } from "@/locales"
 import clsx from "clsx"
-import Link from "next/link"
 
 const links = {
   dashboard: "/backoffice",
@@ -10,7 +10,7 @@ const links = {
   orders: "/backoffice/orders",
   translations: "/backoffice/trads",
   mediatech: "/backoffice/upload",
-  settings: "/backoffice/settings"
+  settings: "/backoffice/settings",
 }
 const BackofficeNav = () => {
   const t = useI18n()

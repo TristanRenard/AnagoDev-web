@@ -1,7 +1,7 @@
+import Link from "@/components/CustomLink"
 import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from "@/components/ui/command"
 import { useI18n } from "@/locales"
 import axios from "axios"
-import Link from "next/link"
 import { useEffect, useState } from "react"
 
 const SearchBar = ({ open, onOpenChange, connected }) => {
@@ -81,7 +81,7 @@ const SearchBar = ({ open, onOpenChange, connected }) => {
         <CommandSeparator />
         {connected && (
           <CommandGroup heading={t("Menu")}>
-            <Link href="/account">
+            <Link href="/profile">
               <CommandItem
                 onSelect={() => {
                   onOpenChange(false)

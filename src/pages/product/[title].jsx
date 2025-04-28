@@ -1,15 +1,15 @@
 import CustomVerticalCarousel from "@/components/core/CustomVerticalCarousel"
 import { Button } from "@/components/ui/button"
 import Product from "@/db/models/Product"
+import { useToast } from "@/hooks/use-toast"
 import knexInstance from "@/lib/db"
 import { useI18n, useScopedI18n } from "@/locales"
+import axios from "axios"
 import clsx from "clsx"
 import Image from "next/image"
+import { useRouter } from "next/router"
 import { useState } from "react"
 import ReactMarkdown from "react-markdown"
-import axios from "axios"
-import { useToast } from "@/hooks/use-toast"
-import { useRouter } from "next/router"
 
 const ProductPage = ({ product, similarProducts }) => {
   const [selectedPrice, setSelectedPrice] = useState(product?.prices?.[0]?.id)
@@ -23,13 +23,22 @@ const ProductPage = ({ product, similarProducts }) => {
   const handleAddToCart = async () => {
     try {
       await axios.post("/api/cart", {
-        productId: product.id,
+        selectedPrice,
         action: "add",
       })
       toast({
         title: t("Product added to cart"),
         description: t("Product successfully added to your cart"),
         status: "success",
+      })
+      umami.track("addToCart", {
+        productId: product.id,
+        productTitle: product.title,
+        priceId: selectedPrice,
+      })
+      umami.track("navigate", {
+        from: router.asPath,
+        to: "/cart",
       })
       router.push("/cart")
     } catch (error) {
@@ -83,11 +92,11 @@ const ProductPage = ({ product, similarProducts }) => {
                     )}
                     onClick={() => setSelectedPrice(price.id)}
                   >
-                    <span className="text-xl font-bold">
+                    {price.nickname !== "unit" && <span className="text-xl font-bold">
                       {t(price.nickname)}
-                    </span>
+                    </span>}
                     <span>
-                      {price.unit_amount / 100}
+                      {price.unit_amount / 100}{" "}
                       {price.currency}
                     </span>
                   </button>

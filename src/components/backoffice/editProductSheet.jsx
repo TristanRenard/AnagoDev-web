@@ -144,12 +144,14 @@ const EditProductSheet = ({ product, queryClient, categories }) => {
         updatedPrices.push({
           id: existingPrice.id,
           "unit_amount": productPrice * 100,
-          currency: "eur"
+          currency: "eur",
+          nickname: "unit",
         })
       } else {
         updatedPrices.push({
           "unit_amount": productPrice * 100,
-          currency: "eur"
+          currency: "eur",
+          nickname: "unit",
         })
       }
     }

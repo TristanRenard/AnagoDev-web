@@ -21,7 +21,7 @@ const accountDeletion = async (email) => {
         {
           name: "accountDeletionLink",
           // eslint-disable-next-line no-underscore-dangle
-          value: `${process.env.HOST_NAME || process.env.__NEXT_PRIVATE_ORIGIN}user/delete?customerId=${user.customerId}`,
+          value: `${process.env.HOST_NAME || process.env.__NEXT_PRIVATE_ORIGIN}/user/delete?customerId=${user.customerId}`,
         },
       ]
       const body = mailFormater(template, params)

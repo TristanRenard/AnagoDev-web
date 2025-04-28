@@ -116,11 +116,7 @@ const CustomVerticalCarousel = ({ slides = slideTest }) => {
     return orderedSlides
   }, [slides, visibleSlides])
   const orderedSlides = useMemo(() => getOrderedSlides(), [getOrderedSlides])
-  const getTransformValue = useCallback(() => {
-    const startOffset = visibleSlides * slideWidth
-
-    return -(startOffset + currentIndex * slideWidth)
-  }, [currentIndex, slideWidth, visibleSlides])
+  const getTransformValue = useCallback(() => -(currentIndex * slideWidth), [currentIndex, slideWidth])
   const nextSlide = useCallback(() => {
     if (!carouselConfig.isCarouselEnabled || isAnimating) {
       return
@@ -234,18 +230,26 @@ const CustomVerticalCarousel = ({ slides = slideTest }) => {
                           style={{ maxWidth: "100%", maxHeight: "100%" }}
                         />
                       </div>
+                    ) : slide.img.length === 1 ? (
+                      <div className="relative w-full h-full">
+                        <Image
+                          src={slide.img[0]}
+                          alt={slide.titre}
+                          width={400}
+                          height={300}
+                          className="object-cover object-center w-full h-full"
+                          style={{ maxWidth: "100%", maxHeight: "100%" }}
+                        />
+                      </div>
                     ) : (
                       <Carousel
                         opts={{ loop: true }}
                         setApi={(api) => setApiForIndex(api, index)}
-                        className={`w-full h-full overflow-hidden`}
+                        className="w-full h-full overflow-hidden"
                       >
                         <CarouselContent className="h-full">
                           {slide.img.map((image, k) => (
-                            <CarouselItem
-                              key={k}
-                              className="h-full overflow-hidden"
-                            >
+                            <CarouselItem key={k} className="h-full overflow-hidden">
                               <div className="relative h-full w-full overflow-hidden">
                                 <Image
                                   src={image}
@@ -253,25 +257,19 @@ const CustomVerticalCarousel = ({ slides = slideTest }) => {
                                   width={400}
                                   height={300}
                                   className="object-cover object-center w-full h-full"
-                                  style={{
-                                    maxWidth: "100%",
-                                    maxHeight: "100%",
-                                  }}
+                                  style={{ maxWidth: "100%", maxHeight: "100%" }}
                                 />
                               </div>
                             </CarouselItem>
                           ))}
                         </CarouselContent>
-                        {/* Boutons de navigation superposés sur l'image */}
                         <div className="absolute inset-0 flex items-center justify-between px-2 pointer-events-none">
                           <button
                             onClick={(e) => {
                               e.stopPropagation()
                               const api = multiImageApisRef.current[index]
 
-                              if (api) {
-                                api.scrollPrev()
-                              }
+                              if (api) { api.scrollPrev() }
                             }}
                             className="bg-white rounded-full p-1 backdrop-blur-sm pointer-events-auto"
                             aria-label="Image précédente"
@@ -283,9 +281,7 @@ const CustomVerticalCarousel = ({ slides = slideTest }) => {
                               e.stopPropagation()
                               const api = multiImageApisRef.current[index]
 
-                              if (api) {
-                                api.scrollNext()
-                              }
+                              if (api) { api.scrollNext() }
                             }}
                             className="bg-white rounded-full p-1 backdrop-blur-sm pointer-events-auto"
                             aria-label="Image suivante"
@@ -326,11 +322,10 @@ const CustomVerticalCarousel = ({ slides = slideTest }) => {
         <div className="relative flex justify-end gap-2 items-center p-2 mt-2">
           <button
             onClick={prevSlide}
-            className={`p-3 rounded-full transition-all duration-300 ${
-              isAnimating
-                ? "bg-cyna-purple-grey/50 cursor-not-allowed"
-                : "bg-cyna-purple-grey hover:bg-cyna-purple-grey/90"
-            }`}
+            className={`p-3 rounded-full transition-all duration-300 ${isAnimating
+              ? "bg-cyna-purple-grey/50 cursor-not-allowed"
+              : "bg-cyna-purple-grey hover:bg-cyna-purple-grey/90"
+              }`}
             disabled={isAnimating}
           >
             <Image
@@ -354,11 +349,10 @@ const CustomVerticalCarousel = ({ slides = slideTest }) => {
           </div>
           <button
             onClick={nextSlide}
-            className={`p-3 rounded-full transition-all duration-300 ${
-              isAnimating
-                ? "bg-cyna-purple-grey/50 cursor-not-allowed"
-                : "bg-cyna-purple-grey hover:bg-cyna-purple-grey/90"
-            }`}
+            className={`p-3 rounded-full transition-all duration-300 ${isAnimating
+              ? "bg-cyna-purple-grey/50 cursor-not-allowed"
+              : "bg-cyna-purple-grey hover:bg-cyna-purple-grey/90"
+              }`}
             disabled={isAnimating}
           >
             <Image

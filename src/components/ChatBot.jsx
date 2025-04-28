@@ -1,8 +1,8 @@
+import Link from "@/components/CustomLink"
 import { useI18n } from "@/locales"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import axios from "axios"
 import { AlertTriangle, Clock, ExternalLink, MessageSquare, MessagesSquare, PlusCircle, Send, X } from "lucide-react"
-import Link from "next/link"
 import { useRouter } from "next/router"
 import { useEffect, useRef, useState } from "react"
 import ReactMarkdown from "react-markdown"
@@ -88,7 +88,7 @@ const ChatBot = () => {
             case "add to cart":
               Promise.all(parsedResponse.productList.map(async (product) => {
                 const res = await axios.post("/api/cart", {
-                  productId: product.id,
+                  selectedPrice: product.id,
                   action: "add",
                   quantity: product.quantity || 1
                 })
@@ -140,12 +140,20 @@ const ChatBot = () => {
           if (parsedResponse.action === "go to page" && parsedResponse.page) {
             console.log("Redirection to:", parsedResponse.page)
             // Window.location.href = parsedResponse.page
+            umami.track("navigate", {
+              from: router.asPath,
+              to: parsedResponse.page
+            })
             router.push(parsedResponse.page)
           }
         } else {
           switch (parsedResponse.action) {
             case "go to page":
               console.log("Redirection to:", parsedResponse.page)
+              umami.track("navigate", {
+                from: router.asPath,
+                to: parsedResponse.page
+              })
               router.push(parsedResponse.page)
 
               break

@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   transpilePackages: ["@mdxeditor/editor"],
+  crossOrigin: "anonymous",
   reactStrictMode: true,
   webpack: (config) => {
     config.experiments = { ...config.experiments, topLevelAwait: true }

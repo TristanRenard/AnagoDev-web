@@ -8,26 +8,26 @@ const Description = () => {
     <div className="mx-24 my-16">
       <h2 className="text-5xl font-medium mb-6">{t("About")}</h2>
       <ImageTextBlock
-        titre={t("Prevention")}
+        titre={t("Proximity")}
         texte={t(
-          "Lorem ipsum dolor sit amet consectetur. Eget pharetra tristique lorem quam elementum mi massa. Elit pretium morbi elementum risus diam aenean enim feugiat gravida. Non nisl morbi donec sed massa fusce in eget. Lobortis semper eu pharetra tristique nec vulputate quam ornare. Sit dolor semper vitae at tellus sed risus at. Mi ipsum diam.",
+          "Our Cyna CERT team is at your side in the event of an attack, ensuring investigation, eradication and remediation to guarantee a rapid and effective response.",
         )}
         image="/Search.svg"
         isLeft
       />
       <ImageTextBlock
-        titre={t("Protect your data")}
+        titre={t("Expertise")}
         texte={t(
-          "Lorem ipsum dolor sit amet consectetur. Eget pharetra tristique lorem quam elementum mi massa. Elit pretium morbi elementum risus diam aenean enim feugiat gravida. Non nisl morbi donec sed massa fusce in eget. Lobortis semper eu pharetra tristique nec vulputate quam ornare. Sit dolor semper vitae at tellus sed risus at. Mi ipsum diam.",
-        )}
-        image="/Protection.svg"
-      />
-      <ImageTextBlock
-        titre={t("Prevail your privacy")}
-        texte={t(
-          "Lorem ipsum dolor sit amet consectetur. Eget pharetra tristique lorem quam elementum mi massa. Elit pretium morbi elementum risus diam aenean enim feugiat gravida. Non nisl morbi donec sed massa fusce in eget. Lobortis semper eu pharetra tristique nec vulputate quam ornare. Sit dolor semper vitae at tellus sed risus at. Mi ipsum diam.",
+          "Certified cyber experts and in-depth knowledge of the SME market to offer you reliable solutions tailored to your needs.",
         )}
         image="/Avatar.svg"
+      />
+      <ImageTextBlock
+        titre={t("Reactivity")}
+        texte={t(
+          "Protect your information system continuously with 24/7 monitoring to detect potential threats.",
+        )}
+        image="/Protection.svg"
         isLeft
       />
     </div>
