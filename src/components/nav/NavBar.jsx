@@ -14,7 +14,6 @@ import SearchBar from "./SearchBar"
 
 const NavBar = () => {
   const t = useI18n()
-  const [userId, setUserId] = useState(null)
   const [isAdmin, setIsAdmin] = useState(false)
   const { isNavBarOpen, toggleNavBar } = useNavBar()
   const [isSearchBarOpen, setIsSearchBarOpen] = useState(false)
@@ -27,8 +26,9 @@ const NavBar = () => {
   }
   const getUserId = async () => {
     const res = await axios("/api/me")
-    setUserId(res.data.user.id)
-    setIsAdmin(res.data.user.role === "admin" || res.data.user.role === "superAdmin")
+    setIsAdmin(
+      res.data.user.role === "admin" || res.data.user.role === "superAdmin",
+    )
   }
   const handleKeyDown = (event) => {
     if (event.key === "k" && (event.ctrlKey || event.metaKey)) {
@@ -160,6 +160,9 @@ const NavBar = () => {
           <li className="flex flex-col justify-center items-center p-4">
             <Link href="/products">{t("Products")}</Link>
           </li>
+          <li className="flex flex-col justify-center items-center p-4">
+            <Link href="/subscriptions">{t("Subscriptions")}</Link>
+          </li>
           <li className="flex flex-col justify-center items-center">
             <Link href="/contact">{t("Contact")}</Link>
           </li>
@@ -201,20 +204,7 @@ const NavBar = () => {
           ) : (
             <>
               <li className="flex flex-col justify-center items-center">
-                <Link
-                  data-umami-event="Cart"
-                  data-umami-event-type="click"
-                  data-umami-event-name="Cart"
-                  data-umami-event-value="Cart"
-                  onClick={() => {
-                    if (isNavBarOpen) {
-                      toggleNavBar()
-                    }
-                  }}
-                  href={`/account/${userId}`}
-                >
-                  {t("My account")}
-                </Link>
+                <IconProfil isAdmin={isAdmin} />
               </li>
               <li className="flex flex-col justify-center items-center">
                 <Link
@@ -226,22 +216,6 @@ const NavBar = () => {
                   href="/cart"
                 >
                   <ShoppingBasket />
-                </Link>
-              </li>
-              <li className="flex flex-col justify-center items-center">
-                <Link
-                  data-umami-event="Logout"
-                  data-umami-event-type="click"
-                  data-umami-event-name="Logout"
-                  data-umami-event-value="Logout"
-                  onClick={() => {
-                    if (isNavBarOpen) {
-                      toggleNavBar()
-                    }
-                  }}
-                  href="/auth/logout"
-                >
-                  {t("Logout")}
                 </Link>
               </li>
             </>
