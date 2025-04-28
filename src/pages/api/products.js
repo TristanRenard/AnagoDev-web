@@ -154,6 +154,12 @@ const handler = async (req, res) => {
           .findById(id)
           .withGraphFetched("[category, prices]")
 
+        // Si un produit spécifique est demandé et qu'il s'agit d'un abonnement,
+        // on le renvoie uniquement si l'utilisateur est admin
+        if (product && product.isSubscription && !isAdmin) {
+          return res.status(403).json({ message: "Subscription product not accessible" })
+        }
+
         return res.status(200).json(product)
       }
 

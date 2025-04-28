@@ -153,7 +153,7 @@ const ProductsPage = ({ categories, products }) => {
 }
 
 export const getServerSideProps = async () => {
-  const products = await Product.query(knexInstance).select("categoryId", "title", "description", "images", "isMarkdown", "isSubscription", "stock", "price", "isTopProduct", "isActive").where({ isActive: true }).withGraphFetched("[category, prices]")
+  const products = await Product.query(knexInstance).select("categoryId", "title", "description", "images", "isMarkdown", "isSubscription", "stock", "price", "isTopProduct", "isActive").where({ isActive: true, isSubscription: false }).withGraphFetched("[category, prices]")
   const categories = await Category.query(knexInstance).select("id", "title").whereNot({ title: "subscriptions" })
 
   console.log(categories)

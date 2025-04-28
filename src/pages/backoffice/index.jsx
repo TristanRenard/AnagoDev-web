@@ -4,6 +4,7 @@ import authProps from "@/serverSideProps/authProps"
 import * as echarts from "echarts"
 import { useEffect, useRef, useState } from "react"
 
+// Composant simple pour les cartes de statistiques
 const StatsCard = ({ title, value, subtitle }) => (
   <div className="bg-white rounded-lg shadow p-4">
     <h3 className="text-gray-500 text-sm font-medium">{title}</h3>
@@ -15,63 +16,89 @@ const BackofficeHome = () => {
   const [stats, setStats] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  // Refs pour les graphiques
   const trafficChartRef = useRef(null)
   const devicesChartRef = useRef(null)
-  const browsersChartRef = useRef(null)
+  const osChartRef = useRef(null)
   const countriesChartRef = useRef(null)
   const topPagesChartRef = useRef(null)
+  const referrersChartRef = useRef(null)
 
+  // Charger les données
   useEffect(() => {
-    // Fetch data from API
-    fetchStatsData()
-  }, [])
+    const fetchStats = async () => {
+      try {
+        setLoading(true)
+        const response = await fetch("/api/stats")
 
-  useEffect(() => {
-    // Initialize charts when stats data is available
-    if (stats && !loading) {
-      initializeCharts()
+        if (!response.ok) {
+          throw new Error(`Erreur HTTP: ${response.status}`)
+        }
+
+        const data = await response.json()
+        setStats(data)
+        setError(null)
+      } catch (err) {
+        console.error("Erreur lors du chargement des statistiques:", err)
+        setError("Impossible de charger les statistiques. Veuillez réessayer plus tard.")
+      } finally {
+        setLoading(false)
+      }
     }
 
-    // Cleanup on component unmount
+    fetchStats()
+  }, [])
+
+  // Initialiser les graphiques quand les données sont chargées
+  useEffect(() => {
+    if (stats && !loading) {
+      initCharts()
+    }
+
+    // Nettoyer les instances de graphiques lors du démontage
     return () => {
-      disposeCharts()
+      if (trafficChartRef.current) {
+        echarts.getInstanceByDom(trafficChartRef.current)?.dispose()
+      }
+
+      if (devicesChartRef.current) {
+        echarts.getInstanceByDom(devicesChartRef.current)?.dispose()
+      }
+
+      if (osChartRef.current) {
+        echarts.getInstanceByDom(osChartRef.current)?.dispose()
+      }
+
+      if (countriesChartRef.current) {
+        echarts.getInstanceByDom(countriesChartRef.current)?.dispose()
+      }
+
+      if (topPagesChartRef.current) {
+        echarts.getInstanceByDom(topPagesChartRef.current)?.dispose()
+      }
+
+      if (referrersChartRef.current) {
+        echarts.getInstanceByDom(referrersChartRef.current)?.dispose()
+      }
     }
   }, [stats, loading])
 
-  const fetchStatsData = async () => {
-    try {
-      setLoading(true)
-      const response = await fetch("/api/stats")
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`)
-      }
-
-      const data = await response.json()
-      setStats(data)
-      setError(null)
-    } catch (err) {
-      console.error("Error fetching stats data:", err)
-      setError("Failed to load statistics. Please try again later.")
-    } finally {
-      setLoading(false)
-    }
-  }
-  const initializeCharts = () => {
-    if (!stats) { return }
-
-    if (trafficChartRef.current) {
-      const trafficChart = echarts.init(trafficChartRef.current)
-      // Format dates for x-axis
+  // Initialiser les graphiques
+  const initCharts = () => {
+    // 1. Graphique de trafic
+    if (trafficChartRef.current && stats.echarts?.line?.traffic) {
+      const chart = echarts.init(trafficChartRef.current)
+      // Formater les dates
       const formatDates = stats.echarts.line.traffic.dates.map(date => {
         const d = new Date(date)
 
 
         return `${(d.getMonth() + 1).toString().padStart(2, "0")}-${d.getDate().toString().padStart(2, "0")}`
       })
-      const trafficOption = {
+
+      chart.setOption({
         title: {
-          text: "Traffic Overview",
+          text: "Trafic",
           left: "center"
         },
         tooltip: {
@@ -81,7 +108,7 @@ const BackofficeHome = () => {
           }
         },
         legend: {
-          data: ["Pageviews", "Sessions"],
+          data: ["Pages vues", "Sessions"],
           top: 30
         },
         grid: {
@@ -102,14 +129,9 @@ const BackofficeHome = () => {
         },
         series: [
           {
-            name: "Pageviews",
-            type: "line",
+            name: "Pages vues",
+            type: "bar",
             data: stats.echarts.line.traffic.pageviews,
-            smooth: true,
-            lineStyle: {
-              width: 3,
-              color: "#5470c6"
-            },
             itemStyle: {
               color: "#5470c6"
             }
@@ -117,32 +139,25 @@ const BackofficeHome = () => {
           {
             name: "Sessions",
             type: "line",
-            data: stats.echarts.line.traffic.sessions,
             smooth: true,
-            lineStyle: {
-              width: 3,
-              color: "#91cc75"
-            },
+            data: stats.echarts.line.traffic.sessions,
             itemStyle: {
               color: "#91cc75"
             }
           }
         ]
-      }
-
-      trafficChart.setOption(trafficOption)
-
-      // Handle window resize
-      window.addEventListener("resize", () => {
-        trafficChart.resize()
       })
+
+      window.addEventListener("resize", () => chart.resize())
     }
 
-    if (devicesChartRef.current && stats) {
-      const devicesChart = echarts.init(devicesChartRef.current)
-      const devicesOption = {
+    // 2. Graphique des appareils
+    if (devicesChartRef.current && stats.echarts?.pie?.devices) {
+      const chart = echarts.init(devicesChartRef.current)
+
+      chart.setOption({
         title: {
-          text: "Devices",
+          text: "Appareils",
           left: "center"
         },
         tooltip: {
@@ -156,7 +171,7 @@ const BackofficeHome = () => {
         },
         series: [
           {
-            name: "Devices",
+            name: "Appareils",
             type: "pie",
             radius: "60%",
             center: ["50%", "60%"],
@@ -167,29 +182,21 @@ const BackofficeHome = () => {
                 shadowOffsetX: 0,
                 shadowColor: "rgba(0, 0, 0, 0.5)"
               }
-            },
-            labelLine: {
-              show: true
-            },
-            label: {
-              formatter: "{b}: {d}%"
             }
           }
         ]
-      }
-
-      devicesChart.setOption(devicesOption)
-
-      window.addEventListener("resize", () => {
-        devicesChart.resize()
       })
+
+      window.addEventListener("resize", () => chart.resize())
     }
 
-    if (browsersChartRef.current && stats) {
-      const browsersChart = echarts.init(browsersChartRef.current)
-      const browsersOption = {
+    // 3. Graphique des OS
+    if (osChartRef.current && stats.echarts?.pie?.os) {
+      const chart = echarts.init(osChartRef.current)
+
+      chart.setOption({
         title: {
-          text: "Browsers",
+          text: "Systèmes d'exploitation",
           left: "center"
         },
         tooltip: {
@@ -199,44 +206,36 @@ const BackofficeHome = () => {
         legend: {
           orient: "vertical",
           left: "left",
-          data: stats.echarts.pie.browsers.map(item => item.name)
+          data: stats.echarts.pie.os.map(item => item.name)
         },
         series: [
           {
-            name: "Browsers",
+            name: "OS",
             type: "pie",
             radius: "60%",
             center: ["50%", "60%"],
-            data: stats.echarts.pie.browsers,
+            data: stats.echarts.pie.os,
             emphasis: {
               itemStyle: {
                 shadowBlur: 10,
                 shadowOffsetX: 0,
                 shadowColor: "rgba(0, 0, 0, 0.5)"
               }
-            },
-            labelLine: {
-              show: true
-            },
-            label: {
-              formatter: "{b}: {d}%"
             }
           }
         ]
-      }
-
-      browsersChart.setOption(browsersOption)
-
-      window.addEventListener("resize", () => {
-        browsersChart.resize()
       })
+
+      window.addEventListener("resize", () => chart.resize())
     }
 
-    if (countriesChartRef.current && stats) {
-      const countriesChart = echarts.init(countriesChartRef.current)
-      const countriesOption = {
+    // 4. Graphique des pays
+    if (countriesChartRef.current && stats.echarts?.pie?.countries) {
+      const chart = echarts.init(countriesChartRef.current)
+
+      chart.setOption({
         title: {
-          text: "Countries",
+          text: "Pays",
           left: "center"
         },
         tooltip: {
@@ -250,7 +249,7 @@ const BackofficeHome = () => {
         },
         series: [
           {
-            name: "Countries",
+            name: "Pays",
             type: "pie",
             radius: "60%",
             center: ["50%", "60%"],
@@ -261,29 +260,21 @@ const BackofficeHome = () => {
                 shadowOffsetX: 0,
                 shadowColor: "rgba(0, 0, 0, 0.5)"
               }
-            },
-            labelLine: {
-              show: true
-            },
-            label: {
-              formatter: "{b}: {d}%"
             }
           }
         ]
-      }
-
-      countriesChart.setOption(countriesOption)
-
-      window.addEventListener("resize", () => {
-        countriesChart.resize()
       })
+
+      window.addEventListener("resize", () => chart.resize())
     }
 
-    if (topPagesChartRef.current && stats) {
-      const topPagesChart = echarts.init(topPagesChartRef.current)
-      const topPagesOption = {
+    // 5. Graphique des pages populaires
+    if (topPagesChartRef.current && stats.echarts?.bar?.topPages) {
+      const chart = echarts.init(topPagesChartRef.current)
+
+      chart.setOption({
         title: {
-          text: "Top Pages",
+          text: "Pages les plus visitées",
           left: "center"
         },
         tooltip: {
@@ -313,7 +304,7 @@ const BackofficeHome = () => {
         },
         series: [
           {
-            name: "Pageviews",
+            name: "Pages vues",
             type: "bar",
             data: stats.echarts.bar.topPages.map(item => item.value).reverse(),
             itemStyle: {
@@ -330,41 +321,65 @@ const BackofficeHome = () => {
             }
           }
         ]
-      }
-
-      topPagesChart.setOption(topPagesOption)
-
-      window.addEventListener("resize", () => {
-        topPagesChart.resize()
       })
-    }
-  }
-  const disposeCharts = () => {
-    if (trafficChartRef.current) {
-      echarts.getInstanceByDom(trafficChartRef.current)?.dispose()
+
+      window.addEventListener("resize", () => chart.resize())
     }
 
-    if (devicesChartRef.current) {
-      echarts.getInstanceByDom(devicesChartRef.current)?.dispose()
-    }
+    // 6. Graphique des référents
+    if (referrersChartRef.current && stats.echarts?.bar?.topReferrers) {
+      const chart = echarts.init(referrersChartRef.current)
 
-    if (browsersChartRef.current) {
-      echarts.getInstanceByDom(browsersChartRef.current)?.dispose()
-    }
+      chart.setOption({
+        title: {
+          text: "Sources de trafic",
+          left: "center"
+        },
+        tooltip: {
+          trigger: "axis",
+          axisPointer: {
+            type: "shadow"
+          }
+        },
+        grid: {
+          left: "3%",
+          right: "4%",
+          bottom: "15%",
+          containLabel: true
+        },
+        xAxis: {
+          type: "value",
+          boundaryGap: [0, 0.01]
+        },
+        yAxis: {
+          type: "category",
+          data: stats.echarts.bar.topReferrers.map(item => item.name).reverse(),
+          axisLabel: {
+            formatter(value) {
+              return value.length > 15 ? `${value.substring(0, 15)}...` : value
+            }
+          }
+        },
+        series: [
+          {
+            name: "Visites",
+            type: "bar",
+            data: stats.echarts.bar.topReferrers.map(item => item.value).reverse(),
+            itemStyle: {
+              color: "#3ba272"
+            }
+          }
+        ]
+      })
 
-    if (countriesChartRef.current) {
-      echarts.getInstanceByDom(countriesChartRef.current)?.dispose()
-    }
-
-    if (topPagesChartRef.current) {
-      echarts.getInstanceByDom(topPagesChartRef.current)?.dispose()
+      window.addEventListener("resize", () => chart.resize())
     }
   }
 
   return (
     <BackofficeLayout>
       <div className="p-6">
-        <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
+        <h1 className="text-2xl font-bold mb-6">Tableau de bord</h1>
 
         {loading ? (
           <div className="flex justify-center items-center h-64">
@@ -377,38 +392,48 @@ const BackofficeHome = () => {
           </div>
         ) : stats ? (
           <>
-            {/* Stats Summary */}
+            {/* Cartes de statistiques */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-              <StatsCard title="Pages Vues" value={stats.stats.pageviews.value} />
-              <StatsCard title="Visiteurs" value={stats.stats.visitors.value} />
-              <StatsCard title="Sessions" value={stats.stats.visits.value} />
-              <StatsCard title="Taux de Rebond" value={stats.stats.bounceRate} />
+              <StatsCard
+                title="Pages vues"
+                value={stats.stats.pageviews.value}
+              />
+              <StatsCard
+                title="Visiteurs"
+                value={stats.stats.visitors.value}
+              />
+              <StatsCard
+                title="Sessions"
+                value={stats.stats.visits.value}
+              />
+              <StatsCard
+                title="Taux de rebond"
+                value={stats.stats.bounceRate}
+                subtitle={`Temps moyen: ${stats.stats.avgTimeOnSite}s`}
+              />
             </div>
 
+            {/* Graphiques principaux */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-              {/* Traffic Chart */}
               <div className="bg-white rounded-lg shadow p-4">
                 <div ref={trafficChartRef} style={{ height: "400px" }}></div>
               </div>
 
-              {/* Top Pages */}
               <div className="bg-white rounded-lg shadow p-4">
                 <div ref={topPagesChartRef} style={{ height: "400px" }}></div>
               </div>
             </div>
 
+            {/* Graphiques secondaires */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* Devices Chart */}
               <div className="bg-white rounded-lg shadow p-4">
                 <div ref={devicesChartRef} style={{ height: "300px" }}></div>
               </div>
 
-              {/* Browsers Chart */}
               <div className="bg-white rounded-lg shadow p-4">
-                <div ref={browsersChartRef} style={{ height: "300px" }}></div>
+                <div ref={osChartRef} style={{ height: "300px" }}></div>
               </div>
 
-              {/* Countries Chart */}
               <div className="bg-white rounded-lg shadow p-4">
                 <div ref={countriesChartRef} style={{ height: "300px" }}></div>
               </div>
@@ -421,7 +446,6 @@ const BackofficeHome = () => {
 }
 
 export default BackofficeHome
-
 
 export const getServerSideProps = async (context) => {
   const { user } = await authProps(context)

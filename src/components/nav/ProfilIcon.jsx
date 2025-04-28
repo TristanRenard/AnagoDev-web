@@ -1,10 +1,5 @@
 import Link from "@/components/CustomLink"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { toast } from "@/hooks/use-toast"
 import { useI18n } from "@/locales"
 import axios from "axios"
@@ -46,10 +41,10 @@ const IconProfil = ({ isAdmin }) => {
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuItem>
-          <Link href="/profile">{t("Mon profil")}</Link>
+          <Link href="/profile">{t("My profile")}</Link>
         </DropdownMenuItem>
         <DropdownMenuItem>
-          <Link href="/orders">{t("Mes commandes")}</Link>
+          <Link href="/orders">{t("Orders")}</Link>
         </DropdownMenuItem>
         {isAdmin && (
           <DropdownMenuItem>
@@ -57,7 +52,7 @@ const IconProfil = ({ isAdmin }) => {
           </DropdownMenuItem>
         )}
         <DropdownMenuItem>
-          <button onClick={handleLogout}>{t("Deconnexion")}</button>
+          <button onClick={handleLogout}>{t("Logout")}</button>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
