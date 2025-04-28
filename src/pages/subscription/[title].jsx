@@ -13,39 +13,29 @@ import ReactMarkdown from "react-markdown"
 
 const ProductPage = ({ product, similarProducts }) => {
   const [selectedPrice, setSelectedPrice] = useState(product?.prices?.[0]?.id)
-  const { toast } = useToast()
   const router = useRouter()
+  const { toast } = useToast()
   const t = useI18n()
   const pt = useScopedI18n("products")
   console.log({ product })
   console.log(similarProducts)
 
-  const handleAddToCart = async () => {
+  const handleSubscription = async () => {
     try {
-      await axios.post("/api/cart", {
+      const res = await axios.post("/api/subscriptionPayment", {
         selectedPrice,
-        action: "add",
       })
       toast({
-        title: t("Product added to cart"),
-        description: t("Product successfully added to your cart"),
-        status: "success",
+        title: t("Success"),
+        description: t("Subscription created successfully"),
+        variant: "default",
       })
-      umami.track("addToCart", {
-        productId: product.id,
-        productTitle: product.title,
-        priceId: selectedPrice,
-      })
-      umami.track("navigate", {
-        from: router.asPath,
-        to: "/cart",
-      })
-      router.push("/cart")
+      router.push(res.data.url)
     } catch (error) {
       toast({
-        title: t("Error adding product to cart"),
-        description: error.response?.data?.message || t("Something went wrong"),
-        status: "error",
+        title: t("Error"),
+        description: t("An error occurred while creating the subscription"),
+        variant: "destructive",
       })
     }
   }
@@ -92,21 +82,22 @@ const ProductPage = ({ product, similarProducts }) => {
                     )}
                     onClick={() => setSelectedPrice(price.id)}
                   >
-                    {price.nickname !== "unit" && <span className="text-xl font-bold">
-                      {t(price.nickname)}
-                    </span>}
+                    {price.nickname !== "unit" && (
+                      <span className="text-xl font-bold">
+                        {t(price.nickname)}
+                      </span>
+                    )}
                     <span>
-                      {price.unit_amount / 100}{" "}
-                      {price.currency}
+                      {price.unit_amount / 100} {price.currency}
                     </span>
                   </button>
                 ))}
               </div>
               <Button
-                onClick={handleAddToCart}
+                onClick={handleSubscription}
                 className="bg-primary text-primary-foreground rounded-md px-4 py-2 mt-6 w-full"
               >
-                Add to cart
+                {t("Subscribe")}
               </Button>
             </div>
           </section>

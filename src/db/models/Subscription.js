@@ -12,7 +12,7 @@ class Subscription extends Model {
   static get jsonSchema() {
     return {
       type: "object",
-      required: ["isAnnually", "price", "productId", "userId", "orderId", "paymentMethodId"],
+      required: ["isAnnually", "price", "productId", "userId", "orderId"],
 
       properties: {
         id: { type: "integer" },
