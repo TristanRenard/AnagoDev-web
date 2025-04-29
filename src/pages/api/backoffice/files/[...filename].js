@@ -35,7 +35,7 @@ const handler = async (req, res) => {
   }
 
   // Extract filename from query parameters
-  const { filename } = req.query
+  const filename = req.query.filename.join("/")
 
   if (!filename) {
     return res.status(400).json({ message: "Filename is required" })

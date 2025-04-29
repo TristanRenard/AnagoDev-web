@@ -35,6 +35,16 @@ const handler = async (req, res) => {
       mode: "payment",
       success_url: `${req.headers.origin || process.env.HOST_NAME}/success`,
       cancel_url: `${req.headers.origin || process.env.HOST_NAME}/cart`,
+      ui_mode: "hosted",
+      invoice_creation: {
+        enabled: true,
+        invoice_data: {
+          description: "Cyna order",
+          metadata: {
+            userId: user.id,
+          },
+        },
+      },
     })
 
     await Order.query(knexInstance)
