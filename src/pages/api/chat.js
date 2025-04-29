@@ -11,7 +11,7 @@ You will always reply with json with this format :
   title : <title of the conversation only for the first message>
   event* : "message" | "suggest" | "do" | "need a human"
   message* : <the message in the user language>
-  productList : <if suggest or do> [{id:<price.id>,quantity:<quantity>},...] (use the id of the price never the id of the product, you can use price.id or priceId)
+  productList : <if suggest or do> [{id:<price.id>,quantity:<quantity>},...] (use the id of the price.id from priceId or product.price.id for the cart, for the suggestion use the product.id)
   action : <if do> "add to cart" | "go to page | remove from cart"
   page : <if action is "go to page"> "product/<product.title>"
 }
