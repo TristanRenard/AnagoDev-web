@@ -317,9 +317,10 @@ const Profile = () => {
                 ).toLocaleDateString()
 
                 return (
-                  <div
+                  <a
                     key={order.id}
                     className="p-4 border rounded-xl shadow-sm bg-gray-50 hover:bg-gray-100 transition-colors"
+                    href={order.invoicePath}
                   >
                     <div className="flex justify-between items-center mb-2">
                       <span className="text-sm font-medium text-gray-600">
@@ -335,7 +336,7 @@ const Profile = () => {
                     <div className="text-sm text-gray-500">
                       {order.orderPrices.length} {t("items")}
                     </div>
-                  </div>
+                  </a>
                 )
               })}
             </div>

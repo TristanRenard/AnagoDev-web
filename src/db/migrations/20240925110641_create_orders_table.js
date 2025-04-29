@@ -5,6 +5,7 @@
 exports.up = (knex) => knex.schema.createTable("orders", (table) => {
   table.increments("id").primary()
   table.string("status").notNullable()
+  table.string("invoicePath")
   table.timestamps(true, true)
   table.integer("userId").unsigned().notNullable()
   table.foreign("userId").references("users.id").onDelete("CASCADE")
