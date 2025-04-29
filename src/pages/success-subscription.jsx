@@ -1,62 +1,79 @@
 /* eslint-disable camelcase */
 import Subscription from "@/db/models/Subscription"
 import knexInstance from "@/lib/db"
+import * as Minio from "minio"
+
+import { stripe } from "@/lib/stripe"
 import authProps from "@/serverSideProps/authProps"
 import Link from "next/link"
-import { stripe } from "@/lib/stripe"
 
 export const getServerSideProps = async (context) => {
   const { user } = await authProps(context)
-  const { session_id } = context.query
 
-  if (!session_id) {
+  try {
+    const { stripeSessionId, ...potentialSubscription } = await Subscription.query(knexInstance)
+      .where({ userId: user.id, status: "waiting for payment" })
+      .first()
+    const stripeSession = await stripe.checkout.sessions.retrieve(stripeSessionId)
+    await console.log("stripeSession", stripeSession)
+    const { invoice_pdf, id: invoiceId } = await stripe.invoices.retrieve(stripeSession.invoice)
+    // Upload the invoice to minio
+    const minioClient = new Minio.Client({
+      endPoint: process.env.MINIO_HOST,
+      port: parseInt(process.env.MINIO_PORT, 10),
+      useSSL: false,
+      accessKey: process.env.MINIO_ROOT_USER,
+      secretKey: process.env.MINIO_ROOT_PASSWORD,
+    })
+    //Get file name from url
+    const filePath = `invoices/${user.id}-${invoiceId}.pdf`
+    // Correction: Récupération correcte du buffer depuis l'URL
+    const response = await fetch(invoice_pdf)
+    const arrayBuffer = await response.arrayBuffer()
+    const buffer = Buffer.from(arrayBuffer)
+
+    await minioClient.putObject("anago-dev", filePath, buffer, {
+      "Content-Type": "application/pdf",
+    })
+    console.log("file uploaded to minio", filePath)
+
+    const fileUrl = `/api/backoffice/files/${filePath}`
+
+    await Subscription.query(knexInstance)
+      .update({
+        status: "active",
+        isActive: true,
+        isAnnually: potentialSubscription.isAnnually,
+        stripeSessionId: stripeSession.id,
+        priceId: potentialSubscription.priceId,
+        userId: user.id,
+        invoicePath: await fileUrl.replace("//", "/"),
+      })
+      .where({ userId: user.id, status: "waiting for payment" })
+
     return {
-      redirect: {
-        destination: "/cart",
-        permanent: false,
+      props: {
+        isAnnually: potentialSubscription.isAnnually || true,
+        price: stripeSession.amount_total / 100,
+        invoicePath: filePath,
       },
     }
-  }
+  } catch (error) {
+    const { isAnnually, invoicePath, stripeSessionId } = await Subscription.query(knexInstance)
+      .where({ userId: user.id, status: "active" })
+      .first()
+    const stripeSession = await stripe.checkout.sessions.retrieve(stripeSessionId)
 
-  const session = await stripe.checkout.sessions.retrieve(session_id, {
-    expand: ["subscription"],
-  })
-  const { subscription } = session
-  const priceId = subscription.items.data[0].price.id
-  const stripePrice = await stripe.prices.retrieve(priceId)
-  const isAnnually = stripePrice.recurring.interval === "year"
-  const price = stripePrice.unit_amount / 100
-  const hasSubscription = await Subscription.query(knexInstance).findOne(
-    user.id,
-  )
-
-  if (hasSubscription) {
     return {
-      redirect: {
-        destination: "/",
-        permanent: false,
+      props: {
+        isAnnually: isAnnually || true,
+        price: stripeSession.amount_total / 100,
+        invoicePath: invoicePath || null,
       },
     }
-  }
-  
-  console.log("Creating subscription for user:", user.id)
-
-  await Subscription.query(knexInstance).insert({
-    isAnnually,
-    price,
-    userId: user.id,
-  })
-
-  console.log("Subscription created successfully")
-
-  return {
-    props: {
-      isAnnually,
-      price,
-    },
   }
 }
-const SuccessSubscription = ({ isAnnually, price }) => (
+const SuccessSubscription = ({ isAnnually, price, invoicePath }) => (
   <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
     <h1 className="text-4xl font-bold text-green-600">
       Subscription Successful!
@@ -68,6 +85,11 @@ const SuccessSubscription = ({ isAnnually, price }) => (
       Plan: {isAnnually ? "Annual" : "Monthly"} - ${price}
       {isAnnually ? "/year" : "/month"}
     </p>
+    {invoicePath && (
+      <p className="mt-2 text-sm text-gray-500">
+        Your invoice has been saved and will be available in your account.
+      </p>
+    )}
     <Link
       href="/"
       className="mt-6 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"

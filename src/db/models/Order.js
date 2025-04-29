@@ -17,6 +17,7 @@ class Order extends Model {
         status: { type: "string" },
         userId: { type: "integer" },
         stripeSessionId: { type: "string" },
+        invoicePath: { type: "string" },
         addressId: { type: "integer" },
         paymentMethodId: { type: "integer" },
       },

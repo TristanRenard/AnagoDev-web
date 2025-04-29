@@ -1,4 +1,5 @@
 import { useI18n } from "@/locales"
+import { useQueryClient } from "@tanstack/react-query"
 import axios from "axios"
 import confetti from "canvas-confetti"
 import { CircleCheckBig } from "lucide-react"
@@ -35,9 +36,11 @@ const Sucess = () => {
       shapes: ["square"],
     })
   }
+  const queryClient = useQueryClient()
 
   useEffect(() => {
     startConfettiRain()
+    queryClient.invalidateQueries(["orders"])
   }, [])
 
   return (

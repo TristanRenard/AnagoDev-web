@@ -1,5 +1,4 @@
-import Order from "@/db/models/Order"
-import PaymentMethod from "@/db/models/PaymentMethod"
+import Price from "@/db/models/Price"
 import Product from "@/db/models/Product"
 import User from "@/db/models/User"
 import { Model } from "objection"
@@ -12,16 +11,17 @@ class Subscription extends Model {
   static get jsonSchema() {
     return {
       type: "object",
-      required: ["isAnnually", "price", "productId", "userId", "orderId"],
+      required: ["isAnnually", "priceId", "userId", "status", "isActive", "stripeSessionId"],
 
       properties: {
         id: { type: "integer" },
         isAnnually: { type: "boolean" },
-        price: { type: "number" },
-        productId: { type: "integer" },
+        status: { type: "string" },
+        isActive: { type: "boolean" },
+        stripeSessionId: { type: "string" },
+        priceId: { type: "integer" },
         userId: { type: "integer" },
-        orderId: { type: "integer" },
-        paymentMethodId: { type: "integer" }
+        invoicePath: { type: "string" }
       }
     }
   }
@@ -36,33 +36,28 @@ class Subscription extends Model {
           to: "users.id"
         }
       },
-      product: {
+      price: {
         relation: Model.BelongsToOneRelation,
+        modelClass: Price,
+        join: {
+          from: "subscriptions.priceId",
+          to: "prices.id"
+        }
+      },
+      product: {
+        relation: Model.HasOneThroughRelation,
         modelClass: Product,
         join: {
-          from: "subscriptions.productId",
+          from: "subscriptions.priceId",
+          through: {
+            from: "prices.id",
+            to: "prices.productId"
+          },
           to: "products.id"
-        }
-      },
-      order: {
-        relation: Model.BelongsToOneRelation,
-        modelClass: Order,
-        join: {
-          from: "subscriptions.orderId",
-          to: "orders.id"
-        }
-      },
-      paymentMethod: {
-        relation: Model.BelongsToOneRelation,
-        modelClass: PaymentMethod,
-        join: {
-          from: "subscriptions.paymentMethodId",
-          to: "paymentMethods.id"
         }
       }
     }
   }
 }
-
 
 export default Subscription

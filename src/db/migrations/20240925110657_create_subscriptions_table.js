@@ -5,17 +5,15 @@
 exports.up = (knex) => knex.schema.createTable("subscriptions", (table) => {
   table.increments("id").primary()
   table.boolean("isAnnually").notNullable().defaultTo(false)
-  table.float("price").notNullable()
-  table.timestamps(true, true)
+  table.string("status").notNullable().defaultTo("waiting for payment")
+  table.boolean("isActive").notNullable().defaultTo(true)
+  table.string("stripeSessionId").notNullable()
+  table.string("invoicePath")
 
   table.integer("priceId").unsigned().notNullable()
   table.foreign("priceId").references("prices.id").onDelete("CASCADE")
   table.integer("userId").unsigned().notNullable()
   table.foreign("userId").references("users.id").onDelete("CASCADE")
-  table.integer("orderId").unsigned().notNullable()
-  table.foreign("orderId").references("orders.id").onDelete("CASCADE")
-  table.integer("paymentMethodId").unsigned()
-  table.foreign("paymentMethodId").references("paymentMethods.id")
 })
 
 /**

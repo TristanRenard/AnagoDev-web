@@ -43,9 +43,6 @@ const IconProfil = ({ isAdmin }) => {
         <DropdownMenuItem>
           <Link href="/profile">{t("My profile")}</Link>
         </DropdownMenuItem>
-        <DropdownMenuItem>
-          <Link href="/orders">{t("Orders")}</Link>
-        </DropdownMenuItem>
         {isAdmin && (
           <DropdownMenuItem>
             <Link href="/backoffice/">{t("Backoffice")}</Link>
